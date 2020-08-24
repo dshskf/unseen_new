@@ -19,7 +19,6 @@ import {
     Box,
     Sub,
     Image,
-    Dropdown,
     Description,
     Left,
     Right,

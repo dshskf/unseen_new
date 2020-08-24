@@ -3,56 +3,59 @@ import styled from "styled-components";
 export const Container = styled.div`
   margin-top: 4rem;
   width: 100%;
-  height: 100%;
   display: flex;
-  justify-content: center;  
+  justify-content: center;
+  margin-bottom: 3rem;
 `;
 
 export const Products = styled.div`
   width: 90%;
   height: 100%;
   display: flex;
-  justify-content:center;
+  justify-content: center;
   flex-wrap: wrap;
 `;
 
 export const Cards = styled.div`
-  width: 20rem;
-  height: 25rem;
+  width: 15rem;
+  height: 19rem;
   overflow: hidden;
-  background: linear-gradient(rgba(39, 39, 39, 0.62), #262626);
+  background: ${(props) =>
+    `linear-gradient(${props.color.primary} 40%, ${props.color.secondary})`};
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: 0 1rem;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  margin: 1rem;
   transition: all 0.5s;
+  border-radius: 4px;
 
   &:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 12px #404040;
+    box-shadow: 0 0 12px ${(props) => props.color.primary};
     cursor: pointer;
   }
 `;
 
 export const Content = styled.div`
   width: 100%;
+  height: 70%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: white;
-  height: 80%;
 
   img {
-    width: 8rem;
-    height: 8rem;
+    width: 7rem;
+    height: 7rem;
     border-radius: 50%;
+    border:4px dashed ${(props) => props.color.secondary};
   }
 `;
 
 export const Text = styled.p`
+  text-transform: capitalize;
   &:nth-child(2) {
     margin: 0;
     margin-top: 1rem;
@@ -60,7 +63,7 @@ export const Text = styled.p`
   }
 
   &:nth-child(3) {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin: 0;
   }
   &:nth-child(4) {
@@ -75,10 +78,23 @@ export const Info = styled.div`
   align-items: center;
   height: 20%;
   color: white;
+
+  * {
+    margin: 0 !important;
+  }
 `;
 
 export const InfoItem = styled.div`
   text-align: center;
+  width: 50%;
+
+  p {
+    margin: 4px 0 !important;
+  }
+
+  :nth-child(1) {
+    width: 70%;
+  }
 
   p:nth-child(2) {
     color: #ff8000;

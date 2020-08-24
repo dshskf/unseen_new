@@ -14,6 +14,8 @@ import { RiLogoutBoxLine } from 'react-icons/ri'
 import { getImg } from '../../Constants/get-img'
 import { pullToken } from '../../Redux/auth/auth-selector'
 import { sign_out } from '../../Redux/auth/auth-action'
+import { API } from '../../Constants/link'
+
 
 import {
     Container,
@@ -25,7 +27,6 @@ import {
     nav_icon,
     User
 } from './style'
-
 
 const Sidebar = props => {
     const [open, setOpen] = useState(false)
@@ -43,7 +44,7 @@ const Sidebar = props => {
         setActive(newPage)
 
         const req = async () => {
-            await axios.get("http://localhost:1234/user/edit", {
+            await axios.get(API + "user/edit", {
                 headers:
                 {
                     "Authorization": `Bearer ${props.token}`
@@ -51,19 +52,13 @@ const Sidebar = props => {
             })
                 .then(res => {
                     const { data, err } = res.data
-                    console.log(res.data)
                     if (!err) {
                         let image = null
                         if (data.image) {
-                            image = "http://localhost:1234/" + data.image.replace('\\', '/')
+                            image = API + data.image.replace('\\', '/')
                         }
-
-                        setUser({
-                            id: data.id,
-                            username: data.username,
-                            email: data.email,
-                            image: image
-                        })
+                        console.log(data)
+                        setUser({ ...data, image: image })
                     }
                 })
         }
@@ -77,72 +72,99 @@ const Sidebar = props => {
         window.location.reload();
     }
 
+
+
     return (
-        <Container isOpen={open}>
-            <Top isOpen={open}>
+        user ?
+            <Container isOpen={open}>
+                <Top isOpen={open}>
+                    {
+                        open ?
+                            <React.Fragment>
+                                <p>UNSEEN</p>
+                                <AiOutlineClose style={open_icon} onClick={() => setOpen(!open)} />
+                            </React.Fragment>
+                            :
+                            <FaBars style={icon} onClick={() => setOpen(!open)} />
+                    }
+                </Top>
                 {
                     open ?
-                        <React.Fragment>
-                            <p>UNSEEN</p>
-                            <AiOutlineClose style={open_icon} onClick={() => setOpen(!open)} />
-                        </React.Fragment>
-                        :
-                        <FaBars style={icon} onClick={() => setOpen(!open)} />
-                }
-            </Top>
-            {
-                open ?
-                    user ?
                         <User>
                             <img src={user.image ? user.image : getImg('Account', 'guest.png')} />
                             <h1>{user.username}</h1>
                             <p>{user.email}</p>
                         </User>
-                        : null
-                    :
-                    null
-            }
 
-            <Main isOpen={open}>
-                <Item isOpen={open} isActive={active[0]} onClick={() => props.history.push('temp')}>
-                    <FaHome style={nav_icon} />
-                    {
-                        open ? <p>Home</p> : null
-                    }
-                </Item>
-                <Item isOpen={open} isActive={active[1]}>
-                    <FaUserEdit style={nav_icon} />
-                    {
-                        open ? <p>Profile</p> : null
-                    }
-                </Item>
+                        :
+                        null
+                }
 
-                <Item isOpen={open} isActive={active[2]} onClick={() => props.history.push('d-admin')}>
-                    <FaSitemap style={nav_icon} />
+                <Main isOpen={open}>
+                    <Item isOpen={open} isActive={active[0]} onClick={() => props.history.push('/home')}>
+                        <FaHome style={nav_icon} />
+                        {
+                            open ? <p>Home</p> : null
+                        }
+                    </Item>
+
+                    <Item
+                        isOpen={open}
+                        isActive={active[1]}
+                        onClick={() => props.history.push(user.account_types === "guides" ? '/guides/edit' : '/user/edit')}
+                    >
+                        <FaUserEdit style={nav_icon} />
+                        {
+                            open ? <p>Profile</p> : null
+                        }
+                    </Item>
+
+
+                    <Item
+                        isOpen={open}
+                        isActive={active[2]}
+                        onClick={() => props.history.push(user.account_types === "admin" ? '/admin/dashboard' : '/user/dashboard')}
+                    >
+                        <FaSitemap style={nav_icon} />
+                        {
+                            open ?
+                                user.account_types === "admin" ?
+                                    <p>Dashboard</p>
+                                    :
+                                    <p>Order</p>
+                                :
+                                null
+                        }
+                    </Item>
+
+                    <Item isOpen={open} isActive={active[3]} onClick={() => props.history.push('/chats')}>
+                        <BsFillChatDotsFill style={nav_icon} />
+                        {
+                            open ? <p>Chats</p> : null
+                        }
+                    </Item>
                     {
-                        open ? <p>Dashboard</p> : null
+                        user.account_types === "admin" ?
+                            <Item isOpen={open} isActive={active[4]} onClick={() => props.history.push('/ads')}>
+                                <AiOutlineAreaChart style={nav_icon} />
+                                {
+                                    open ? <p>Ads</p> : null
+                                }
+                            </Item>
+                            :
+                            null
                     }
-                </Item>
-                <Item isOpen={open} isActive={active[3]} onClick={() => props.history.push('chats')}>
-                    <BsFillChatDotsFill style={nav_icon} />
-                    {
-                        open ? <p>Chats</p> : null
-                    }
-                </Item>
-                <Item isOpen={open} isActive={active[4]} onClick={() => props.history.push('ads')}>
-                    <AiOutlineAreaChart style={nav_icon} />
-                    {
-                        open ? <p>Ads</p> : null
-                    }
-                </Item>
-                <Item isOpen={open} isActive={active[5]} isLogout={true} onClick={signOutHandler}>
-                    <RiLogoutBoxLine style={nav_icon} />
-                    {
-                        open ? <p>Logout</p> : null
-                    }
-                </Item>
-            </Main >
-        </Container >
+
+                    <Item isOpen={open} isActive={active[5]} isLogout={true} onClick={signOutHandler}>
+                        <RiLogoutBoxLine style={nav_icon} />
+                        {
+                            open ? <p>Logout</p> : null
+                        }
+                    </Item>
+                </Main >
+            </Container >
+            :
+            null
     )
 }
 const mapStateToProps = createStructuredSelector({

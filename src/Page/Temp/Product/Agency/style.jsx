@@ -3,27 +3,26 @@ import styled from "styled-components";
 export const Container = styled.div`
   margin-top: 4rem;
   width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
+  text-transform: capitalize;
+  margin-bottom:3rem;  
 `;
 
 export const Product = styled.div`
   width: 95%;
-  height: 100%;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 `;
 
 export const Cards = styled.div`
-  width: 35rem;
-  height: 15rem;
-  margin: 1rem;
+  width: 28rem;
+  height: 12rem;
+  margin: 14px 1.2rem;
   overflow: hidden;
   display: flex;
-  border: 1px solid #d8d8d8;
-  transition: all 0.5s;
+  border: 1px solid rgba(0,0,0,0.3);
+  transition: all 0.5s;  
+  background:white;
 
   &:hover {
     transform: scale(1.02);
@@ -43,17 +42,20 @@ export const CardImage = styled.div`
 `;
 
 export const CardContent = styled.div`
+  width: 55%;
   margin-left: 1rem;
 `;
 
 export const Content = styled.div`
-  height: 70%;
+  height: 75%;
+  width: 100%;
+  margin: 0;
 
   p:nth-child(1) {
     margin-bottom: 0;
     color: #ff8000;
     font-size: 1.5rem;
-    margin-top: 1rem;
+    margin-top: 4px;
   }
 
   p:nth-child(2) {
@@ -67,15 +69,16 @@ export const Content = styled.div`
 `;
 
 export const InfoItem = styled.div`
+  height: 2rem;
   width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-end;
   align-items: center;
   color: #2e2e2e;
 `;
 
 export const Item = styled.div`
   text-align: center;
-  width: 50%;
+  width: 100%;
   color: #ff8000;
 `;

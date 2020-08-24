@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactStars from "react-rating-stars-component";
+import { API } from '../../../../Constants/link'
 
 import {
     Container,
@@ -20,7 +21,7 @@ const Guides = props => {
                 {
                     props.product ?
                         props.product.map(data => {
-                            const image = "http://localhost:1234/" + data.image[0].replace('\\', '/')
+                            const image = API + data.image[0].replace('\\', '/')
                             return (
                                 <Cards key={data.id} id={data.id} onClick={props.nav}>
                                     <Content>

@@ -10,6 +10,7 @@ import { pullToken, pullUserData, pullSocket } from '../../../../Redux/auth/auth
 
 import { getImg } from '../../../../Constants/get-img'
 import { AiOutlineSend, AiOutlineClose } from 'react-icons/ai'
+import { API } from '../../../../Constants/link'
 
 import {
     Container,
@@ -17,6 +18,7 @@ import {
     User,
     Friend,
     FriendTitle,
+    FriendData,
     Chat,
     ChatTitle,
     Box,
@@ -35,41 +37,37 @@ const ChatPage = props => {
     const [friendList, setFriendList] = useState([])
     const [message, setMessage] = useState('')
     const [chatting, setChatting] = useState(false)
+    let [lastMessage, setLastMessage] = useState(false)
     const [activeId, setActiveId] = useState({
         receiver: '',
         friendName: ''
     })
 
-    let friends = []
     const messageEnd = useRef(null)
+    const isScroll = useRef(false)
 
-    const API = "localhost:1234"
-
-    useEffect(async () => {
-        let socket = props.socket
-
-        if (!socket) {
+    useEffect(() => {
+        if (!props.socket) {
             props.history.push('/')
         }
 
-        socket.on('msg_response', data => {
+        props.socket.on('msg_response', async data => {
             const d = new Date()
             const dateNow = `T${d.getHours()}:${d.getMinutes()}`
-            const isReFetchFriendList = isFetchNewFriend(data)
 
-            if (isReFetchFriendList) {
-                console.log("Fetch")
-                req()
-            }
+            await req()
 
-            setMessage(lastData => [
+            await setMessage(lastData => [
                 ...lastData,
                 {
                     ...data,
                     createdAt: dateNow
                 }
             ])
-            messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+            console.log(isScroll)
+            if (isScroll.current) {
+                messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+            }
         })
 
         const req = async () => {
@@ -77,23 +75,23 @@ const ChatPage = props => {
                 id: props.user.id,
                 token: props.token
             })
-            friends = post.data
+
+            post.last_message.map(last_msg => {
+                last_msg.content = checkMessageLength(last_msg.content)
+                return last_msg
+            })
+
+            setLastMessage(post.last_message)
             setFriendList(post.data)
         }
 
         if (props.user) {
             req()
         }
-    }, [API])
+    }, [])
 
-    const isFetchNewFriend = (msg) => {
-        let isFetch = true
-        friends.map(friend => {
-            if (friend.id.toString() === msg.sender_id.toString()) {
-                isFetch = false
-            }
-        })
-        return isFetch
+    const checkMessageLength = msg => {
+        return msg.length > 30 ? msg.substr(0, 30) + "..." : msg
     }
 
     const fetchMsg = async e => {
@@ -119,6 +117,7 @@ const ChatPage = props => {
         })
         setMessage(req.data)
         setChatting(true)
+        isScroll.current = true
         messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
     }
 
@@ -132,7 +131,16 @@ const ChatPage = props => {
             content: input,
             notification: null
         }
-        setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
+
+
+        lastMessage = await lastMessage.map(msg => {
+            if (msg.sender_id.toString() === userData.receiver_id.toString()) {
+                msg.content = checkMessageLength(input)
+            }
+            return msg
+        })
+        await setLastMessage(lastMessage)
+        await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
         setInput('')
 
         const req = await props.addMsg({
@@ -167,7 +175,11 @@ const ChatPage = props => {
                                         onClick={fetchMsg}
                                     >
                                         <img src={getImg("Account", "guest.png")} />
-                                        <p>{data.username}</p>
+                                        <FriendData>
+                                            <p>{data.username}</p>
+                                            <p>{lastMessage[index].content}</p>
+                                        </FriendData>
+
                                     </FriendTitle>
                                 )
                             })
@@ -231,7 +243,6 @@ const ChatPage = props => {
                     :
                     null
             }
-
         </Container>
     )
 }

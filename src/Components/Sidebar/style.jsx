@@ -26,6 +26,7 @@ const onOpen = {
     container: css`
     width: 20vw;
     position: relative;
+    min-width:15rem;
   `,
     top: css`
     display: flex;
@@ -54,6 +55,7 @@ export const Container = styled.div`
   overflow: hidden;
   background: #2e2e2e;
   transition: all 0.5s;
+  min-width:3rem;
   ${(props) => (props.isOpen ? onOpen.container : null)}
 `;
 

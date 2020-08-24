@@ -34,7 +34,7 @@ const Product = props => {
 
     const navHandler = async e => {
         await props.setProductId(e.currentTarget.id)
-        props.history.push('/p-detail')
+        props.history.push('/product/detail')
     }
 
     return (

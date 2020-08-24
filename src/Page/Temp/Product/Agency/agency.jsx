@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactStars from "react-rating-stars-component";
+import { API } from '../../../../Constants/link'
 
 import {
     Container,
@@ -19,7 +20,7 @@ const Agency = props => {
                 {
                     props.product ?
                         props.product.map(data => {
-                            const image = "http://localhost:1234/" + data.image[0].replace('\\', '/')
+                            const image = API + data.image[0].replace('\\', '/')
                             return (
                                 <Cards key={data.id} id={data.id} onClick={props.nav}>
                                     <CardImage>
@@ -29,7 +30,7 @@ const Agency = props => {
                                         <Content>
                                             <p>{data.title}</p>
                                             <p>{data.username}</p>
-                                            <p>{"LA -> London -> Paris -> Tokyo -> Rome"}</p>
+                                            <p>{"LA > London > Paris > Tokyo"}</p>
                                             <p>Start: {data.start_date.split('T')[0]}</p>
                                         </Content>
 
@@ -38,7 +39,7 @@ const Agency = props => {
                                                 <ReactStars
                                                     count={5}
                                                     // onChange={ratingChanged}
-                                                    value={data.rating ? data.rating : 0}
+                                                    value={data.rating ? data.rating : 4}
                                                     edit={false}
                                                     size={24}
                                                     isHalf={true}
@@ -48,9 +49,7 @@ const Agency = props => {
                                                     activeColor="#ffd700"
                                                 />
                                             </Item>
-                                            <Item>
-                                                <p>${data.cost}</p>
-                                            </Item>
+
                                         </InfoItem>
                                     </CardContent>
                                 </Cards>

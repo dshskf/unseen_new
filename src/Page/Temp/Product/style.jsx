@@ -1,16 +1,18 @@
 import styled from "styled-components";
+import {color} from '../../../Constants/color'
 
 export const Body = styled.div`
   margin: 0;
   overflow: hidden;
   width: 100%;
   height: 100vh;
-  display: flex;
+  display: flex;  
 `;
 
 export const Container = styled.div`
   width: 100%;
   height: 100vh;
+  min-width:32rem;
   overflow-x: hidden;
   box-sizing: border-box;
 `;
@@ -44,15 +46,26 @@ export const Search = styled.div`
   input[type="text"] {
     width: 50%;
     padding-left: 1rem;
+
+    &:focus{
+      border:1px solid ${color.primary};
+    }
   }
 
   input[type="submit"] {
-    background: #f37d1f;
+    background: ${color.primary_hover};
     color: white;
     margin-left: -2rem;
-    height: 3.25rem;
+    height: 3.22rem;
     width: 7%;
     border: none;
     cursor: pointer;
+    min-width:4rem;    
+
+    &:hover{
+      background: ${color.primary};
+    }
   }
+
+  
 `;

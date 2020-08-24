@@ -10,8 +10,7 @@ export const Body = styled.div`
 
 export const Sub = styled.div`
   width: 100%;
-  height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
   padding-bottom: 2rem;
 `;
 

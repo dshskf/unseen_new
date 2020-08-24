@@ -6,10 +6,15 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   width: 90vw;
+  text-transform: capitalize;
 `;
 
 export const Title = styled.div`
   width: 90%;
+
+  h1{
+    text-transform:capitalize;    
+  }
 `;
 
 export const Detail = styled.div`

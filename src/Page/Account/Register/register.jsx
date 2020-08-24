@@ -63,7 +63,7 @@ class Register extends Component {
     render() {
         return (
             <Container>
-                <Left>
+                {/* <Left>
                     <Carousels autoplay>
                         <div>
                             <img src={getImg("Product", "b1.jpg")} />
@@ -97,7 +97,7 @@ class Register extends Component {
                                 null
                         }
                     </InputField>
-                </Right>
+                </Right> */}
             </Container>
         )
     }

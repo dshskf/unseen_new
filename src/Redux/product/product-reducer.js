@@ -27,9 +27,7 @@ const product_reducer = (state = INITIAL_STATE, action) => {
             product_id: action.data
         }
     }
-
-
-
+    
     return state
 }
 

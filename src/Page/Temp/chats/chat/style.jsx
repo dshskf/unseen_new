@@ -95,6 +95,24 @@ export const FriendTitle = styled.div`
   }
 `;
 
+export const FriendData = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    
+  height: 100%;
+
+  p {
+    margin: 0;
+
+    :nth-child(1) {
+      text-transform: capitalize;      
+    }
+    :nth-child(2) {
+      font-size:0.7rem;
+    }
+  }
+`;
+
 export const Chat = styled.div`
   width: 75%;
   height: 100%;
@@ -191,7 +209,7 @@ export const RightText = styled.div`
   ${defaultMsg};
   display: flex;
   justify-content: flex-end;
-  margin-right: 2rem;  
+  margin-right: 2rem;
   max-width: 50%;
 
   span {
@@ -209,17 +227,17 @@ export const Text = styled.div`
   background: #2e3746;
   border-radius: 20px;
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   flex-wrap: wrap;
   justify-content: flex-start;
   margin-left: 10px;
   align-items: center;
-  padding:0 10px;
+  padding: 0 10px;
   color: white;
   position: relative;
-  min-width:3rem;  
-  word-break:break-all;
-  max-width:100%;    
+  min-width: 3rem;
+  word-break: break-all;
+  max-width: 100%;
   ${(props) => (props.isRight ? rightTxt : null)};
 
   span {

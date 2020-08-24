@@ -7,6 +7,7 @@ import axios from 'axios'
 
 import { get_product_dashboard, set_id } from '../../../Redux/product/product-action'
 import { pullToken, pullUserData } from '../../../Redux/auth/auth-selector'
+import { API } from '../../../Constants/link'
 
 import Guides from './Guides/guide'
 import Sidebar from '../../../Components/Sidebar/sidebar'
@@ -19,11 +20,9 @@ const AdsList = props => {
     const [data, setData] = useState('')
     const [pages, setPages] = useState('ads')
 
-    const api = 'http://localhost:1234/'
-
     useEffect(() => {
         const req = async () => {
-            await axios.get(`${api}product/dashboard`, {
+            await axios.get(`${API}product/dashboard`, {
                 headers:
                 {
                     "Authorization": `Bearer ${props.token}`

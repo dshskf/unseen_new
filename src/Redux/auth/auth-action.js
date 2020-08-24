@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { API } from '../../Constants/link'
 
 export const authType = {
     set_token: "SET_TOKEN",
@@ -11,20 +12,20 @@ export const authType = {
     set_io_connection: "SET_IO_CONNECTION"
 }
 
-const API = "http://localhost:1234/user"
+const URL = API + "user"
 
 const Get = async (link, header = null) => {
     if (header) {
-        return await axios.get(`${API}/${link}`, header)
+        return await axios.get(`${URL}/${link}`, header)
     }
-    return await axios.get(`${API}/${link}`)
+    return await axios.get(`${URL}/${link}`)
 }
 
 const Post = async (link, data, header = null) => {
     if (header) {
-        return await axios.post(`${API}/${link}`, data, header)
+        return await axios.post(`${URL}/${link}`, data, header)
     }
-    return await axios.post(`${API}/${link}`, data)
+    return await axios.post(`${URL}/${link}`, data)
 }
 
 
@@ -44,7 +45,7 @@ export const sign_in = (data) => async (dispatch) => {
         localStorage.setItem('login_data', JSON.stringify({ email: post.data.email, token: post.data.token }));
         dispatch({ type: authType.set_token, data: post.data.token })
         dispatch({ type: 'SET_USER', data: post.data.userData })
-        data.history.push("/");
+        return post.data
     }
 
     dispatch({ type: authType.sign_in, data: post.data })

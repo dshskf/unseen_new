@@ -62,12 +62,15 @@ class Account extends Component {
         }
 
         const req = await this.props.signIn({
-            data: dataToSubmit,
-            history: this.props.history
+            data: dataToSubmit
         });
 
         if (req ? req.err : false) {
             this.setState({ err: req.err })
+        }
+        if (!req.err) {
+            window.location.href = "http://localhost:3000/home"
+
         }
     }
 
