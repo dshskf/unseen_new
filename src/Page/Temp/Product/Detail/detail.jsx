@@ -67,7 +67,7 @@ const ProductDetails = props => {
             const post = await props.getProduct({
                 id: props.productId
             })
-            console.log(post)
+            
             setComment(post.comment)
             setData(post.product[0])
         }
@@ -89,13 +89,12 @@ const ProductDetails = props => {
         const post = await props.postRequestForm({
             form: dataToSubmit,
             token: props.token
-        })
-        console.log(post)
+        })        
     }
 
     return (
         <Body>
-            <Sidebar page="dashboard" />
+            <Sidebar page="home" />
 
             <Sub>
                 <Header>

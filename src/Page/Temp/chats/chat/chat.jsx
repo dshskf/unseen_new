@@ -64,7 +64,7 @@ const ChatPage = props => {
                     createdAt: dateNow
                 }
             ])
-            console.log(isScroll)
+
             if (isScroll.current) {
                 messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
             }
@@ -117,6 +117,7 @@ const ChatPage = props => {
         })
         setMessage(req.data)
         setChatting(true)
+
         isScroll.current = true
         messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
     }
@@ -134,11 +135,13 @@ const ChatPage = props => {
 
 
         lastMessage = await lastMessage.map(msg => {
-            if (msg.sender_id.toString() === userData.receiver_id.toString()) {
+            if (msg.receiver_id.toString() === userData.receiver_id.toString()) {
+
                 msg.content = checkMessageLength(input)
             }
             return msg
         })
+
         await setLastMessage(lastMessage)
         await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
         setInput('')
@@ -174,7 +177,7 @@ const ChatPage = props => {
                                         isActive={data.id.toString() === activeId.receiver.toString()}
                                         onClick={fetchMsg}
                                     >
-                                        <img src={getImg("Account", "guest.png")} />
+                                        <img src={data.image ? API + data.image.replace('\\', '/') : getImg("Account", "guest.png")} />
                                         <FriendData>
                                             <p>{data.username}</p>
                                             <p>{lastMessage[index].content}</p>
@@ -203,7 +206,7 @@ const ChatPage = props => {
                                 message ?
                                     message.map((data, index) => {
                                         let img = data.notification ?
-                                            'http://localhost:1234/' + data.prod_data.image[0].replace('\\', '/')
+                                            API + data.prod_data.image[0].replace('\\', '/')
                                             :
                                             null
                                         const date = data.createdAt.split('T')[1].substring(0, 5)
@@ -217,12 +220,12 @@ const ChatPage = props => {
                                                             <span>{date} pm</span>
                                                         </Text>
 
-                                                        <img src={userData.friend_image ? userData.friend_image : getImg("Account", "guest.png")} />
+                                                        <img src={userData.friend_image ? API + userData.friend_image : getImg("Account", "guest.png")} />
                                                     </RightText>
                                                 </BoxRight>
                                                 :
                                                 <LeftText key={index} ref={index === message.length - 1 ? messageEnd : null}>
-                                                    <img src={userData.user_image ? userData.user_image : getImg("Account", "guest.png")} />
+                                                    <img src={userData.user_image ? API + userData.user_image : getImg("Account", "guest.png")} />
                                                     <Text length={data.content}>
                                                         <p>{data.content}</p>
                                                         <span>{date} pm</span>

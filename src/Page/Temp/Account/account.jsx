@@ -80,7 +80,8 @@ class Account extends Component {
             username: username,
             email: email,
             phone: phone,
-            password: password
+            password: password,
+            account_types: 'user'
         }
 
         const req = await this.props.signUp(dataToSubmit)

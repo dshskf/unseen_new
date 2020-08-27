@@ -9,6 +9,7 @@ import HomePage from './Page/Home/home'
 
 // import ResetAction from './Page/Account/Reset/reset-action'
 import EditUserProfile from './Page/Temp/Profile/User/user'
+import Track from './Page/Temp/Dashboard/Track/track'
 
 import Maps from './Page/Account/Maps/maps'
 
@@ -67,7 +68,7 @@ class App extends React.Component {
               :
               <Switch>
 
-                {/* <Route path="/reset/:token" component={ResetAction} /> */}                             
+                {/* <Route path="/reset/:token" component={ResetAction} /> */}
 
                 <Route path="/map" component={Maps} />
 
@@ -81,7 +82,7 @@ class App extends React.Component {
                 <Route path="/user/edit" component={EditUserProfile} />
 
                 <Route path="/product/detail" component={ProductDetails} />
-
+                <Route path="/tracks/:orderId" component={Track} />
                 <Route path="/" component={HomePage} />
               </Switch>
           }

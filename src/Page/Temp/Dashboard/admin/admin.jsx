@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 
@@ -11,6 +11,9 @@ import { getImg } from '../../../../Constants/get-img'
 
 import { get_approval_management, update_approval_status, add_message } from '../../../../Redux/product/product-action'
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth-selector'
+
+import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
+import { GiSandsOfTime } from 'react-icons/gi'
 
 
 import {
@@ -25,7 +28,7 @@ import {
 } from './style'
 
 const AdminDashboard = props => {
-    const header = ['Name', 'Phone', 'Email', 'Item', 'Reason', 'Price', 'Action', 'Status']
+    const header = ['Name', 'Phone', 'Item', 'Reason', 'Price', 'Action', 'Status']
 
     const [refetch, setRefetch] = useState(false)
     const [openModal, setOpenModal] = useState(false)
@@ -38,7 +41,7 @@ const AdminDashboard = props => {
                 action: 'receiver_id',
                 token: props.token
             })
-            console.log(getData.data)
+
             setData(getData.data)
         }
         req()
@@ -62,14 +65,16 @@ const AdminDashboard = props => {
         const post = await props.updateStatus({
             form: dataToSubmit,
             token: props.token
-        })
-
+        })        
 
         const msgData = {
             sender_id: props.user.id,
             receiver_id: data[index].sender_id,
-            content: `Cool! ${props.user.username} has approved your request, now you can go to payment!`,
-            notification: data[index].product_id
+            content: name === "isActive" ?
+                `${props.user.username} has activated your trip!`
+                :
+                `Cool! ${props.user.username} has approved your request, now you can go to payment!`,
+            ads_id: data[index].product_id
         }
 
         const send = await props.addMsg({
@@ -99,7 +104,7 @@ const AdminDashboard = props => {
             sender_id: props.user.id,
             receiver_id: data[index].sender_id,
             content: `${props.user.username} not approving your request on ${data[index].product_name}`,
-            notification: null
+            ads_id: data[index].product_id
         }
 
         const send = await props.addMsg({
@@ -111,6 +116,10 @@ const AdminDashboard = props => {
             setRefetch(!refetch)
         }
 
+    }
+
+    const styles = {
+        link: { textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }
     }
 
     return (
@@ -152,9 +161,6 @@ const AdminDashboard = props => {
                                             <p>{data.phone}</p>
                                         </Content>
                                         <Content>
-                                            <p>{data.email}</p>
-                                        </Content>
-                                        <Content>
                                             <p>{data.product_name}</p>
                                         </Content>
                                         <Content id={data.reason} isReason={true} onClick={openModalHandler}>
@@ -194,9 +200,12 @@ const AdminDashboard = props => {
                                         <Content>
                                             {
                                                 data.isActive ?
-                                                    <StatusBox>
-                                                        <p>Active</p>
-                                                    </StatusBox>
+                                                    <Link to={`/tracks/${data.id}`} style={styles.link}>
+                                                        <StatusBox id={data.id} isActive={true}>
+                                                            <FaMapMarkerAlt style={{ color: "white" }} />
+                                                            <p>Track</p>
+                                                        </StatusBox>
+                                                    </Link>
                                                     :
                                                     data.isPaying ?
                                                         <StatusBox isPayed={true}>
@@ -205,10 +214,12 @@ const AdminDashboard = props => {
                                                         :
                                                         data.isApprove ?
                                                             <StatusBox isPayed={true}>
+                                                                <FaMoneyCheck style={{ color: "white" }} />
                                                                 <p>Paying</p>
                                                             </StatusBox>
                                                             :
                                                             <StatusBox>
+                                                                <GiSandsOfTime />
                                                                 <p>Waiting</p>
                                                             </StatusBox>
 
@@ -218,7 +229,6 @@ const AdminDashboard = props => {
                                 ))
                                 :
                                 null
-
                         }
                     </Table>
                 </Container>

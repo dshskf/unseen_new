@@ -109,6 +109,7 @@ export const FriendData = styled.div`
     }
     :nth-child(2) {
       font-size:0.7rem;
+      color:gray;
     }
   }
 `;

@@ -3,15 +3,16 @@ import styled, { css } from "styled-components";
 export const Container = styled.div`
   display: flex;
   width: 100%;
+  min-width:800px;
   justify-content: center;
   align-content: center;
-  margin-top: 10%;
+  margin-top: 4rem;
 `;
 
 export const Table = styled.div`
   display: flex;
   flex-direction: column;
-  width: 90%;
+  width: 90%;  
   height: 70%;
   overflow: hidden;
 `;
@@ -43,47 +44,43 @@ export const Content = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 100%;  
   height: 3rem;
   margin: 0;
   color: #5f5f5f;
   margin: 5px 0;
-  cursor: cell;
+  cursor: default;
   ${(props) => (props.isHeader ? header : null)};
 
   ${(props) => (props.isReason ? reason : null)};
 
   :nth-child(1) {
-    width: 15%;
+    width: 18%;
   }
 
   :nth-child(2) {
-    width: 11%;
-  }
+    width: 12%;
+  }  
 
   :nth-child(3) {
-    width: 16%;
+    width: 25%;
   }
 
   :nth-child(4) {
-    width: 24%;
+    width: 12%;
   }
 
   :nth-child(5) {
-    width: 5%;
-  }
-
-  :nth-child(6) {
-    width: 8%;
+    width: 12%;
     font-weight: bold;
   }
 
-  :nth-child(7) {
+  :nth-child(6) {
     width: 10%;
   }
 
-  :nth-child(8) {
-    width: 11%;
+  :nth-child(7) {
+    width: 12%;
   }
 `;
 
@@ -130,7 +127,9 @@ const onPayed = css`
 const onActive = css`
   color: white;
   background: #f37d1f;
+  cursor: pointer;
 `;
+
 
 export const StatusBox = styled.div`
   background: #d1d1d1;
@@ -141,9 +140,11 @@ export const StatusBox = styled.div`
   justify-content: center;
   align-items: center;
   ${(props) => (props.isPayed ? onPayed : null)};
+  ${(props) => (props.isActive ? onActive : null)};
 
   p {
     margin: 0;
+    margin-left:6px;
   }
 `;
 

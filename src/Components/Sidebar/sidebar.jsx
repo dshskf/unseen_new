@@ -13,7 +13,7 @@ import { RiLogoutBoxLine } from 'react-icons/ri'
 
 import { getImg } from '../../Constants/get-img'
 import { pullToken } from '../../Redux/auth/auth-selector'
-import { sign_out } from '../../Redux/auth/auth-action'
+import { sign_out, get_edit_profile } from '../../Redux/auth/auth-action'
 import { API } from '../../Constants/link'
 
 
@@ -44,23 +44,16 @@ const Sidebar = props => {
         setActive(newPage)
 
         const req = async () => {
-            await axios.get(API + "user/edit", {
-                headers:
-                {
-                    "Authorization": `Bearer ${props.token}`
+            const user = await props.getUserData({ token: props.token })
+            
+            const { data, err } = user
+            if (!err) {
+                let image = null
+                if (data.image) {
+                    image = API + data.image.replace('\\', '/')
                 }
-            })
-                .then(res => {
-                    const { data, err } = res.data
-                    if (!err) {
-                        let image = null
-                        if (data.image) {
-                            image = API + data.image.replace('\\', '/')
-                        }
-                        console.log(data)
-                        setUser({ ...data, image: image })
-                    }
-                })
+                setUser({ ...data, image: image })
+            }
         }
 
         req()
@@ -71,8 +64,6 @@ const Sidebar = props => {
         await props.signOut()
         window.location.reload();
     }
-
-
 
     return (
         user ?
@@ -95,7 +86,6 @@ const Sidebar = props => {
                             <h1>{user.username}</h1>
                             <p>{user.email}</p>
                         </User>
-
                         :
                         null
                 }
@@ -172,7 +162,8 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    signOut: () => dispatch(sign_out())
+    signOut: () => dispatch(sign_out()),
+    getUserData: (data) => dispatch(get_edit_profile(data))
 })
 
 export default compose(

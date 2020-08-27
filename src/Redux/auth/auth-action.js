@@ -90,12 +90,21 @@ export const check_email = (data) => async (dispatch) => {
     dispatch({ type: authType.check_reset, data: post.data })
 }
 
-export const post_edit_profile = (data) => async (dispatch) => {
-    const post = await Post('edit', {
+export const get_edit_profile = (data) => async (dispatch) => {
+    const get = await Get('edit', {
         headers: {
             "Authorization": `Bearer ${data.token}`
         }
-    }, data.user)
+    })
+    return get.data;
+}
+
+export const post_edit_profile = (data) => async (dispatch) => {
+    const post = await Post('edit', data.user, {
+        headers: {
+            "Authorization": `Bearer ${data.token}`
+        }
+    })
 
     dispatch({ type: authType.edit_profile, data: post.data })
     return post.data
@@ -103,4 +112,20 @@ export const post_edit_profile = (data) => async (dispatch) => {
 
 export const set_io_connection = (data) => async (dispatch) => {
     dispatch({ type: authType.set_io_connection, data: data })
+}
+
+
+export const get_location_data = (data) => async (dispatch) => {
+    const post = await Post('location', data)
+    return post.data
+}
+
+export const get_track_user_data = (data) => async (dispatch) => {
+    const post = await Post('track/user', { reqId: data.id }, {
+        headers: {
+            "Authorization": `Bearer ${data.token}`
+        }
+    })
+
+    return post.data
 }

@@ -7,7 +7,7 @@ import productReducer from './product/product-reducer'
 
 const persistConfig = {
     key: "toor",
-    storage,
+    storage: storage,
     whitelist: ['auth']
 }
 

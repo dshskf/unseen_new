@@ -6,7 +6,7 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;  
   align-items: center;  
-  overflow-x: hidden;
+  overflow: hidden;
 `;
 
 export const Form = styled.div`
@@ -22,8 +22,7 @@ export const Form = styled.div`
   position: relative;
   margin-top: 5rem;
   padding-top: 6rem;
-  border-radius: 6px;  
-  margin-bottom:4rem;
+  border-radius: 6px;
 `;
 
 export const FormInput = styled.div`

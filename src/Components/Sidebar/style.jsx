@@ -1,46 +1,46 @@
 import styled, { css } from "styled-components";
 
 export const icon = {
-    color: "white",
-    fontSize: "1.5rem",
-    marginTop: "4px",
-    cursor: "pointer",
+  color: "white",
+  fontSize: "1.5rem",
+  marginTop: "4px",
+  cursor: "pointer",
 };
 
 export const open_icon = {
-    color: "white",
-    fontSize: "1.5rem",
-    marginRight: "10px",
-    cursor: "pointer",
+  color: "white",
+  fontSize: "1.5rem",
+  marginRight: "10px",
+  cursor: "pointer",
 };
 
 export const nav_icon = {
-    color: "color:#575757",
-    fontSize: "1.5rem",
-    marginRight: "10px",
-    cursor: "pointer",
-    margin: "0 1rem",
+  color: "color:#575757",
+  fontSize: "1.5rem",
+  marginRight: "10px",
+  cursor: "pointer",
+  margin: "0 1rem",
 };
 
 const onOpen = {
-    container: css`
+  container: css`
     width: 20vw;
     position: relative;
     min-width:15rem;
   `,
-    top: css`
+  top: css`
     display: flex;
     justify-content: space-between;
     align-items: center;
   `,
-    item: css`
+  item: css`
     display: flex;
     align-items: center;
     width: 100%;
     margin: 0;
     border-bottom: 1px solid #5a5959;
   `,
-    logout: css`
+  logout: css`
     position: absolute;
     left: 0;
     bottom: 0;
@@ -51,7 +51,7 @@ const onOpen = {
 
 export const Container = styled.div`
   width: 3rem;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   background: #2e2e2e;
   transition: all 0.5s;
@@ -91,7 +91,7 @@ export const Item = styled.div`
   margin: 1rem 0;
   text-align: center;
   color: ${(props) => (props.isActive ? "#F37D1F" : "#575757")};
-  transition: all 0.3s;
+  transition: all 0.2s;
 
   ${(props) => (props.isOpen ? onOpen.item : null)}
   ${(props) => (props.isLogout ? onOpen.logout : null)}
@@ -111,7 +111,7 @@ export const User = styled.div`
   justify-content: center;
   align-items: center;
   color: #f37d1f;
-  margin-top: 5vh;
+  margin-top: 1.5rem;
 
   h1 {
     margin: 0;

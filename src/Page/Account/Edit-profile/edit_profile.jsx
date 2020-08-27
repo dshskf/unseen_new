@@ -33,7 +33,6 @@ class EditProfile extends Component {
             email: "",
             phone: ""
         },
-
     }
 
     async componentWillMount() {
