@@ -1,38 +1,36 @@
-const getImage = x => {
-    return require(`../../../Assets/Image/Home/${x}`)
-}
+import {getImg} from '../../../Constants/get-img'
 
 export const city_data = [
     {
         name: 'New York',
-        img: getImage("b1.jpg")
+        img: getImg("Home/City","new-york.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b2.jpg")
+        name: 'Tokyo',
+        img: getImg("Home/City","tokyo.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b1.jpg")
+        name: 'Paris',
+        img: getImg("Home/City","paris.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b2.jpg")
+        name: 'Greenland',
+        img: getImg("Home/City","greenland.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b1.jpg")
+        name: 'London',
+        img: getImg("Home/City","london.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b2.jpg")
+        name: 'Singapore',
+        img: getImg("Home/City","singapore.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b1.jpg")
+        name: 'Dubai',
+        img: getImg("Home/City","dubai.jpg")
     },
     {
-        name: 'New York',
-        img: getImage("b2.jpg")
+        name: 'Bali',
+        img: getImg("Home/City","bali.jpg")
     }
 ]

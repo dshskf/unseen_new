@@ -1,0 +1,72 @@
+.advantange {
+  margin-top: 7rem;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.head-adv {
+  border-bottom: 3px solid #ff8900;
+}
+
+.sub-adv {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.adv-card {
+  width: 23%;
+  height: 24rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: justify;
+  margin: 0 1rem;
+  padding: 12px 1rem;
+  color: gray;
+  box-shadow: 0 0 12px #d6d6d6;
+  transition: transform 0.5s;
+  cursor: pointer;
+}
+
+.adv-card * {
+  pointer-events: none;
+}
+
+.adv-card:hover {
+  transform: scale(1.04);
+  background: #ff8900;
+  color: white !important;
+  box-shadow: 1px 1px 10px #ff8900;
+}
+
+.adv-card:hover h1, .adv-card:hover p {
+  color: white;
+}
+
+.adv-card img {
+  width: 7rem;
+  height: 5rem;
+}
+
+.adv-card h1 {
+  color: #4f5d75;
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
+
+.adv-card p {
+  padding: 0 1rem;
+}
+
+.mid {
+  height: 26rem;
+  width: 24%;
+}

@@ -6,8 +6,7 @@ import {
     Platform,
     Instruction,
     List,
-    ListHeader,
-    PlatformImage
+    ListHeader
 } from './styles'
 
 const instruction_data = [
@@ -39,14 +38,14 @@ const PlatformComponent = props => {
             </Title>
             <Sub>
                 <Platform>
-                    <PlatformImage autoplay>
+                    {/* <PlatformImage autoplay>
                         <div>
                             <img src={getImage("b2.jpg")} alt="" />
                         </div>
                         <div>
                             <img src={getImage("b1.jpg")} alt="" />
                         </div>
-                    </PlatformImage>
+                    </PlatformImage> */}
                 </Platform>
                 <Instruction>
                     {

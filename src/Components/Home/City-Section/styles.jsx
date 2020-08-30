@@ -9,10 +9,10 @@ export const Container = styled.div`
 `;
 
 const onHoverEffect = {
-    img: css`
-    transform: scale(1.2);    
+  img: css`
+    transform: scale(1.2);
   `,
-    overlay: css`
+  overlay: css`
     opacity: 0;
   `,
 };
@@ -25,10 +25,10 @@ export const Sub = styled.div`
   align-items: center;
   position: relative;
   overflow: hidden !important;
+  cursor: pointer;
 
   p {
     color: white;
-    font-weight: bold;
     font-size: 2rem;
     z-index: 1;
     pointer-events: none;
@@ -44,12 +44,12 @@ export const Image = styled.img`
 `;
 
 export const Overlay = styled.div`
-  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35));
+  background: rgba(0, 0, 0, 0.6);
   width: 100%;
   height: 100%;
   z-index: 1;
   position: absolute;
-  transition: 1s all;
+  transition: 2s all;
 
   ${(props) => (props.isHover ? onHoverEffect.overlay : undefined)}
 `;

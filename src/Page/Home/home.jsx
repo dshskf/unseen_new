@@ -1,9 +1,9 @@
 import React from 'react'
 // import Headers from '../../Components/Header/header'
 import MainComponent from '../../Components/Home/Main-Section/main'
-// import ItemComponent from '../../Components/Home/Item-Section/item'
+import AdvancedComponent from '../../Components/Home/Advantange-Section/advantange'
 import CityComponent from '../../Components/Home/City-Section/city'
-// import PlatformComponent from '../../Components/Home/Platform-Section/platform'
+import PlatformComponent from '../../Components/Home/Platform-Section/platform'
 import Footers from '../../Components/Footer/footer'
 
 const HomePage = props => {
@@ -12,8 +12,9 @@ const HomePage = props => {
             {/* <Headers /> */}
             <MainComponent />
             {/* <ItemComponent /> */}
+            <AdvancedComponent />
             <CityComponent />
-            {/* <PlatformComponent /> */}
+            <PlatformComponent />
             <Footers />
         </React.Fragment>
     )

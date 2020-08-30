@@ -1,38 +1,60 @@
-import React from 'react';
-import { getImg } from '../../../Constants/get-img'
-import './styles.css'
+import React, { useState } from "react";
+import { getImg } from "../../../Constants/get-img";
+import { AiFillAndroid, AiFillApple, AiOutlineSearch } from "react-icons/ai";
 
-const MainComponent = props => {
+import "./styles.css";
+
+const MainComponent = (props) => {
+    const [hover, setHover] = useState({
+        android: false,
+        ios: false
+    })
+
+    const handleHover = (component) => {        
+        if (!hover[component]) {
+            setHover({ ...hover, [component]: true })
+        } else {
+            setHover({ ...hover, [component]: false })
+        }
+        return
+    }
+
+    const styles = {
+        logo: {
+            color: 'white',
+            fontSize: '20px',
+            marginRight: '2px'
+        },
+        search: {
+            color: 'white',
+            fontSize: '28px'
+        }
+    }
+
     return (
         <div class="parent">
             <div class="container">
-
                 <div class="header">
                     <div class="header-logo">
                         <img src={getImg("Account", "logo.png")} alt="" />
                         <h1>UNSEEN</h1>
                     </div>
                     <div class="header-link">
-                        <div class="link-item">
-                            Travels
+                        <div class="link-item">Travels</div>
+                        <div class="link-item">Guides</div>
+                        <div class="link-item">About Us</div>
+                        <div class="link-item">Contact Us</div>
                     </div>
-                        <div class="link-item">
-                            Guides
-                    </div>
-                        <div class="link-item">
-                            About Us
-                    </div>
-                        <div class="link-item">
-                            Contact Us
-                    </div>
-                    </div>
+
                     <div class="header-download">
-                        <div class="download-item">
-                            Android
-                    </div>
-                        <div class="download-item ios">
+                        <div class="download-item" onMouseOver={() => handleHover('android')} onMouseLeave={() => handleHover('android')}>
+                            <AiFillAndroid style={{ ...styles.logo, color: hover.android ? "white" : "#3ddc84" }} />
+                            android
+                        </div>
+                        <div class="download-item ios" onMouseOver={() => handleHover('ios')} onMouseLeave={() => handleHover('ios')}>
+                            <AiFillApple style={{ ...styles.logo, color: hover.ios ? "white" : "rgb(95,95,95)" }} />
                             IOS
-                    </div>
+                        </div>
                     </div>
                 </div>
 
@@ -54,17 +76,15 @@ const MainComponent = props => {
                 </div>
                 <div class="search-input">
                     <input type="date" />
-                    <div class="search-button">
-                        =
-                </div>
+                    <div class="search-button">=</div>
                     <input type="date" />
                 </div>
                 <div class="search-submit">
-                    <a href="#">Find</a>
+                    <AiOutlineSearch style={styles.search} />
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default MainComponent
+export default MainComponent;

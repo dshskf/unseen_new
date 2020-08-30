@@ -10,8 +10,6 @@ const CityComponent = props => {
     }))
 
 
-
-
     return (
         <Container>
             {

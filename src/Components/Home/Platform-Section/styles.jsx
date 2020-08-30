@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { Carousel } from "antd";
 import { color } from "../../../Constants/color";
 
 export const Container = styled.div`
@@ -87,15 +86,15 @@ export const ListHeader = styled.div`
   align-items: center;
 `;
 
-export const PlatformImage = styled(Carousel)`
-  text-align: center;
-  width: 20rem;
-  height: 30rem;  
-  background: white;
-  overflow: hidden;
+// export const PlatformImage = styled(Carousel)`
+//   text-align: center;
+//   width: 20rem;
+//   height: 30rem;  
+//   background: white;
+//   overflow: hidden;
 
-  img {
-    width: 20rem;
-    height: 30rem;
-  }
-`;
+//   img {
+//     width: 20rem;
+//     height: 30rem;
+//   }
+// `;
