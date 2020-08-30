@@ -129,3 +129,14 @@ export const get_track_user_data = (data) => async (dispatch) => {
 
     return post.data
 }
+
+export const update_track_user_location = (data) => async (dispatch) => {    
+    const post = await Post('track/update', data.location, {
+        headers: {
+            "Authorization": `Bearer ${data.token}`
+        }
+    })
+
+
+    return post.data
+}

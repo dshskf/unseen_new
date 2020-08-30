@@ -65,9 +65,9 @@ const ProductDetails = props => {
     useEffect(() => {
         const req = async () => {
             const post = await props.getProduct({
-                id: props.productId
+                id: props.match.params.travelId
             })
-            
+
             setComment(post.comment)
             setData(post.product[0])
         }
@@ -89,7 +89,9 @@ const ProductDetails = props => {
         const post = await props.postRequestForm({
             form: dataToSubmit,
             token: props.token
-        })        
+        })
+
+        console.log(post)
     }
 
     return (
@@ -98,7 +100,7 @@ const ProductDetails = props => {
 
             <Sub>
                 <Header>
-                    <img src={getImg("Account", "logo.png")} />
+                    <img src={getImg("Account", "logo.png")} alt="" />
                     <h1>UNSEEN</h1>
                 </Header>
                 {
@@ -131,7 +133,7 @@ const ProductDetails = props => {
                             </Title >
                             <Detail>
                                 <Left>
-                                    <img src={api + data.image[0].replace('\\', '/')} />
+                                    <img src={api + data.image[0].replace('\\', '/')} alt="" />
                                 </Left>
                                 <Right>
                                     <ProductTitle>
@@ -140,7 +142,7 @@ const ProductDetails = props => {
                                     </ProductTitle>
                                     <ProductGuide>
                                         <GuideImages>
-                                            <img src={data.user_image ? api + data.user_image.replace('\\', '/') : getImg('Account', 'guest.png')} />
+                                            <img src={data.user_image ? api + data.user_image.replace('\\', '/') : getImg('Account', 'guest.png')} alt="" />
                                         </GuideImages>
                                         <GuideData>
                                             <h2>Guided By:</h2>
@@ -154,11 +156,11 @@ const ProductDetails = props => {
                                     <ProductAction>
                                         <ActionItem>
                                             <BsChatDots />
-                                            <a> Chats</a>
+                                            <p> Chats</p>
                                         </ActionItem>
                                         <ActionItem onClick={() => setOpenModal(true)}>
                                             <FiGitPullRequest />
-                                            <a> Request</a>
+                                            <p> Request</p>
                                         </ActionItem>
                                     </ProductAction>
                                 </Right>

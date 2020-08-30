@@ -168,7 +168,7 @@ const EditUserProfile = props => {
                     <Form>
                         <ImageBox>
                             <input type="file" id="image-input" ref={clickImage} onChange={imageHandler} hidden />
-                            <img src={formData.image_to_show ? formData.image_to_show : getImg("Account", "guest.png")} onClick={() => clickImage.current.click()} />
+                            <img src={formData.image_to_show ? formData.image_to_show : getImg("Account", "guest.png")} onClick={() => clickImage.current.click()} alt="" />
                         </ImageBox>
                         <FormInput>
                             <Left>
@@ -235,6 +235,9 @@ const EditUserProfile = props => {
                                         {
                                             location.city ?
                                                 location.city.map(data => {
+                                                    if (data.id === location.city_id) {
+                                                        return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`} selected>{data.name}</option>
+                                                    }
                                                     return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`}>{data.name}</option>
                                                 })
                                                 :

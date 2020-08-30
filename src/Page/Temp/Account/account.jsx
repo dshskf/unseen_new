@@ -116,7 +116,7 @@ class Account extends Component {
                 </Left>
                 <Right>
                     <Title>
-                        <img src={getImg("Account", 'logo.png')} />
+                        <img src={getImg("Account", 'logo.png')} alt="" />
                         <h1>UNSEEN</h1>
                     </Title>
                     <Forms page={this.state.page}>

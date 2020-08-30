@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 
-import { get_product, set_product_id } from '../../../Redux/product/product-action'
+import { get_product } from '../../../Redux/product/product-action'
 import { pullToken, pullUserData } from '../../../Redux/auth/auth-selector'
 
 import { getImg } from '../../../Constants/get-img'
@@ -32,11 +32,7 @@ const Product = props => {
         req()
     }, [])
 
-    const navHandler = async e => {
-        await props.setProductId(e.currentTarget.id)
-        props.history.push('/product/detail')
-    }
-
+   
     return (
         <Body>
             <Sidebar page="home" />
@@ -51,9 +47,9 @@ const Product = props => {
                 </Search>
                 {
                     page === "guides" ?
-                        <Guides product={data} nav={navHandler} />
+                        <Guides product={data} />
                         :
-                        <Agency product={data} nav={navHandler} />
+                        <Agency product={data} />
                 }
             </Container>
         </Body>
@@ -66,8 +62,7 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getProduct: () => dispatch(get_product()),
-    setProductId: (data) => dispatch(set_product_id(data))
+    getProduct: () => dispatch(get_product())
 })
 
 export default compose(

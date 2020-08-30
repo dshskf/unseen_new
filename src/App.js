@@ -81,7 +81,7 @@ class App extends React.Component {
                 <Route path="/user/dashboard" component={UserDashboard} />
                 <Route path="/user/edit" component={EditUserProfile} />
 
-                <Route path="/product/detail" component={ProductDetails} />
+                <Route path="/travel/:travelId" component={ProductDetails} />
                 <Route path="/tracks/:orderId" component={Track} />
                 <Route path="/" component={HomePage} />
               </Switch>

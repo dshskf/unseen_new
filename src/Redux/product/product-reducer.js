@@ -1,8 +1,7 @@
 const INITIAL_STATE = {
     product: null,
     product_dashboard: null,
-    fetch_id: null,
-    product_id: null
+    fetch_id: null
 }
 
 
@@ -18,13 +17,6 @@ const product_reducer = (state = INITIAL_STATE, action) => {
         return {
             ...state,
             fetch_id: action.data
-        }
-    }
-
-    if (action.type === "SET_PRODUCT_ID") {
-        return {
-            ...state,
-            product_id: action.data
         }
     }
     

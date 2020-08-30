@@ -137,7 +137,3 @@ export const update_approval_status = (data) => async dispatch => {
 export const set_id = (data) => async (dispatch) => {
     dispatch({ type: 'SET_DASHBOARD_PRODUCT_ID', data: data })
 }
-
-export const set_product_id = (data) => async (dispatch) => {
-    dispatch({ type: 'SET_PRODUCT_ID', data: data })
-}
