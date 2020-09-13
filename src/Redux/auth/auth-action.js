@@ -86,8 +86,13 @@ export const send_email = (data) => async (dispatch) => {
 }
 
 export const check_email = (data) => async (dispatch) => {
-    const post = await Post('check-reset', data)
-    dispatch({ type: authType.check_reset, data: post.data })
+    const post = await Post('reset/check', data)
+    return post.data
+}
+
+export const update_password = (data) => async (dispatch) => {
+    const post = await Post('reset/confirm', data)
+    return post.data
 }
 
 export const get_edit_profile = (data) => async (dispatch) => {
@@ -130,7 +135,7 @@ export const get_track_user_data = (data) => async (dispatch) => {
     return post.data
 }
 
-export const update_track_user_location = (data) => async (dispatch) => {    
+export const update_track_user_location = (data) => async (dispatch) => {
     const post = await Post('track/update', data.location, {
         headers: {
             "Authorization": `Bearer ${data.token}`
