@@ -54,7 +54,7 @@ export const Content = styled.div`
   p:nth-child(1) {
     margin-bottom: 0;
     color: #ff8000;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-top: 4px;
   }
 

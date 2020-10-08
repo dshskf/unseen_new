@@ -37,8 +37,7 @@ const onOpen = {
     display: flex;
     align-items: center;
     width: 100%;
-    margin: 0;
-    border-bottom: 1px solid #5a5959;
+    margin: 0;    
   `,
   logout: css`
     position: absolute;

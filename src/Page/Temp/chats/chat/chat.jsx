@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react'
-import io from 'socket.io-client'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux';
 import { compose } from 'redux'
-import { withRouter, useHistory } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
-import { get_friend_list, get_msg, add_message, get_product_detail } from '../../../../Redux/product/product-action'
-import { pullToken, pullUserData, pullSocket } from '../../../../Redux/auth/auth-selector'
+import { chats_person_list, chats_fetch_message, chats_send_message } from '../../../../Redux/features/features.action'
+// import { get_tours_detail } from '../../../../Redux/tours/tours.action'
+
+import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
+import { pullSocket } from '../../../../Redux/features/features.selector'
 
 import { getImg } from '../../../../Constants/get-img'
 import { AiOutlineSend, AiOutlineClose } from 'react-icons/ai'
@@ -71,7 +73,7 @@ const ChatPage = props => {
         })
 
         const req = async () => {
-            const post = await props.getFriend({
+            const post = await props.chats_person_list({
                 id: props.user.id,
                 token: props.token
             })
@@ -105,7 +107,7 @@ const ChatPage = props => {
             friend_image: filterFriends[0].image
         }
 
-        const req = await props.getMsg({
+        const req = await props.chats_fetch_message({
             id: dataToSubmit,
             token: props.token
         })
@@ -135,8 +137,11 @@ const ChatPage = props => {
 
 
         lastMessage = await lastMessage.map(msg => {
-            if (msg.receiver_id.toString() === userData.receiver_id.toString()) {
-
+            console.log("Receiver :")
+            console.log([msg.receiver_id, userData.receiver_id])
+            console.log("Sender :")
+            console.log([msg.sender_id, userData.sender_id])
+            if (msg.receiver_id.toString() === userData.receiver_id.toString() || msg.receiver_id.toString() === userData.sender_id.toString()) {
                 msg.content = checkMessageLength(input)
             }
             return msg
@@ -146,7 +151,7 @@ const ChatPage = props => {
         await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
         setInput('')
 
-        const req = await props.addMsg({
+        const req = await props.chats_send_message({
             form: dataToSubmit,
             token: props.token
         })
@@ -257,10 +262,10 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getFriend: data => dispatch(get_friend_list(data)),
-    getMsg: data => dispatch(get_msg(data)),
-    addMsg: data => dispatch(add_message(data)),
-    getDetail: data => dispatch(get_product_detail(data))
+    chats_person_list: data => dispatch(chats_person_list(data)),
+    chats_fetch_message: data => dispatch(chats_fetch_message(data)),
+    chats_send_message: data => dispatch(chats_send_message(data)),
+    // get_tours_detail: data => dispatch(get_tours_detail(data))
 })
 
 export default compose(

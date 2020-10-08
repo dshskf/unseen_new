@@ -9,9 +9,13 @@ import DateRangePicker from '@wojtekmaj/react-daterange-picker';
 import Resizer from '../../../../script/react-file-image-resizer'
 import { getImg } from '../../../../Constants/get-img'
 
-import { add_product } from '../../../../Redux/product/product-action'
-import { pullToken } from '../../../../Redux/auth/auth-selector'
+import { get_location_data } from '../../../../Redux/features/features.action'
+import { add_tours } from '../../../../Redux/tours/tours.action'
+import { pullToken } from '../../../../Redux/auth/auth.selector'
+import { storage } from '../../../../Constants/request'
 
+import Select from '../../../../Components/Select/select'
+import Modal from '../../../../Components/Modal/modal'
 
 import {
     Container,
@@ -23,23 +27,53 @@ import {
     Left,
     Right,
     Header,
-    ButtonBox
+    ButtonBox,
+    DestinationBox,
+    DestinationItem
 } from '../Edit/style'
 
-class Add extends Component {
-    constructor(props) {
-        super(props)
-    }
+class AddTours extends Component {
 
     state = {
         title: "",
         cost: 0,
-        destination: "",
         image: ['', '', '', ''],
         imgShow: ['', '', '', ''],
         start_date: "",
         end_date: "",
-        description: ""
+        description: "",
+        period: "",
+        destination: [],
+        countries_id: null,
+        countries: null,
+        states_id: null,
+        states: null,
+        cities_id: null,
+        cities_name: null,
+        cities: null,
+        lat: null,
+        lng: null,
+        isModalOpen: false
+    }
+
+    async componentDidMount() {
+        let get_countries = await this.props.get_location_data({ action: "countries" })
+        this.setState({ countries: get_countries.data })
+    }
+
+    clearModalState = () => {
+        this.setState({
+            period: "",
+            countries_id: null,
+            states_id: null,
+            states: null,
+            cities_id: null,
+            cities_name: null,
+            cities: null,
+            lat: null,
+            lng: null,
+            isModalOpen: false
+        })
     }
 
     inputHandler = e => {
@@ -78,34 +112,48 @@ class Add extends Component {
         }
     }
 
-    submitForm = async e => {
-        e.preventDefault()
-        let { title, cost, destination, image, start_date, end_date, description } = this.state
+    handleChangeSelect = async (e) => {
+        const { name, value } = e.target
 
-        image = image.filter(data => data !== '')
-
-        let dataToSubmit = {
-            title: title,
-            cost: cost,
-            destination: destination,
-            image: image,
-            description: description,
-            start_date: start_date,
-            end_date: end_date
+        if (name === 'countries') {
+            const getStateData = await this.props.get_location_data({ action: 'states', countries_id: value })
+            this.setState({
+                countries_id: value,
+                states_id: null,
+                cities_id: null,
+                cities: null,
+                states: getStateData.data
+            })
         }
-
-
-        const formData = serialize(dataToSubmit);
-
-        dataToSubmit = {
-            form: formData,
-            token: this.props.token
+        else if (name === 'states') {
+            const getCitiesData = await this.props.get_location_data({ action: 'cities', states_id: value })
+            this.setState({
+                states_id: value,
+                cities_id: null,
+                cities: getCitiesData.data
+            })
+        } else {
+            const city_name = this.state.cities.filter(c => parseInt(c.val) === parseInt(value))[0]
+            this.setState({
+                cities_id: parseInt(value),
+                cities_name: city_name.label
+            })
         }
+    }
 
-        const sendForm = await this.props.addProduct(dataToSubmit)
-        if (!sendForm.err) {
-            this.props.nav()
-        }
+    handleAddDestination = () => {
+        const dest = this.state.destination
+        dest.push({
+            country_id: this.state.countries_id,
+            state_id: this.state.states_id,
+            city_id: this.state.cities_id,
+            city_name: this.state.cities_name,
+            period: this.state.period,
+            isGuides: storage.type === 'guides'
+        })
+
+        this.setState({ destination: dest })
+        this.clearModalState()
     }
 
     dateHandler = (value, dateString) => {
@@ -114,15 +162,87 @@ class Add extends Component {
 
     call_file_input = e => document.getElementById('selectImage' + e.currentTarget.id).click()
 
+    submitForm = async e => {
+        e.preventDefault()
+        let { title, cost, destination, image, start_date, end_date, description } = this.state
+        const accountType = JSON.parse(localStorage.getItem('login_data')).type;
+        image = image.filter(data => data !== '')
+
+        let dataToSubmit = {
+            title: title,
+            cost: cost,
+            destination: JSON.stringify(destination),
+            image: image,
+            description: description,
+            start_date: start_date,
+            end_date: end_date,
+            type: accountType,
+        }
+
+        const formData = serialize(dataToSubmit);
+
+        dataToSubmit = {
+            form: formData,
+            token: this.props.token
+        }
+
+        const sendForm = await this.props.add_tours(dataToSubmit)
+
+        if (!sendForm.err) {
+            this.props.history.push('/ads')
+        }
+    }
+
+    optionElement = () => {
+        return (
+            <React.Fragment>
+                <Item isSelect={true}>
+                    <p>Country</p>
+                    <Select
+                        name="countries"
+                        handler={this.handleChangeSelect}
+                        option={this.state.countries && this.state.countries}
+                    />
+                </Item>
+                <Item isSelect={true}>
+                    <p>State</p>
+                    <Select
+                        name="states"
+                        handler={this.handleChangeSelect}
+                        option={this.state.states && this.state.states}
+                    />
+                </Item>
+                <Item isSelect={true}>
+                    <p>Cities</p>
+                    <Select
+                        name="cities"
+                        handler={this.handleChangeSelect}
+                        option={this.state.cities && this.state.cities}
+                    />
+                </Item>
+                <Item>
+                    <input type="number" name="period" value={this.state.period} onChange={this.inputHandler} placeholder="Number of Days" />
+                </Item>
+            </React.Fragment>
+        )
+    }
+
+    handleOpenModal = () => this.setState({ isModalOpen: !this.state.isModalOpen })
 
     render() {
         return (
             <React.Fragment>
                 <Header>
-                    <img src={getImg("Account", "logo.png")} />
+                    <img src={getImg("Account", "logo.png")} alt='' />
                     <h1>UNSEEN</h1>
                 </Header>
                 <Container>
+                    <Modal
+                        element={this.optionElement}
+                        isOpen={this.state.isModalOpen}
+                        handleClose={this.handleOpenModal}
+                        action={this.handleAddDestination}
+                    />
                     <Left>
                         <Item>
                             <p>Title</p>
@@ -131,10 +251,6 @@ class Add extends Component {
                         <Item>
                             <p>Cost</p>
                             <input type="number" name="cost" value={this.state.cost} onChange={this.inputHandler} />
-                        </Item>
-                        <Item>
-                            <p>Destination</p>
-                            <input type="text" name="destination" value={this.state.destination} onChange={this.inputHandler} placeholder="destination" />
                         </Item>
                         <Item>
                             <p>Start & End date</p>
@@ -161,7 +277,7 @@ class Add extends Component {
                                                 {
                                                     data !== '' ?
                                                         <React.Fragment>
-                                                            <img src={data} />
+                                                            <img src={data} alt='' />
                                                             <span id={index} onClick={this.deleteImage}>X</span>
                                                         </React.Fragment>
                                                         :
@@ -183,13 +299,29 @@ class Add extends Component {
                     </Left>
                     <Right>
                         <Item>
+                            <p>Destination</p>
+                            <DestinationBox>
+                                {
+                                    this.state.destination && this.state.destination.map(dest => (
+                                        <DestinationItem>
+                                            <label>X</label>
+                                            <p>{dest.city_name} ({dest.period}days)</p>
+                                        </DestinationItem>
+                                    ))
+                                }
+                                <DestinationItem isAdd={true} onClick={this.handleOpenModal}>
+                                    <label>+</label>
+                                </DestinationItem>
+                            </DestinationBox>
+                        </Item>
+                        <Item>
                             <p>Description</p>
                             <Description name="description" value={this.state.description} onChange={this.inputHandler}></Description>
                         </Item>
 
                         <ButtonBox>
                             <input type="submit" value="Create" onClick={this.submitForm} />
-                            <input type="submit" value="Cancel" onClick={this.props.nav} />
+                            <input type="submit" value="Cancel" onClick={() => this.props.history.push('/ads')} />
                         </ButtonBox>
                     </Right>
                 </Container >
@@ -204,10 +336,11 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    addProduct: data => dispatch(add_product(data))
+    add_tours: data => dispatch(add_tours(data)),
+    get_location_data: data => dispatch(get_location_data(data))
 })
 
 export default compose(
     withRouter,
     connect(mapStateToProps, mapDispatchToProps)
-)(Add);
+)(AddTours);

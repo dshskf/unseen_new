@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 
-import { get_product } from '../../../Redux/product/product-action'
-import { pullToken, pullUserData } from '../../../Redux/auth/auth-selector'
+import { get_tours_agency, get_tours_guides } from '../../../Redux/tours/tours.action'
+import { pullToken, pullUserData } from '../../../Redux/auth/auth.selector'
 
 import { getImg } from '../../../Constants/get-img'
 import Guides from './Guides/guide'
@@ -19,27 +19,33 @@ import {
     Search
 } from './style'
 
-const Product = props => {
-    const [data, setData] = useState(null)
+const Tours = props => {
+    const [dataAgency, setDataAgency] = useState(null)
+    const [dataGuides, setDataGuides] = useState(null)
     const [page, setPage] = useState('guides')
 
     useEffect(() => {
         const req = async () => {
-            const post = await props.getProduct()
-            setData(post.product)
+            const post = await props.get_tours_guides()            
+            setDataGuides(post.tours)
         }
-
         req()
     }, [])
 
-   
+
+    const changePage = async () => {
+        const post = await props.get_tours_agency()
+        setDataAgency(post.tours)
+        setPage(page === "guides" ? "agency" : "guides")
+    }
+
     return (
         <Body>
             <Sidebar page="home" />
             <Container>
                 <Header>
-                    <img src={getImg("Account", "logo.png")} />
-                    <h1 onClick={() => setPage(page === "guides" ? "agency" : "guides")}>UNSEEN</h1>
+                    <img src={getImg("Account", "logo.png")} alt="" />
+                    <h1 onClick={changePage}>UNSEEN</h1>
                 </Header>
                 <Search>
                     <input type="text" placeholder="Enter something here..." />
@@ -47,9 +53,9 @@ const Product = props => {
                 </Search>
                 {
                     page === "guides" ?
-                        <Guides product={data} />
+                        <Guides guides={dataGuides} />
                         :
-                        <Agency product={data} />
+                        <Agency tours={dataAgency} />
                 }
             </Container>
         </Body>
@@ -62,10 +68,11 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getProduct: () => dispatch(get_product())
+    get_tours_agency: () => dispatch(get_tours_agency()),
+    get_tours_guides: () => dispatch(get_tours_guides())
 })
 
 export default compose(
     withRouter,
     connect(mapStateToProps, mapDispatchToProps)
-)(Product);
+)(Tours);

@@ -19,20 +19,26 @@ const Agency = props => {
         <Container>
             <Product>
                 {
-                    props.product ?
-                        props.product.map(data => {
+                    props.tours ?
+                        props.tours.map(data => {
                             const image = API + data.image[0].replace('\\', '/')
                             return (
-                                <Link to={`/travel/${data.id}`} style={{ textDecoration: 'none', outline: 'none' }}>
+                                <Link to={`/tours/agency/${data.id}`} style={{ textDecoration: 'none', outline: 'none' }}>
                                     <Cards key={data.id} id={data.id}>
                                         <CardImage>
-                                            <img src={image} />
+                                            <img src={data.image[0]} alt="" />
                                         </CardImage>
                                         <CardContent>
                                             <Content>
                                                 <p>{data.title}</p>
                                                 <p>{data.username}</p>
-                                                <p>{"LA > London > Paris > Tokyo"}</p>
+                                                <p>
+                                                    {
+                                                        data.destination.map((dest, i) => {
+                                                            return i < data.destination.length - 1 ? dest.name + ", " : dest.name
+                                                        })
+                                                    }
+                                                </p>
                                                 <p>Start: {data.start_date.split('T')[0]}</p>
                                             </Content>
 

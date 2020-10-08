@@ -10,8 +10,9 @@ import Sidebar from '../../../../Components/Sidebar/sidebar'
 import { getImg } from '../../../../Constants/get-img'
 import { Body, Sub, Header } from '../../style.route'
 
-import { get_edit_profile, post_edit_profile, get_location_data } from '../../../../Redux/auth/auth-action'
-import { pullToken } from '../../../../Redux/auth/auth-selector'
+import { get_edit_profile, post_edit_profile } from '../../../../Redux/user/user.action'
+import { get_location_data } from '../../../../Redux/features/features.action'
+import { pullToken } from '../../../../Redux/auth/auth.selector'
 import { API } from '../../../../Constants/link'
 
 import {
@@ -51,18 +52,19 @@ const EditUserProfile = props => {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            let user = await props.getEdit({ token: props.token })
-
+            let user = await props.get_edit_profile({ token: props.token })
             user = user.data
-            user.image = user.image ? user.image.replace('\\', '/') : null
+            // user.image = user.image ? user.image.replace('\\', '/') : null
+            console.log(user)
 
-            let location = await props.getUserLocation({ action: "countries" })
+            let location = await props.get_location_data({ action: "countries" })
             let location_data = { ...location, country: location.data }
 
+            // if user already fill location
             if (user.country_id) {
-                let state = await props.getUserLocation({ action: "states", country_id: user.country_id })
-                let city = await props.getUserLocation({ action: "cities", state_id: user.state_id })
-                let fetch_location = await props.getUserLocation({ action: "fetch_data", city_id: user.city_id })
+                let state = await props.get_location_data({ action: "states", country_id: user.country_id })
+                let city = await props.get_location_data({ action: "cities", state_id: user.state_id })
+                let fetch_location = await props.get_location_data({ action: "fetch_data", city_id: user.city_id })
 
                 location_data = {
                     ...location_data,
@@ -120,12 +122,24 @@ const EditUserProfile = props => {
         const { name, value } = e.target
         let getDataLocation
         if (name === 'country') {
-            getDataLocation = await props.getUserLocation({ action: "states", country_id: value })
-            setLocation({ ...location, country_id: value, states: getDataLocation.data })
+            getDataLocation = await props.get_location_data({ action: "states", country_id: value })
+            setLocation({
+                ...location,
+                country_id: value,
+                state_id: null,
+                city_id: null,
+                city: null,
+                states: getDataLocation.data
+            })
         }
         else if (name === 'state') {
-            getDataLocation = await props.getUserLocation({ action: "cities", state_id: value })
-            setLocation({ ...location, state_id: value, city: getDataLocation.data })
+            getDataLocation = await props.get_location_data({ action: "cities", state_id: value })
+            setLocation({
+                ...location,
+                state_id: value,
+                city_id: null,
+                city: getDataLocation.data
+            })
         } else {
             setLocation({
                 ...location,
@@ -150,7 +164,7 @@ const EditUserProfile = props => {
             images_to_delete: formData.image_to_delete
         }
 
-        const post = await props.postEdit({ user: serialize(dataToSubmit), token: props.token })
+        const post = await props.post_edit_profile({ user: serialize(dataToSubmit), token: props.token })
         if (!post.err) {
             props.history.push('/home')
         }
@@ -161,7 +175,7 @@ const EditUserProfile = props => {
             <Sidebar page="profile" />
             <Sub>
                 <Header>
-                    <img src={getImg("Account", "logo.png")} />
+                    <img src={getImg("Account", "logo.png")} alt="" />
                     <h1>UNSEEN</h1>
                 </Header>
                 <Container>
@@ -191,15 +205,12 @@ const EditUserProfile = props => {
                                     <select name="country" onChange={locationHandler}>
                                         <option value="" disabled selected>Select your country</option>
                                         {
-                                            location.country ?
-                                                location.country.map(data => {
-                                                    if (data.id === location.country_id) {
-                                                        return <option key={location.country_id} value={location.country_id} selected>{location.country_name}</option>
-                                                    }
-                                                    return <option key={data.id} value={data.id}>{data.name}</option>
-                                                })
-                                                :
-                                                null
+                                            location.country && location.country.map(data => {
+                                                if (data.id === location.country_id) {
+                                                    return <option key={location.country_id} value={location.country_id} selected>{location.country_name}</option>
+                                                }
+                                                return <option key={data.id} value={data.id}>{data.name}</option>
+                                            })
                                         }
                                     </select>
                                 </InputBox>
@@ -212,15 +223,12 @@ const EditUserProfile = props => {
                                     >
                                         <option value="" disabled selected>Select your states</option>
                                         {
-                                            location.states ?
-                                                location.states.map(data => {
-                                                    if (data.id === location.state_id) {
-                                                        return <option key={location.state_id} value={location.state_id} selected>{location.state_name}</option>
-                                                    }
-                                                    return <option key={data.id} value={data.id}>{data.name}</option>
-                                                })
-                                                :
-                                                null
+                                            location.states && location.states.map(data => {
+                                                if (data.id === location.state_id) {
+                                                    return <option key={location.state_id} value={location.state_id} selected>{location.state_name}</option>
+                                                }
+                                                return <option key={data.id} value={data.id}>{data.name}</option>
+                                            })
                                         }
                                     </select>
                                 </InputBox>
@@ -233,15 +241,12 @@ const EditUserProfile = props => {
                                     >
                                         <option value="" disabled selected>Select your cities</option>
                                         {
-                                            location.city ?
-                                                location.city.map(data => {
-                                                    if (data.id === location.city_id) {
-                                                        return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`} selected>{data.name}</option>
-                                                    }
-                                                    return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`}>{data.name}</option>
-                                                })
-                                                :
-                                                null
+                                            location.city && location.city.map(data => {
+                                                if (data.id === location.city_id) {
+                                                    return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`} selected>{data.name}</option>
+                                                }
+                                                return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`}>{data.name}</option>
+                                            })
                                         }
                                     </select>
                                 </InputBox>
@@ -252,8 +257,8 @@ const EditUserProfile = props => {
                         </SubmitBox>
                     </Form>
                 </Container>
-            </Sub>
-        </Body>
+            </Sub >
+        </Body >
     )
 }
 
@@ -262,9 +267,9 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getEdit: data => dispatch(get_edit_profile(data)),
-    postEdit: data => dispatch(post_edit_profile(data)),
-    getUserLocation: data => dispatch(get_location_data(data))
+    get_edit_profile: data => dispatch(get_edit_profile(data)),
+    post_edit_profile: data => dispatch(post_edit_profile(data)),
+    get_location_data: data => dispatch(get_location_data(data))
 })
 
 export default compose(

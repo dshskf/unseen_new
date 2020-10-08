@@ -9,8 +9,10 @@ import { Body, Sub, Header } from '../../style.route'
 
 import { getImg } from '../../../../Constants/get-img'
 
-import { get_approval_management, update_approval_status, add_message } from '../../../../Redux/product/product-action'
-import { pullToken, pullUserData } from '../../../../Redux/auth/auth-selector'
+import { get_booking_user, update_approval } from '../../../../Redux/management/management.action'
+import { chats_send_message } from '../../../../Redux/features/features.action'
+
+import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 
 
 import {
@@ -29,18 +31,18 @@ const UserDashboard = props => {
     const [data, setData] = useState('')
     const [refetch, setRefetch] = useState(false)
 
-    useEffect(() => {
-        const req = async () => {
-            const get = await props.getApproval({
+    useEffect(() => {        
+        const req = async () => {            
+            const get = await props.get_booking_user({
                 action: 'sender_id',
                 token: props.token
             })
-            console.log(get.data)
+            console.log(get)
             setData(get.data)
-        }
+        } 
 
         req()
-    }, [refetch])
+    }, [])
 
     const updateHandler = async (e, index) => {
         const { id } = e.currentTarget
@@ -51,7 +53,7 @@ const UserDashboard = props => {
             on: 'isPaying'
         }
 
-        const post = await props.updateStatus({
+        const post = await props.update_approval({
             form: dataToSubmit,
             token: props.token
         })
@@ -64,7 +66,7 @@ const UserDashboard = props => {
             notification: data[index].product_id
         }
 
-        const send = await props.addMsg({
+        const send = await props.chats_send_message({
             form: msgData,
             token: props.token
         })
@@ -82,7 +84,7 @@ const UserDashboard = props => {
             action: 'delete',
             on: 'isPaying'
         }
-        const post = await props.updateStatus({
+        const post = await props.update_approval({
             form: dataToSubmit,
             token: props.token
         })
@@ -94,7 +96,7 @@ const UserDashboard = props => {
             notification: null
         }
 
-        const send = await props.addMsg({
+        const send = await props.chats_send_message({
             form: msgData,
             token: props.token
         })
@@ -209,9 +211,9 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getApproval: data => dispatch(get_approval_management(data)),
-    updateStatus: data => dispatch(update_approval_status(data)),
-    addMsg: data => dispatch(add_message(data))
+    get_booking_user: data => dispatch(get_booking_user(data)),
+    update_approval: data => dispatch(update_approval(data)),
+    chats_send_message: data => dispatch(chats_send_message(data))
 })
 
 export default compose(

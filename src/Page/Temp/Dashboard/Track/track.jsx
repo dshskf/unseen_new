@@ -10,8 +10,9 @@ import { Body, Sub, Header } from '../../style.route'
 
 import { getImg } from '../../../../Constants/get-img'
 
-import { get_track_user_data, update_track_user_location } from '../../../../Redux/auth/auth-action'
-import { pullToken, pullUserData, pullSocket } from '../../../../Redux/auth/auth-selector'
+import { get_user_location, update_user_location } from '../../../../Redux/features/features.action'
+import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
+import { pullSocket } from '../../../../Redux/features/features.selector'
 
 import {
     Container,
@@ -34,7 +35,7 @@ class Track extends Component {
     }, 3000);
 
     async componentDidMount() {
-        const fetch = await this.props.getAnotherUser({
+        const fetch = await this.props.get_user_location({
             id: this.props.match.params.orderId,
             token: this.props.token
         })
@@ -91,7 +92,7 @@ class Track extends Component {
     calculateCenteredViewPosition = (coordinate = { lat: this.state.lat, lng: this.state.lng }) => {
         const distance_lat = coordinate.latitude - this.state.opposite.lat
         const distance_lng = Math.abs(coordinate.longitude) - Math.abs(this.state.opposite.lng)
-        
+
         // Calculate maps centered
         const center_lat = ((distance_lat / 2) - coordinate.latitude) * -1
         const center_lng = coordinate.longitude - (distance_lng / 2)
@@ -111,7 +112,7 @@ class Track extends Component {
             if (this.state.change === false || this.state.lat.toString() !== position.coords.latitude.toString() || this.state.lng.toString() !== position.coords.longitude.toString()) {
                 map_position = this.calculateZoomLevel(position.coords)
 
-                const update = await this.props.updateLocation({
+                const update = await this.props.update_user_location({
                     location: {
                         ...new_location,
                         userId: this.props.user.id
@@ -209,8 +210,8 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getAnotherUser: (data) => dispatch(get_track_user_data(data)),
-    updateLocation: (data) => dispatch(update_track_user_location(data))
+    get_user_location: (data) => dispatch(get_user_location(data)),
+    update_user_location: (data) => dispatch(update_user_location(data))
 })
 
 export default compose(

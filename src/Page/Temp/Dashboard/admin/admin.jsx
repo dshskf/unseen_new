@@ -9,8 +9,10 @@ import { Body, Sub, Header } from '../../style.route'
 
 import { getImg } from '../../../../Constants/get-img'
 
-import { get_approval_management, update_approval_status, add_message } from '../../../../Redux/product/product-action'
-import { pullToken, pullUserData } from '../../../../Redux/auth/auth-selector'
+import { get_approval, update_approval } from '../../../../Redux/management/management.action'
+import { chats_send_message } from '../../../../Redux/features/features.action'
+
+import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 
 import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
 import { GiSandsOfTime } from 'react-icons/gi'
@@ -37,11 +39,11 @@ const AdminDashboard = props => {
 
     useEffect(() => {
         const req = async () => {
-            const getData = await props.getApproval({
+            const getData = await props.get_approval({
                 action: 'receiver_id',
                 token: props.token
             })
-
+            console.log(getData)
             setData(getData.data)
         }
         req()
@@ -62,10 +64,10 @@ const AdminDashboard = props => {
             on: name
         }
 
-        const post = await props.updateStatus({
+        const post = await props.update_approval({
             form: dataToSubmit,
             token: props.token
-        })        
+        })
 
         const msgData = {
             sender_id: props.user.id,
@@ -77,7 +79,7 @@ const AdminDashboard = props => {
             ads_id: data[index].product_id
         }
 
-        const send = await props.addMsg({
+        const send = await props.chats_send_message({
             form: msgData,
             token: props.token
         })
@@ -95,7 +97,7 @@ const AdminDashboard = props => {
             action: 'delete',
             on: name
         }
-        const post = await props.updateStatus({
+        const post = await props.update_approval({
             form: dataToSubmit,
             token: props.token
         })
@@ -107,7 +109,7 @@ const AdminDashboard = props => {
             ads_id: data[index].product_id
         }
 
-        const send = await props.addMsg({
+        const send = await props.chats_send_message({
             form: msgData,
             token: props.token
         })
@@ -243,9 +245,9 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getApproval: data => dispatch(get_approval_management(data)),
-    updateStatus: data => dispatch(update_approval_status(data)),
-    addMsg: data => dispatch(add_message(data))
+    get_approval: data => dispatch(get_approval(data)),
+    update_approval: data => dispatch(update_approval(data)),
+    chats_send_message: data => dispatch(chats_send_message(data))
 })
 
 export default compose(

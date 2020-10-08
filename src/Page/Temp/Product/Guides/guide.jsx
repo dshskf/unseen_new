@@ -20,8 +20,8 @@ const Guides = props => {
         <Container>
             <Products>
                 {
-                    props.product ?
-                        props.product.map(data => {
+                    props.guides ?
+                        props.guides.map(data => {
                             const image = API + data.image[0].replace('\\', '/')
                             // Generate gradient color
                             i += 1
@@ -29,12 +29,12 @@ const Guides = props => {
                                 i = 0
                             }
                             return (
-                                <Link key={data.id} to={`/travel/${data.id}`} style={{ textDecoration: 'none', outline: 'none' }}>
+                                <Link key={data.id} to={`/tours/guides/${data.id}`} style={{ textDecoration: 'none', outline: 'none' }}>
                                     <Cards key={data.id} id={data.id} color={color_collections[i]}>
                                         <Content color={color_collections[i]}>
-                                            <img src={image} />
-                                            <Text>{data.destination}</Text>
-                                            <Text>{data.title}</Text>
+                                            <img src={data.image} alt="" />
+                                            <Text>{data.country}</Text>
+                                            <Text>{data.username}</Text>
                                         </Content>
 
                                         <Info>
@@ -62,7 +62,7 @@ const Guides = props => {
                             )
                         })
                         :
-                        null
+                        null // it will be loading circle
                 }
             </Products>
         </Container>

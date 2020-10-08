@@ -155,6 +155,7 @@
   padding: 10px;
   border-radius: 40px;
   transition: all 0.2s;
+  outline: none;
 }
 
 .title-button a:hover {

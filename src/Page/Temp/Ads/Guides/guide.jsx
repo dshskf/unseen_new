@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactStars from "react-rating-stars-component";
+import { withRouter } from 'react-router-dom'
 import { API } from '../../../../Constants/link'
 
 import {
@@ -21,11 +22,11 @@ const Guides = props => {
                 {
                     props.product ?
                         props.product.map(data => {
-                            const image = API + data.image[0].replace('\\', '/')
+                            const image = data.image.length > 0 && API + data.image[0].replace('\\', '/')
                             return (
-                                <Cards key={data.id} id={data.id} onClick={props.nav}>
+                                <Cards key={data.id} id={data.id} onClick={() => props.history.push(`/ads/${data.id}`)}>
                                     <Content>
-                                        <img src={image} />
+                                        <img src={image} alt="" />
                                         <Text>{data.destination}</Text>
                                         <Text>{data.title}</Text>
                                         <Text>Find your best <b>guide</b> for real</Text>
@@ -58,7 +59,7 @@ const Guides = props => {
                         :
                         null
                 }
-                <AddBox onClick={props.navAdd}>
+                <AddBox onClick={() => props.history.push('/ads/add')}>
                     <h1>+</h1>
                 </AddBox>
             </Products>
@@ -66,4 +67,4 @@ const Guides = props => {
     )
 }
 
-export default Guides
+export default withRouter(Guides)

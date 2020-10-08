@@ -5,14 +5,12 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 import axios from 'axios'
 
-import { get_product_dashboard, set_id } from '../../../Redux/product/product-action'
-import { pullToken, pullUserData } from '../../../Redux/auth/auth-selector'
+import { get_dashboard } from '../../../Redux/tours/tours.action'
+import { pullToken, pullUserData } from '../../../Redux/auth/auth.selector'
 import { API } from '../../../Constants/link'
 
 import Guides from './Guides/guide'
 import Sidebar from '../../../Components/Sidebar/sidebar'
-import Edit from './Edit/edit'
-import Add from './Add/add'
 
 import { Body, Sub } from '../style.route'
 
@@ -22,47 +20,24 @@ const AdsList = props => {
 
     useEffect(() => {
         const req = async () => {
-            await axios.get(`${API}product/dashboard`, {
-                headers:
-                {
+            await axios.post(`${API}tours/dashboard`, { type: 'agency' }, {
+                headers: {
                     "Authorization": `Bearer ${props.token}`
                 }
             })
                 .then(res => {
-                    setData(res.data.product)
+                    setData(res.data.tours)
                 })
         }
         req()
-    }, [pages])
+    }, [])
 
-    const navHandler = async (e, p) => {
-        if (e) {
-            await props.setId(e.currentTarget.id)
-        }
-
-        let update_page = pages === "ads" ? "edit" : "ads"
-        if (p === 'add') {
-            update_page = 'add'
-        }
-
-        setPages(update_page)
-    }
 
     return (
         <Body>
             <Sidebar page="ads" />
             <Sub>
-                {
-                    pages === "ads" ?
-                        <Guides product={data} nav={navHandler} navAdd={() => setPages('add')} />
-                        :
-                        pages === "edit" ?
-                            <Edit nav={navHandler} />
-                            :
-                            <Add nav={navHandler} />
-
-
-                }
+                <Guides product={data} />
             </Sub>
         </Body>
     )
@@ -74,8 +49,8 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    getProduct: data => dispatch(get_product_dashboard(data)),
-    setId: data => dispatch(set_id(data))
+    get_dashboard: data => dispatch(get_dashboard(data)),
+    // setId: data => dispatch(set_id(data))
 })
 
 export default compose(

@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { getImg } from "../../../Constants/get-img";
 import { AiFillAndroid, AiFillApple, AiOutlineSearch } from "react-icons/ai";
 
+import { createStructuredSelector } from 'reselect'
+import { connect } from 'react-redux';
+import { compose } from 'redux'
+import { withRouter, Link } from 'react-router-dom'
+
+import { storage } from '../../../Constants/request'
+import { pullToken } from '../../../Redux/auth/auth.selector'
+
 import "./styles.css";
 
 const MainComponent = (props) => {
@@ -10,7 +18,8 @@ const MainComponent = (props) => {
         ios: false
     })
 
-    const handleHover = (component) => {        
+
+    const handleHover = (component) => {
         if (!hover[component]) {
             setHover({ ...hover, [component]: true })
         } else {
@@ -32,54 +41,56 @@ const MainComponent = (props) => {
     }
 
     return (
-        <div class="parent">
-            <div class="container">
-                <div class="header">
-                    <div class="header-logo">
+        <div className="parent">
+            <div className="container">
+                <div className="header">
+                    <div className="header-logo">
                         <img src={getImg("Account", "logo.png")} alt="" />
                         <h1>UNSEEN</h1>
                     </div>
-                    <div class="header-link">
-                        <div class="link-item">Travels</div>
-                        <div class="link-item">Guides</div>
-                        <div class="link-item">About Us</div>
-                        <div class="link-item">Contact Us</div>
+                    <div className="header-link">
+                        <div className="link-item">Travels</div>
+                        <div className="link-item">Guides</div>
+                        <div className="link-item">About Us</div>
+                        <div className="link-item">Contact Us</div>
                     </div>
 
-                    <div class="header-download">
-                        <div class="download-item" onMouseOver={() => handleHover('android')} onMouseLeave={() => handleHover('android')}>
+                    <div className="header-download">
+                        <div className="download-item" onMouseOver={() => handleHover('android')} onMouseLeave={() => handleHover('android')}>
                             <AiFillAndroid style={{ ...styles.logo, color: hover.android ? "white" : "#3ddc84" }} />
                             android
                         </div>
-                        <div class="download-item ios" onMouseOver={() => handleHover('ios')} onMouseLeave={() => handleHover('ios')}>
+                        <div className="download-item ios" onMouseOver={() => handleHover('ios')} onMouseLeave={() => handleHover('ios')}>
                             <AiFillApple style={{ ...styles.logo, color: hover.ios ? "white" : "rgb(95,95,95)" }} />
                             IOS
                         </div>
                     </div>
                 </div>
 
-                <div class="content">
-                    <div class="content-title">
-                        <h1>Adventure is Worthwhile</h1>
+                <div className="content">
+                    <div className="content-title">
+                        <h1 onClick={() => console.log(props.token)}>Adventure is Worthwhile</h1>
                         <p>Find Your Professional Travel Expert!</p>
-                        <div class="title-button">
-                            <a href="#">Start Now</a>
-                            <a href="#">Sign-Up</a>
+                        <div className="title-button">
+                            <Link to='/home'>Start Now</Link>
+                            {
+                                !storage && <Link to='/user/auth'>Sign-Up</Link>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="content-search">
-                <div class="search-logo">
+            <div className="content-search">
+                <div className="search-logo">
                     <img src={getImg("Home", "island.gif")} alt="" />
                 </div>
-                <div class="search-input">
+                <div className="search-input">
                     <input type="date" />
-                    <div class="search-button">=</div>
+                    <div className="search-button">=</div>
                     <input type="date" />
                 </div>
-                <div class="search-submit">
+                <div className="search-submit">
                     <AiOutlineSearch style={styles.search} />
                 </div>
             </div>
@@ -87,4 +98,15 @@ const MainComponent = (props) => {
     );
 };
 
-export default MainComponent;
+const mapStateToProps = createStructuredSelector({
+    token: pullToken
+})
+
+const mapDispatchToProps = (dispatch) => ({
+
+})
+
+export default compose(
+    withRouter,
+    connect(mapStateToProps, mapDispatchToProps)
+)(MainComponent);

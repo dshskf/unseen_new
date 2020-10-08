@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "../../../../Constants/color";
 
 export const Container = styled.div`
   display: flex;
@@ -70,7 +71,8 @@ export const ButtonBox = styled.div`
 `;
 
 export const Item = styled.div`
-  margin: 1rem 0;
+  margin: ${(props) => (props.isSelect ? "0" : "1rem 0")};
+  width: ${(props) => (props.isSelect ? "100%" : null)};
 
   p {
     margin-bottom: 8px;
@@ -95,6 +97,45 @@ export const Item = styled.div`
       -webkit-appearance: none;
       margin: 0;
     }
+  }
+`;
+
+export const DestinationBox = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+export const DestinationItem = styled.div`
+  height: 2rem;
+  padding-right: ${(props) => (props.isAdd ? 0 : "8px")};
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  color: white;
+  border-radius: 4px;
+  border: 1px solid ${color.primary};
+
+  label {
+    background: ${color.primary};
+    height: 100%;
+    width: 2rem;
+    display: flex;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  p {
+    margin: 0;
+    margin-left: 8px;
+    color: ${color.primary};
+    text-transform: capitalize;
+    font-weight: normal;
   }
 `;
 
