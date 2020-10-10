@@ -9,7 +9,7 @@ import { Body, Sub, Header } from '../../style.route'
 
 import { getImg } from '../../../../Constants/get-img'
 
-import { get_booking_user, update_booking_user } from '../../../../Redux/management/management.action'
+import { get_booking_agency, update_booking_agency } from '../../../../Redux/management/management.action'
 import { chats_send_message } from '../../../../Redux/features/features.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
@@ -26,7 +26,7 @@ import {
     ModalContent
 } from './style'
 
-const UserBookingDashboard = props => {
+const AgencyBookingDashboard = props => {
     const header = ['Seller', 'Product', 'Price', 'Start Date', 'Confirmation', 'Status']
     const [data, setData] = useState('')
     const [refetch, setRefetch] = useState(false)
@@ -34,10 +34,11 @@ const UserBookingDashboard = props => {
 
     useEffect(() => {
         const req = async () => {
-            const get = await props.get_booking_user({
+            const get = await props.get_booking_agency({
                 action: 'sender_id',
                 token: storage.token
             })
+            console.log(get)
             setData(get.data)
         }
         req()
@@ -51,12 +52,11 @@ const UserBookingDashboard = props => {
             action: 'update'
         }
 
-        const post = await props.update_booking_user({
+        const post = await props.update_booking_agency({
             form: dataToSubmit,
             token: storage.token
         })
-
-        console.log(post)
+        
 
         const msgData = {
             sender_id: props.user.id,
@@ -82,7 +82,7 @@ const UserBookingDashboard = props => {
             request_id: id,
             action: 'delete'
         }
-        const post = await props.update_booking_user({
+        const post = await props.update_booking_agency({
             form: dataToSubmit,
             token: storage.token
         })
@@ -134,7 +134,7 @@ const UserBookingDashboard = props => {
                                     <Row key={data.id}>
                                         <Content>
                                             <p>{
-                                                tab === 'A' ? data.agency_username : data.guides.username
+                                                tab === 'A' ? data.user_username : data.guides.username
                                             }</p>
                                         </Content>
                                         <Content>
@@ -149,7 +149,7 @@ const UserBookingDashboard = props => {
                                         <Content>
                                             <ActionBox>
                                                 {
-                                                    !data.is_payed &&
+                                                    !data.is_active &&
                                                     <React.Fragment>
                                                         <input
                                                             id={data.id}
@@ -177,7 +177,7 @@ const UserBookingDashboard = props => {
                                                     :
                                                     data.is_payed ?
                                                         <StatusBox isPayed={true}>
-                                                            In Process
+                                                            Payed
                                                         </StatusBox>
                                                         :
                                                         <StatusBox>
@@ -205,12 +205,12 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    get_booking_user: data => dispatch(get_booking_user(data)),
-    update_booking_user: data => dispatch(update_booking_user(data)),
+    get_booking_agency: data => dispatch(get_booking_agency(data)),
+    update_booking_agency: data => dispatch(update_booking_agency(data)),
     chats_send_message: data => dispatch(chats_send_message(data))
 })
 
 export default compose(
     withRouter,
     connect(mapStateToProps, mapDispatchToProps)
-)(UserBookingDashboard);
+)(AgencyBookingDashboard);

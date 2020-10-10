@@ -34,7 +34,7 @@ export const update_booking_guides = (data) => async dispatch => {
 
 
 export const get_booking_agency = (data) => async dispatch => {
-    const post = await Post(link('approval'), { action: data.action }, {
+    const post = await Post(link('agency'), { action: data.action }, {
         headers: {
             "Authorization": `Bearer ${data.token}`
         }
@@ -43,7 +43,7 @@ export const get_booking_agency = (data) => async dispatch => {
 }
 
 export const update_booking_agency = (data) => async dispatch => {
-    const post = await Post(link('approval/update'), data.form, {
+    const post = await Post(link('agency/update'), data.form, {
         headers: {
             "Authorization": `Bearer ${data.token}`
         }
@@ -63,7 +63,7 @@ export const get_booking_user = (data) => async dispatch => {
 }
 
 export const update_booking_user = (data) => async dispatch => {
-    const post = await Post(link('approval/update'), data.form, {
+    const post = await Post(link('user/update'), data.form, {
         headers: {
             "Authorization": `Bearer ${data.token}`
         }

@@ -27,6 +27,8 @@ import EditTours from './Page/Temp/Ads/Edit/edit'
 
 import AdminDashboard from './Page/Temp/Dashboard/admin/admin'
 import UserBookingDashboard from './Page/Temp/Bookings/user/user'
+import AgencyBookingDashboard from './Page/Temp/Bookings/agency/agency'
+
 import AgencyToursDetail from './Page/Temp/Product/Agency/Detail/detail'
 import GuidesToursDetail from './Page/Temp/Product/Guides/Detail/detail'
 
@@ -89,7 +91,7 @@ class App extends React.Component {
                 <Route path="/ads/:adsId" component={EditTours} />
                 <Route path="/ads" component={AdsList} />
 
-                <Route path="/agency/dashboard" component={AdminDashboard} />
+                <Route path="/agency/dashboard" component={AgencyBookingDashboard} />
                 <Route path="/user/dashboard" component={UserBookingDashboard} />
                 <Route path="/user/edit" component={EditUserProfile} />
                 <Route path="/agency/edit" component={EditAgencyProfile} />
