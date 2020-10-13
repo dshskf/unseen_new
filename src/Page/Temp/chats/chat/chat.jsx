@@ -13,6 +13,7 @@ import { pullSocket } from '../../../../Redux/features/features.selector'
 import { getImg } from '../../../../Constants/get-img'
 import { AiOutlineSend, AiOutlineClose } from 'react-icons/ai'
 import { API } from '../../../../Constants/link'
+import { storage } from '../../../../Constants/request'
 
 import {
     Container,
@@ -39,14 +40,23 @@ const ChatPage = props => {
     const [friendList, setFriendList] = useState([])
     const [message, setMessage] = useState('')
     const [chatting, setChatting] = useState(false)
+
     let [lastMessage, setLastMessage] = useState(false)
-    const [activeId, setActiveId] = useState({
+    const [activeChats, setActiveChats] = useState({
+        index: '',
         receiver: '',
-        friendName: ''
+        friendName: '',
+        type: ''
     })
 
     const messageEnd = useRef(null)
     const isScroll = useRef(false)
+    const activeList = useRef({
+        index: '',
+        receiver: '',
+        friendName: '',
+        type: ''
+    })
 
     useEffect(() => {
         if (!props.socket) {
@@ -58,65 +68,85 @@ const ChatPage = props => {
             const dateNow = `T${d.getHours()}:${d.getMinutes()}`
 
             await req()
+            
+            if (data.sender_id.toString() === activeList.current.receiver.toString() && data.sender_type === activeList.current.type) {
 
-            await setMessage(lastData => [
-                ...lastData,
-                {
-                    ...data,
-                    createdAt: dateNow
+                await setMessage(lastData => [
+                    ...lastData,
+                    {
+                        ...data,
+                        createdAt: dateNow
+                    }
+                ])
+
+                if (isScroll.current) {
+                    messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
                 }
-            ])
-
-            if (isScroll.current) {
-                messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
             }
         })
-
-        const req = async () => {
-            const post = await props.chats_person_list({
-                id: props.user.id,
-                token: props.token
-            })
-
-            post.last_message.map(last_msg => {
-                last_msg.content = checkMessageLength(last_msg.content)
-                return last_msg
-            })
-
-            setLastMessage(post.last_message)
-            setFriendList(post.data)
-        }
 
         if (props.user) {
             req()
         }
     }, [])
 
+
+
+    const req = async () => {
+        let post = await props.chats_person_list({
+            id: props.user.id,
+            type: storage.type[0].toUpperCase(),
+        })
+
+        post.last_message.map((last_msg, i) => {
+            last_msg.content = checkMessageLength(last_msg.content)
+
+            // set index
+            last_msg.index = i
+            post.data[i].index = i
+
+            return last_msg
+        })
+
+        setLastMessage(post.last_message)
+        setFriendList(post.data)
+    }
+
     const checkMessageLength = msg => {
         return msg.length > 30 ? msg.substr(0, 30) + "..." : msg
     }
 
     const fetchMsg = async e => {
-        const filterFriends = friendList.filter(friend => friend.id.toString() === e.currentTarget.id)
-        const receiver = e.currentTarget.id
+        let filterFriends = friendList.filter(friend => friend.index.toString() === e.currentTarget.id)
+        filterFriends = filterFriends[0]
+
+        const receiver_id = filterFriends.id
+        const receiver_type = filterFriends.type
+        
 
         const dataToSubmit = {
             sender_id: props.user.id,
-            receiver_id: receiver,
-            user_image: props.user.image,
-            friend_image: filterFriends[0].image
+            receiver_id: receiver_id,
+            receiver_type: storage.type[0].toUpperCase(), //type of receiver
+            sender_type: receiver_type  // type of sender
         }
 
-        const req = await props.chats_fetch_message({
-            id: dataToSubmit,
-            token: props.token
+        const req = await props.chats_fetch_message(dataToSubmit)
+        const active_data = {
+            index: filterFriends.index,
+            receiver: receiver_id,
+            friendName: filterFriends.username,
+            type: receiver_type
+        }
+
+        setUserData({
+            ...dataToSubmit,
+            user_image: props.user.image,
+            friend_image: filterFriends.image
         })
 
-        setUserData(dataToSubmit)
-        setActiveId({
-            receiver: receiver,
-            friendName: filterFriends[0].username
-        })
+        activeList.current = active_data
+        setActiveChats(active_data)
         setMessage(req.data)
         setChatting(true)
 
@@ -130,31 +160,25 @@ const ChatPage = props => {
 
         const dataToSubmit = {
             sender_id: userData.sender_id,
+            sender_type: storage.type[0].toUpperCase(),
             receiver_id: userData.receiver_id,
             content: input,
-            notification: null
         }
 
 
         lastMessage = await lastMessage.map(msg => {
-            console.log("Receiver :")
-            console.log([msg.receiver_id, userData.receiver_id])
-            console.log("Sender :")
-            console.log([msg.sender_id, userData.sender_id])
-            if (msg.receiver_id.toString() === userData.receiver_id.toString() || msg.receiver_id.toString() === userData.sender_id.toString()) {
+            if (msg.index === activeChats.index) {
                 msg.content = checkMessageLength(input)
             }
             return msg
         })
 
+
         await setLastMessage(lastMessage)
         await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
         setInput('')
 
-        const req = await props.chats_send_message({
-            form: dataToSubmit,
-            token: props.token
-        })
+        const req = await props.chats_send_message(dataToSubmit)
 
         messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
         props.socket.emit('msg', dataToSubmit)
@@ -177,9 +201,9 @@ const ChatPage = props => {
                             friendList.map((data, index) => {
                                 return (
                                     <FriendTitle
-                                        id={data.id}
+                                        id={data.index}
                                         key={index}
-                                        isActive={data.id.toString() === activeId.receiver.toString()}
+                                        isActive={data.id.toString() === activeChats.receiver.toString()}
                                         onClick={fetchMsg}
                                     >
                                         <img src={data.image ? API + data.image.replace('\\', '/') : getImg("Account", "guest.png")} />
@@ -204,7 +228,7 @@ const ChatPage = props => {
                                 style={{ position: 'absolute', color: '#384355', fontSize: '1.5rem', right: '5%', cursor: 'pointer' }}
                                 onClick={() => setChatting(false)}
                             />
-                            <p>{activeId.friendName}</p>
+                            <p>{activeChats.friendName}</p>
                         </ChatTitle>
                         <Box>
                             {
@@ -217,7 +241,7 @@ const ChatPage = props => {
                                         const date = data.createdAt.split('T')[1].substring(0, 5)
 
                                         return (
-                                            data.sender_id.toString() === userData.sender_id.toString() ?
+                                            data.sender_id.toString() === userData.sender_id.toString() && data.sender_type !== userData.sender_type ?
                                                 <BoxRight key={index} ref={index === message.length - 1 ? messageEnd : null}>
                                                     <RightText>
                                                         <Text isRight={true} length={data.content}>

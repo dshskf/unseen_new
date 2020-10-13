@@ -38,6 +38,7 @@ import { check_token } from './Redux/auth/auth.action'
 import { set_io_connection } from './Redux/features/features.action'
 import { pullResponse, pullLoginStatus, pullUserData } from './Redux/auth/auth.selector'
 import { API } from './Constants/link'
+import { storage } from './Constants/request'
 
 
 class App extends React.Component {
@@ -52,14 +53,14 @@ class App extends React.Component {
       await this.props.checkToken(this.state.storage)
     }
 
-    // if (this.props.user) {
-    //   let socket = io(API)
-    //   socket.emit('join_room', {
-    //     room_id: this.props.user.id
-    //   })
+    if (this.props.user) {      
+      let socket = io(API)
+      socket.emit('join_room', {
+        room_id: this.props.user.id
+      })
 
-    //   await this.props.setIOConnection(socket)
-    // }
+      await this.props.setIOConnection(socket)
+    }
 
     this.setState({ isCheck: false })
 

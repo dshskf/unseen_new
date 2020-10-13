@@ -34,6 +34,7 @@ import {
     ActionItem,
     Description
 } from './style'
+import { storage } from '../../../../../Constants/request';
 
 const AgencyToursDetail = props => {
     const [data, setData] = useState(null)
@@ -43,20 +44,14 @@ const AgencyToursDetail = props => {
     const [input, setInput] = useState({
         reason: "",
         price: ""
-    })
-
-    const api = 'http://localhost:1234/'
-
-    const inputHandler = e => {
-        const { name, value } = e.target
-        setInput({ ...input, [name]: value })
-    }
-
+    })    
+   
     useEffect(() => {
         const req = async () => {
             const post = await props.get_tours_agency_detail({
                 id: props.match.params.toursId
             })
+            console.log(post)
             setComment(post.comment)
             setData(post.tours[0])
         }
@@ -64,20 +59,25 @@ const AgencyToursDetail = props => {
     }, [])
 
     const sendBooking = async () => {
-        alert("titi")
-        const dataToSubmit = {
+        const post = await props.post_user_booking({
             tours_id: data.id,
             sender_id: props.user.id,
             receiver_id: data.agencyId,
             is_payed: false,
             is_active: false,
             receiver_type: 'A'
-        }
-
-        const post = await props.post_user_booking({
-            form: dataToSubmit,
-            token: props.token
         })
+
+        if (!post.err) {
+            await props.chats_send_message({
+                sender_id: props.user.id,
+                sender_type: 'U',
+                receiver_id: data.agencyId,
+                content: "Hey! you got new orders",
+                tours_id: data.id,
+                tours_type: 'A'
+            })
+        }
     }
 
     return (

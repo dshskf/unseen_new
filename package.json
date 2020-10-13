@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@wojtekmaj/react-daterange-picker": "^3.0.0",
     "axios": "^0.19.2",
+    "cryptr": "^6.0.2",
     "file-saver": "^2.0.2",
     "google-maps-react": "^2.0.6",
     "history": "^5.0.0",

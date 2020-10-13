@@ -1,4 +1,5 @@
 import { Get, Post } from '../../Constants/request'
+import { storage } from '../../Constants/request'
 
 export const toursType = {
     set_tours_agency: 'SET_TOURS_AGENCY',
@@ -38,43 +39,43 @@ export const get_tours_agency_detail = (data) => async dispatch => {
 export const post_user_request = (data) => async dispatch => {
     const post = await Post(link('request'), data.form, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
 }
 
 export const post_user_booking = (data) => async dispatch => {
-    const post = await Post(link('booking'), data.form, {
+    const post = await Post(link('booking'), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
 }
 
 export const add_tours = (data) => async (dispatch) => {
-    const post = await Post(link("dashboard/add"), data.form, {
+    const post = await Post(link("dashboard/add"), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
 }
 
 export const edit_tours = (data) => async dispatch => {
-    const post = await Post(link("dashboard/edit"), data.form, {
+    const post = await Post(link("dashboard/edit"), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
 }
 
 export const delete_tours = (data) => async dispatch => {
-    const post = await Post(link('dashboard/delete'), { ...data }, {
+    const post = await Post(link('dashboard/delete'), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
@@ -94,7 +95,7 @@ export const get_dashboard = (data) => async (dispatch) => {
 export const get_dashboard_detail = (data) => async dispatch => {
     const post = await Post(link("dashboard/details"), { ...data }, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data

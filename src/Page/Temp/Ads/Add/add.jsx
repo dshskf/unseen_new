@@ -180,13 +180,7 @@ class AddTours extends Component {
         }
 
         const formData = serialize(dataToSubmit);
-
-        dataToSubmit = {
-            form: formData,
-            token: this.props.token
-        }
-
-        const sendForm = await this.props.add_tours(dataToSubmit)
+        const sendForm = await this.props.add_tours(formData)        
 
         if (!sendForm.err) {
             this.props.history.push('/ads')

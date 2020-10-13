@@ -1,5 +1,5 @@
 import { Post } from '../../Constants/request'
-
+import { storage } from '../../Constants/request'
 
 export const featuresType = {
     set_io_connection: "SET_IO_CONNECTION"
@@ -13,7 +13,7 @@ const link = endpoint => {
 export const get_user_location = (data) => async (dispatch) => {
     const post = await Post(link('track'), { reqId: data.id }, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
 
@@ -23,7 +23,7 @@ export const get_user_location = (data) => async (dispatch) => {
 export const update_user_location = (data) => async (dispatch) => {
     const post = await Post(link('track/update'), data.location, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
 
@@ -32,27 +32,27 @@ export const update_user_location = (data) => async (dispatch) => {
 }
 
 export const chats_send_message = (data) => async dispatch => {
-    const post = await Post(link('chats/send'), data.form, {
+    const post = await Post(link('chats/send'), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
 }
 
 export const chats_fetch_message = (data) => async dispatch => {
-    const post = await Post(link('chats'), data.id, {
+    const post = await Post(link('chats'), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data
 }
 
 export const chats_person_list = (data) => async dispatch => {
-    const post = await Post(link('chats/list'), { id: data.id }, {
+    const post = await Post(link('chats/list'), data, {
         headers: {
-            "Authorization": `Bearer ${data.token}`
+            "Authorization": `Bearer ${storage.token}`
         }
     })
     return post.data

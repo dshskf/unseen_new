@@ -54,17 +54,16 @@ const EditUserProfile = props => {
         const fetchUsers = async () => {
             let user = await props.get_edit_profile({ token: props.token })
             user = user.data
-            // user.image = user.image ? user.image.replace('\\', '/') : null
-            console.log(user)
+            // user.image = user.image ? user.image.replace('\\', '/') : null            
 
             let location = await props.get_location_data({ action: "countries" })
-            let location_data = { ...location, country: location.data }
+            let location_data = { ...location, country: location.data }            
 
             // if user already fill location
             if (user.country_id) {
-                let state = await props.get_location_data({ action: "states", country_id: user.country_id })
-                let city = await props.get_location_data({ action: "cities", state_id: user.state_id })
-                let fetch_location = await props.get_location_data({ action: "fetch_data", city_id: user.city_id })
+                let state = await props.get_location_data({ action: "states", countries_id: user.country_id })
+                let city = await props.get_location_data({ action: "cities", states_id: user.state_id })
+                let fetch_location = await props.get_location_data({ action: "fetch_data", cities_id: user.city_id })
 
                 location_data = {
                     ...location_data,
@@ -122,7 +121,7 @@ const EditUserProfile = props => {
         const { name, value } = e.target
         let getDataLocation
         if (name === 'country') {
-            getDataLocation = await props.get_location_data({ action: "states", country_id: value })
+            getDataLocation = await props.get_location_data({ action: "states", countries_id: value })
             setLocation({
                 ...location,
                 country_id: value,
@@ -133,7 +132,7 @@ const EditUserProfile = props => {
             })
         }
         else if (name === 'state') {
-            getDataLocation = await props.get_location_data({ action: "cities", state_id: value })
+            getDataLocation = await props.get_location_data({ action: "cities", states_id: value })
             setLocation({
                 ...location,
                 state_id: value,
@@ -203,13 +202,13 @@ const EditUserProfile = props => {
                                 <InputBox>
                                     <label>Country</label>
                                     <select name="country" onChange={locationHandler}>
-                                        <option value="" disabled selected>Select your country</option>
+                                    <option value="" disabled selected>Select your country</option>
                                         {
-                                            location.country && location.country.map(data => {
-                                                if (data.id === location.country_id) {
-                                                    return <option key={location.country_id} value={location.country_id} selected>{location.country_name}</option>
+                                            location.country && location.country.map((data, index) => {
+                                                if (data.val === location.country_id) {
+                                                    return <option key={index} value={data.val} selected>{data.label}</option>
                                                 }
-                                                return <option key={data.id} value={data.id}>{data.name}</option>
+                                                return <option key={index} value={data.val}>{data.label}</option>
                                             })
                                         }
                                     </select>
@@ -223,11 +222,11 @@ const EditUserProfile = props => {
                                     >
                                         <option value="" disabled selected>Select your states</option>
                                         {
-                                            location.states && location.states.map(data => {
-                                                if (data.id === location.state_id) {
-                                                    return <option key={location.state_id} value={location.state_id} selected>{location.state_name}</option>
+                                            location.states && location.states.map((data, index) => {
+                                                if (data.val === location.state_id) {
+                                                    return <option key={index} value={data.val} selected>{data.label}</option>
                                                 }
-                                                return <option key={data.id} value={data.id}>{data.name}</option>
+                                                return <option key={index} value={data.val}>{data.label}</option>
                                             })
                                         }
                                     </select>
@@ -241,11 +240,11 @@ const EditUserProfile = props => {
                                     >
                                         <option value="" disabled selected>Select your cities</option>
                                         {
-                                            location.city && location.city.map(data => {
-                                                if (data.id === location.city_id) {
-                                                    return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`} selected>{data.name}</option>
+                                            location.city && location.city.map((data, index) => {
+                                                if (data.val === location.city_id) {
+                                                    return <option key={index} value={data.val} selected>{data.label}</option>
                                                 }
-                                                return <option key={data.id} value={`${data.id}/${data.latitude}/${data.longitude}`}>{data.name}</option>
+                                                return <option key={index} value={data.val} >{data.label}</option>
                                             })
                                         }
                                     </select>

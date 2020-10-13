@@ -285,12 +285,7 @@ class EditTours extends Component {
         }
         const formData = serialize(dataToSubmit);
 
-        dataToSubmit = {
-            form: formData,
-            token: this.props.token
-        }
-
-        const sendForm = await this.props.edit_tours(dataToSubmit)
+        const sendForm = await this.props.edit_tours(formData)
         if (sendForm) {
             this.props.history.push('/ads')
         }
@@ -302,11 +297,11 @@ class EditTours extends Component {
             if (dest ? dest.destination_id : false) {
                 return dest.destination_id
             }
-        }).filter(result => result && result)        
+        }).filter(result => result && result)
 
         const dataToSubmit = {
             id: this.state.id,
-            token: this.props.token,
+            token: storage.token,
             type: accountType,
             removed_destination: rm_dest
         }

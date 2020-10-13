@@ -17,4 +17,4 @@ export const Post = async (route, data, header = null) => {
     return await axios.post(URL, data)
 }
 
-export const storage = JSON.parse(localStorage.getItem('login_data'))
+export const storage = localStorage.getItem('login_data') && JSON.parse(localStorage.getItem('login_data'))

@@ -1,4 +1,5 @@
 import { Get, Post } from '../../Constants/request'
+// import { encrypt, decrypt } from '../../Constants/aes'
 
 export const authType = {
     set_token: "SET_TOKEN",
@@ -19,9 +20,26 @@ export const sign_in = (data) => async (dispatch) => {
     }
 
     if (!post.data.err) {
-        localStorage.setItem('login_data', JSON.stringify({ email: post.data.userData.email, token: post.data.token, type: post.data.type }));
+        // localStorage.setItem('login_data', JSON.stringify({
+        //     id: encrypt(post.data.userData.id),
+        //     email: encrypt(post.data.userData.email),
+        //     token: encrypt(post.data.token),
+        //     type: post.data.type
+        // }));
+        localStorage.setItem('login_data', JSON.stringify({
+            email: post.data.userData.email,
+            token: post.data.token,
+            type: post.data.type
+        }));
         dispatch({ type: authType.set_token, data: post.data.token })
-        dispatch({ type: 'SET_USER', data: post.data.userData })
+        dispatch({
+            type: 'SET_USER',
+            data: {
+                ...post.data.userData,
+                password: null,
+                type: data.type
+            }
+        })
     }
 
     dispatch({ type: authType.sign_in, data: post.data })
@@ -41,8 +59,8 @@ export const check_token = (data) => async (dispatch) => {
             "Authorization": `Bearer ${data.token}`
         }
     })
-    
-    if (post.data.err) {
+
+    if (post.data.err) {        
         localStorage.removeItem('login_data')
         dispatch({ type: authType.sign_out, data: null })
         dispatch({ type: authType.set_token, data: null })
