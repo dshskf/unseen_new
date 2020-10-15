@@ -39,19 +39,13 @@ import { storage } from '../../../../../Constants/request';
 const AgencyToursDetail = props => {
     const [data, setData] = useState(null)
     const [comment, setComment] = useState(null)
-    const [openModal, setOpenModal] = useState(false)
 
-    const [input, setInput] = useState({
-        reason: "",
-        price: ""
-    })    
-   
     useEffect(() => {
         const req = async () => {
             const post = await props.get_tours_agency_detail({
                 id: props.match.params.toursId
             })
-            console.log(post)
+            
             setComment(post.comment)
             setData(post.tours[0])
         }
@@ -73,6 +67,7 @@ const AgencyToursDetail = props => {
                 sender_id: props.user.id,
                 sender_type: 'U',
                 receiver_id: data.agencyId,
+                receiver_type: 'A',
                 content: "Hey! you got new orders",
                 tours_id: data.id,
                 tours_type: 'A'

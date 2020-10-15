@@ -68,7 +68,7 @@ const ChatPage = props => {
             const dateNow = `T${d.getHours()}:${d.getMinutes()}`
 
             await req()
-            
+
             if (data.sender_id.toString() === activeList.current.receiver.toString() && data.sender_type === activeList.current.type) {
 
                 await setMessage(lastData => [
@@ -122,16 +122,17 @@ const ChatPage = props => {
 
         const receiver_id = filterFriends.id
         const receiver_type = filterFriends.type
-        
+
 
         const dataToSubmit = {
             sender_id: props.user.id,
+            sender_type: storage.type[0].toUpperCase(),
             receiver_id: receiver_id,
-            receiver_type: storage.type[0].toUpperCase(), //type of receiver
-            sender_type: receiver_type  // type of sender
+            receiver_type: receiver_type,
         }
 
         const req = await props.chats_fetch_message(dataToSubmit)
+
         const active_data = {
             index: filterFriends.index,
             receiver: receiver_id,
@@ -162,6 +163,7 @@ const ChatPage = props => {
             sender_id: userData.sender_id,
             sender_type: storage.type[0].toUpperCase(),
             receiver_id: userData.receiver_id,
+            receiver_type: userData.receiver_type,
             content: input,
         }
 
@@ -241,7 +243,7 @@ const ChatPage = props => {
                                         const date = data.createdAt.split('T')[1].substring(0, 5)
 
                                         return (
-                                            data.sender_id.toString() === userData.sender_id.toString() && data.sender_type !== userData.sender_type ?
+                                            data.sender_id.toString() === userData.sender_id.toString() && data.sender_type !== userData.receiver_type ?
                                                 <BoxRight key={index} ref={index === message.length - 1 ? messageEnd : null}>
                                                     <RightText>
                                                         <Text isRight={true} length={data.content}>
