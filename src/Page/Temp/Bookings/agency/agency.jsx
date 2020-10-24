@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 
@@ -14,6 +14,10 @@ import { chats_send_message } from '../../../../Redux/features/features.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 import { storage } from '../../../../Constants/request'
+
+
+import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
+import { GiSandsOfTime } from 'react-icons/gi'
 
 import {
     Container,
@@ -56,7 +60,7 @@ const AgencyBookingDashboard = props => {
             form: dataToSubmit,
             token: storage.token
         })
-        
+
 
         const msgData = {
             sender_id: props.user.id,
@@ -105,6 +109,9 @@ const AgencyBookingDashboard = props => {
 
     }
 
+    const styles = {
+        link: { textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }
+    }
 
     return (
         <Body>
@@ -149,7 +156,7 @@ const AgencyBookingDashboard = props => {
                                         <Content>
                                             <ActionBox>
                                                 {
-                                                    !data.is_active &&
+                                                    (data.is_payed && !data.is_active) &&
                                                     <React.Fragment>
                                                         <input
                                                             id={data.id}
@@ -171,17 +178,22 @@ const AgencyBookingDashboard = props => {
                                         <Content>
                                             {
                                                 data.is_active ?
-                                                    <StatusBox>
-                                                        Active
-                                                    </StatusBox>
+                                                    <Link to={`/tracks/agency/${data.id}`} style={styles.link}>
+                                                        <StatusBox id={data.id} isActive={true}>
+                                                            <FaMapMarkerAlt style={{ color: "white" }} />
+                                                            <p>Track</p>
+                                                        </StatusBox>
+                                                    </Link>
                                                     :
                                                     data.is_payed ?
                                                         <StatusBox isPayed={true}>
-                                                            Payed
+                                                            <FaMoneyCheck style={{ color: "white" }} />
+                                                            <p>Payed</p>
                                                         </StatusBox>
                                                         :
                                                         <StatusBox>
-                                                            Waiting
+                                                            <GiSandsOfTime />
+                                                            <p>Waiting</p>
                                                         </StatusBox>
 
                                             }

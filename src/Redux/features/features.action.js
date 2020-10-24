@@ -11,7 +11,7 @@ const link = endpoint => {
 
 
 export const get_user_location = (data) => async (dispatch) => {
-    const post = await Post(link('track'), { reqId: data.id }, {
+    const post = await Post(link('track'), data, {
         headers: {
             "Authorization": `Bearer ${storage.token}`
         }
@@ -21,7 +21,7 @@ export const get_user_location = (data) => async (dispatch) => {
 }
 
 export const update_user_location = (data) => async (dispatch) => {
-    const post = await Post(link('track/update'), data.location, {
+    const post = await Post(link('track/update'), data, {
         headers: {
             "Authorization": `Bearer ${storage.token}`
         }

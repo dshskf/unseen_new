@@ -122,17 +122,25 @@ const onPayed = css`
 const onActive = css`
   color: white;
   background: #f37d1f;
+  cursor: pointer;
 `;
+
 
 export const StatusBox = styled.div`
   background: #d1d1d1;
-  height: 2rem;  
+  height: 2rem;
+  width: 70%;
   border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding:4px 10px;
-  ${(props) => (props.isPayed ? onPayed : null)};  
+  ${(props) => (props.isPayed ? onPayed : null)};
+  ${(props) => (props.isActive ? onActive : null)};
+
+  p {
+    margin: 0;
+    margin-left:6px;
+  }
 `;
 
 export const Modal = styled.div`

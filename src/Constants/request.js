@@ -17,4 +17,13 @@ export const Post = async (route, data, header = null) => {
     return await axios.post(URL, data)
 }
 
-export const storage = localStorage.getItem('login_data') && JSON.parse(localStorage.getItem('login_data'))
+const checkStorage = () => {
+    if (localStorage.getItem('login_data')) {
+        let ls = JSON.parse(localStorage.getItem('login_data'))
+        ls.type_code = ls.type[0].toUpperCase()
+        return ls
+    }
+    return null
+}
+
+export const storage = checkStorage()

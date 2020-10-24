@@ -59,7 +59,7 @@ class AgencyAuth extends Component {
             username: username,
             password: password,
             type: 'agency'
-        }
+        }        
 
         const req = await this.props.signIn({
             data: dataToSubmit

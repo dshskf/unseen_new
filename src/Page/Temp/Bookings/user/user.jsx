@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 
@@ -14,6 +14,10 @@ import { chats_send_message } from '../../../../Redux/features/features.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 import { storage } from '../../../../Constants/request'
+
+import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
+import { GiSandsOfTime } from 'react-icons/gi'
+
 
 import {
     Container,
@@ -34,10 +38,7 @@ const UserBookingDashboard = props => {
 
     useEffect(() => {
         const req = async () => {
-            const get = await props.get_booking_user({
-                action: 'sender_id',
-                token: storage.token
-            })
+            const get = await props.get_booking_user()
             setData(get.data)
         }
         req()
@@ -105,6 +106,9 @@ const UserBookingDashboard = props => {
 
     }
 
+    const styles = {
+        link: { textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }
+    }
 
     return (
         <Body>
@@ -171,17 +175,22 @@ const UserBookingDashboard = props => {
                                         <Content>
                                             {
                                                 data.is_active ?
-                                                    <StatusBox>
-                                                        Active
-                                                    </StatusBox>
+                                                    <Link to={`/tracks/users/${data.id}.agency`} style={styles.link}>
+                                                        <StatusBox id={data.id} isActive={true}>
+                                                            <FaMapMarkerAlt style={{ color: "white" }} />
+                                                            <p>Track</p>
+                                                        </StatusBox>
+                                                    </Link>
                                                     :
                                                     data.is_payed ?
                                                         <StatusBox isPayed={true}>
-                                                            In Process
+                                                            <FaMoneyCheck style={{ color: "white" }} />
+                                                            <p>In Process</p>
                                                         </StatusBox>
                                                         :
                                                         <StatusBox>
-                                                            Waiting
+                                                            <GiSandsOfTime />
+                                                            <p>Waiting</p>
                                                         </StatusBox>
 
                                             }

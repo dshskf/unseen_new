@@ -14,12 +14,14 @@ import { get_user_location, update_user_location } from '../../../../Redux/featu
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 import { pullSocket } from '../../../../Redux/features/features.selector'
 
+import { storage } from '../../../../Constants/request'
+
 import {
     Container,
     MapBox
 } from './style'
 
-class Track extends Component {
+class TrackAgency extends Component {
     state = {
         zoom: null,
         lat: null,
@@ -36,13 +38,13 @@ class Track extends Component {
 
     async componentDidMount() {
         const fetch = await this.props.get_user_location({
-            id: this.props.match.params.orderId,
-            token: this.props.token
+            booking_id: this.props.match.params.id,
+            receiver_type: storage.type
         })
 
         // Split user and opposite
-        const user_data = fetch.data.filter(data => data.id === this.props.user.id ? data : null)[0]
-        const opposite_data = fetch.data.filter(data => data.id !== this.props.user.id ? data : null)[0]
+        const user_data = fetch.data.filter(data => data.type === storage.type[0].toUpperCase() ? data : null)[0]
+        const opposite_data = fetch.data.filter(data => data.type !== storage.type[0].toUpperCase() ? data : null)[0]
 
         if (!this.state.change) {
             this.getPosition()
@@ -70,9 +72,49 @@ class Track extends Component {
         })
     }
 
-    calculateZoomLevel = (location_now) => {
+    currentPosition = async position => {
+        let map_position = null
+        let new_location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        }
 
-        // Get distance length between user and opposite        
+        if (this.state.lat || this.state.change === false) {
+            // Update user location
+            if (this.state.change === false || this.state.lat.toString() !== position.coords.latitude.toString() || this.state.lng.toString() !== position.coords.longitude.toString()) {
+                map_position = this.calculateZoomLevel(position.coords)
+
+                const update = await this.props.update_user_location({
+                    ...new_location,
+                    id: this.props.user.id,
+                    type: storage.type
+                })
+                if (update.err) {
+                    return
+                }
+            }
+        }
+
+        if (this.state.opposite) {
+            map_position = this.calculateZoomLevel(position.coords)
+        }
+
+        if (!this.state.change) {
+            const center_position = this.calculateCenteredViewPosition(position.coords)
+            this.setState({ center: { lat: center_position.lat, lng: center_position.lng } })
+        }
+
+        this.props.socket.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
+
+        this.setState({
+            ...new_location,
+            zoom: map_position,
+            change: true
+        })
+    }
+
+    calculateZoomLevel = (location_now) => {
+        // Get distance length between user and opposite                
         const distance_lat = location_now.latitude - this.state.opposite.lat
         const distance_lng = Math.abs(location_now.longitude) - Math.abs(this.state.opposite.lng)
 
@@ -100,49 +142,6 @@ class Track extends Component {
         return { lat: center_lat, lng: center_lng }
     }
 
-    currentPosition = async position => {
-        let map_position = null
-        let new_location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-        }
-
-        if (this.state.lat || this.state.change === false) {
-            // Update user location
-            if (this.state.change === false || this.state.lat.toString() !== position.coords.latitude.toString() || this.state.lng.toString() !== position.coords.longitude.toString()) {
-                map_position = this.calculateZoomLevel(position.coords)
-
-                const update = await this.props.update_user_location({
-                    location: {
-                        ...new_location,
-                        userId: this.props.user.id
-                    },
-                    token: this.props.token
-                })
-                if (update.err) {
-                    return
-                }
-
-                this.props.socket.emit('update_location', { ...new_location, opposite_id: this.state.opposite.id })
-            }
-        }
-
-        if (this.state.opposite) {
-            map_position = this.calculateZoomLevel(position.coords)
-        }
-
-        if (!this.state.change) {
-            const center_position = this.calculateCenteredViewPosition(position.coords)
-            this.setState({ center: { lat: center_position.lat, lng: center_position.lng } })
-        }
-
-        this.setState({
-            ...new_location,
-            zoom: map_position,
-            change: true
-        })
-    }
-
     errPosition = err => {
         console.log(err)
     }
@@ -158,11 +157,16 @@ class Track extends Component {
                 zoom={this.state.zoom}
                 initialCenter={{ lat: this.state.center.lat, lng: this.state.center.lng }}
                 style={{ width: "100%", height: "100%" }}
-                onClick={() => console.log(this.state.zoom)}
+                onClick={() => console.log(this.state)}
             >
                 <Marker
                     name={"You"}
                     title={"You"}
+                    icon={{
+                        url: "https://pngimg.com/uploads/ferrari/ferrari_PNG10665.png",
+                        anchor: new window.google.maps.Point(32, 32),
+                        scaledSize: new window.google.maps.Size(20, 20)
+                    }}
                     position={{ lat: this.state.lat, lng: this.state.lng }}
                 />
 
@@ -220,4 +224,4 @@ export default compose(
         apiKey: 'AIzaSyC-V00eSeQTl8ug3_pCiOqMD08IsFZ_Xr8'
     }),
     connect(mapStateToProps, mapDispatchToProps)
-)(Track);
+)(TrackAgency);

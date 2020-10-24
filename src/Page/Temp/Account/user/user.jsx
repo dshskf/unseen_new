@@ -58,7 +58,7 @@ class UserAuth extends Component {
         const dataToSubmit = {
             username: username,
             password: password,
-            type: 'user'
+            type: 'users'
         }
 
         const req = await this.props.signIn({
@@ -79,7 +79,7 @@ class UserAuth extends Component {
             username: username,
             email: email,
             password: password,
-            account_types: 'user'
+            account_types: 'users'
         }
 
         const req = await this.props.signUp(dataToSubmit)
