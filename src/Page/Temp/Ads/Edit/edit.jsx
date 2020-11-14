@@ -48,6 +48,7 @@ class EditTours extends Component {
         id: "",
         title: "",
         cost: "",
+        quota: "",
         image: "",
         imgShow: "", //To show
         image_db: "", //Original image from db
@@ -74,15 +75,7 @@ class EditTours extends Component {
 
     async componentDidMount() {
         if (!this.state.isFetch) {
-            const accountType = storage.type;
-
-            const reqData = {
-                id: this.props.match.params.adsId,
-                token: this.props.token,
-                type: accountType
-            }
-
-            let request = await this.props.get_dashboard_detail(reqData)
+            let request = await this.props.get_dashboard_detail({ id: this.props.match.params.adsId })
             let get_countries = await this.props.get_location_data({ action: "countries" })
             request = request.tours
 
@@ -101,7 +94,7 @@ class EditTours extends Component {
             request = request[0]
 
             if (request) {
-                let { id, title, cost, image, start_date, end_date, description } = request
+                let { id, title, cost, quota, image, start_date, end_date, description } = request
 
                 start_date = start_date.split('T')[0].replace(/-/g, '/')
                 end_date = end_date.split('T')[0].replace(/-/g, '/')
@@ -109,11 +102,12 @@ class EditTours extends Component {
                 image = image.map(data => {
                     return API + data.replace('\\', '/')
                 })
-
+                
                 this.setState({
                     id: id,
                     title: title,
                     cost: cost,
+                    quota: quota,
                     imgShow: image,
                     image_db: image,
                     destination: destination,
@@ -260,10 +254,9 @@ class EditTours extends Component {
     submitForm = async e => {
         e.preventDefault()
         let {
-            id, title, cost, destination, image_to_delete, new_image,
+            id, title, cost, quota, destination, image_to_delete, new_image,
             image_db, start_date, end_date, description, removed_destination
         } = this.state
-        const accountType = storage.type
         new_image = new_image.filter(data => data !== "")
 
         // Filter new destination        
@@ -273,6 +266,8 @@ class EditTours extends Component {
             id: id,
             title: title,
             cost: cost,
+            quota: quota,
+            quota_left: quota,
             destination: JSON.stringify(destination),
             img_del: image_to_delete,
             img_path: image_db,
@@ -281,7 +276,6 @@ class EditTours extends Component {
             start_date: start_date,
             end_date: end_date,
             removed_destination: removed_destination,
-            type: accountType
         }
         const formData = serialize(dataToSubmit);
 
@@ -292,7 +286,6 @@ class EditTours extends Component {
     }
 
     deleteHandler = async () => {
-        const accountType = storage.type
         let rm_dest = this.state.destination.map(dest => {
             if (dest ? dest.destination_id : false) {
                 return dest.destination_id
@@ -301,8 +294,6 @@ class EditTours extends Component {
 
         const dataToSubmit = {
             id: this.state.id,
-            token: storage.token,
-            type: accountType,
             removed_destination: rm_dest
         }
 
@@ -387,6 +378,10 @@ class EditTours extends Component {
                         <Item>
                             <p>Cost</p>
                             <input name="cost" value={this.state.cost} type="number" onChange={this.inputHandler} />
+                        </Item>
+                        <Item>
+                            <p>Quota</p>
+                            <input type="number" name="quota" value={this.state.quota} onChange={this.inputHandler} />
                         </Item>
                         <Item>
                             <p>Start & End date</p>

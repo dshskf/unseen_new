@@ -53,12 +53,7 @@ export const sign_out = (data) => async (dispatch) => {
 }
 
 export const check_token = (data) => async (dispatch) => {
-    const post = await Post(link('check-token'), { type: data.type }, {
-        headers:
-        {
-            "Authorization": `Bearer ${data.token}`
-        }
-    })
+    const post = await Post(link('check-token'), { type: data.type })
 
     if (post.data.err) {        
         localStorage.removeItem('login_data')

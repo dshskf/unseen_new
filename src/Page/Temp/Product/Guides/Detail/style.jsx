@@ -1,68 +1,26 @@
 import styled from "styled-components";
-
+import { color } from '../../../../../Constants/color'
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 90vw;
-  text-transform: capitalize;
-`;
+  flex-wrap: wrap;
+  width: 100vw;
+  overflow-x: hidden;
+  padding-bottom:10rem;
 
-export const Title = styled.div`
-  width: 90%;
-
-  h1{
-    text-transform:capitalize;    
+  *{
+    box-sizing: border-box;
   }
 `;
 
-export const Detail = styled.div`
-  width: 90%;
-  display: flex;
-  overflow: hidden;
+export const Headers = styled.div`
+  height: 20rem;
+  position: relative;
 `;
 
-export const Left = styled.div`
-  width: 35%;
-  height: 22rem;
-  margin-right: 2rem;
-
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 4px;
-  }
-`;
-
-export const Right = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-export const ProductTitle = styled.div`
-  h1 {
-    margin: 0;
-    font-weight: 400;
-  }
-  p {
-    color: gray;
-    margin-top: 0;
-    font-size: 1.5rem;
-    font-weight: 300;
-  }
-`;
-
-export const ProductGuide = styled.div`
-  display: flex;
-  align-items: center;
+export const Background = styled.div`
+  height: 60%;
   width: 100%;
-`;
-
-export const GuideImages = styled.div`
-  width: 6rem;
-  height: 6rem;
-  margin-right: 10px;
 
   img {
     width: 100%;
@@ -70,169 +28,255 @@ export const GuideImages = styled.div`
   }
 `;
 
-export const GuideData = styled.div`
-  h2 {
-    margin: 0;
-    font-size: 1.4rem;
-  }
-
-  p {
-    font-weight: 100;
-    font-size: 2.5rem;
-    margin-top: 2px;
-    margin-bottom: 0;
-    color: orange;
-
-    :nth-child(3) {
-      font-size: 0.9rem;
-      font-weight: 300;
-    }
-  }
+export const Logo = styled.div`
+  position: absolute;
+  background: ${color.primary};
+  top: 0;
+  right: 10%;
+  padding: 10px 30px;
+  color: white;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 `;
 
-export const ProductPrice = styled.div`
-  h2 {
-    font-weight: 300;
-    margin-top: 2rem;
-  }
-`;
-
-export const ProductAction = styled.div`
+export const Profile = styled.div`
+  width: 100%;
+  height: 40%;
+  position: relative;
   display: flex;
 `;
-export const ActionItem = styled.div`
+export const AvatarBox = styled.div`
+  width: 50%;
+  height: 100%;
+  position: relative;
+`;
+
+export const Avatar = styled.div`
+  width: 80%;
+  height: 100%;
+  position: absolute;
+  top: -3.5rem;
+  left: 5%;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+
+  img {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    border: 8px solid #ffffff;
+    /*    box-shadow:1px -8px 10px #6f6f6f; */
+  }
+`;
+
+export const NameBox = styled.div`
+  margin-top: -1.5rem;
+  margin-left: 1rem;
+
+  & :nth-child(1) {
+    color: ${color.primary};
+    font-size: 2rem;
+    margin: 0;
+    margin-bottom: 1rem;
+    text-transform: capitalize;
+  }
+
+  & :nth-child(2) {
+    margin: 0;
+    color: ${color.border};
+  }
+`;
+
+export const ActionBox = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-right: 5%;
+`;
+
+export const ActionButton = styled.div`
+  width: 7rem;
+  height: 2.5rem;
+  color: ${color.primary};
+  border: none;
+  background: white;
+  border: 1px solid ${color.primary};
+  margin-top: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 8rem;
-  height: 2.4rem;
-  margin: 0 1rem;
-  margin-left: 0;
-  border-radius: 4px;
-  cursor: pointer;
+  margin-left: 1rem;
 
-  :nth-child(1) {
-    background: #00a7ff;
+  * {
+    background: none;
+    border: none;
     color: white;
   }
+  &:nth-child(1) button {
+    color: ${color.primary};
+  }
 
-  :nth-child(2) {
-    border: 1px solid #ff7600;
-    color: #ff7600;
-    margin-left: 8px;
+  &:nth-child(2) {
+    background: blue;
+    color: white;
+    border: 1px solid blue;
   }
 `;
 
+export const Details = styled.div`
+  width: 100%;
+  margin-top: 2rem;
+  min-height: 20rem;
+  padding: 2rem 4%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background:#f7f7f7;
+`;
 export const Description = styled.div`
+  width: 45%;
+  min-width: 20rem;
+  text-align: justify;
+  color: ${color.border};
+`;
+
+export const Splitter = styled.div`
+  width: 5%;
+  display: flex;
+  justify-content: center;
+
+  div {
+    width: 1px;
+    height: 100%;
+    background: ${color.border};
+  }
+`;
+
+export const Information = styled.div`
+  width: 40%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+`;
+
+export const InformationItem = styled.div`
+  width: 45%;
+
+  & :nth-child(1) {
+    border-bottom: 1px solid silver;
+    padding-bottom: 4px;
+    width: 100%;
+    color: ${color.primary};
+    margin-top: 0;
+    font-weight: bold;
+  }
+
+  & :nth-child(2) {
+    color: ${color.border};
+  }
+`;
+
+export const Photo = styled.div`
+  width: 100%;
+  height: 10rem;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2rem;
+`;
+
+export const PhotoAction = styled.div`
+  width: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const PhotoBox = styled.div`
   width: 90%;
   overflow: hidden;
-  color: #313131;
-  min-height: 8rem;
-  margin-top: 2rem;
+  display: flex;
 `;
 
-export const Review = styled.div`
-  width: 90%;
-  min-height: 10rem;
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid silver;
-  margin-bottom: 4rem;
+export const PhotoCard = styled.div`
+  width: 35%;
+  height: 100%;
+  margin: 0 1rem;
 
-  h1 {
-    color: #414141;
+  img {
+    width: 100%;
+    min-width: 15rem;
+    max-width: 20rem;
+    height: 100%;
   }
+`;
+
+export const ReviewBox = styled.div`
+  width: 100%;
+  height: 15rem;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4%;
+  margin-top: 4rem;
+`;
+
+export const SkillBox = styled.div`
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+`;
+
+export const Skill = styled.div`
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid ${color.primary};
+  margin: 10px;
+  margin-top: 0;
+`;
+
+export const CommentsBox = styled.div`
+  width: 40%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;  
+  background:${color.primary};
 `;
 
 export const Comments = styled.div`
+  width: 70%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-height: 10rem;
-  border: 1px solid #dedede;
-  overflow: hidden;
-  margin-bottom: 1.5rem;
+  justify-content: center;
 `;
 
-export const CommentsProfile = styled.div`
-  width: 100%;
-  height: 40%;
+export const C_Header = styled.div`
   display: flex;
   align-items: center;
-  padding-top: 5px;
-  padding-left: 1rem;
-  background: #f5f5f5;
-`;
-
-export const ProfileImage = styled.div`
-  height: 3rem;
-  width: 3rem;
-  margin-right: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid gray;
+  color:white;
 
   img {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-export const ProfileData = styled.div`
-  p {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 300;
-  }
-`;
-
-export const Text = styled.div`
-  padding: 0 1rem;
-  margin-bottom: 1.5rem;
-`;
-
-export const Modal = styled.div`
-  position: fixed;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  background: rgba(8, 8, 8, 0.3);
-  display: ${(props) => (props.isOpen ? "flex" : "none")};
-  justify-content: center;
-  align-items: center;
-  z-index: 5;
-`;
-
-export const ModalBox = styled.div`
-  width: 40%;
-  height: 15rem;
-  background: white;
-  padding-left: 1rem;
-  position: relative;
-  color: #272727;
-  text-align: left;
-`;
-
-export const ModalTitle = styled.div``;
-
-export const ModalInput = styled.div`
-  input {
-    border: 1px solid silver;
-    outline: none;
-  }
-`;
-
-export const ModalButton = styled.div`
-  display: flex;
-  align-items: center;
-
-  input {
-    height: 2rem;
     width: 3rem;
-    border: none;
-    color: white;
-    background: red;
-    font-size:1.5rem;
-    margin:0;
+    height: 3rem;
+    border-radius: 50%;
     margin-right: 1rem;
   }
+
+  p{
+    font-size:1.4rem;
+  }
+`;
+
+export const Message = styled.div`
+  margin-top: 1rem;
+  color: white;
 `;

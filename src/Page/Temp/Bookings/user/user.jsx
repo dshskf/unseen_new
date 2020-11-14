@@ -39,16 +39,17 @@ const UserBookingDashboard = props => {
     useEffect(() => {
         const req = async () => {
             const get = await props.get_booking_user()
+            console.log(get.data)
             setData(get.data)
         }
         req()
     }, [])
 
-    const updateHandler = async (e, index) => {
-        const { id } = e.currentTarget
+    const updateHandler = async (id, index, tours_id) => {
 
         const dataToSubmit = {
             request_id: id,
+            tours_id: tours_id,
             action: 'update'
         }
 
@@ -56,8 +57,6 @@ const UserBookingDashboard = props => {
             form: dataToSubmit,
             token: storage.token
         })
-
-        console.log(post)
 
         const msgData = {
             sender_id: props.user.id,
@@ -76,8 +75,7 @@ const UserBookingDashboard = props => {
         // }
     }
 
-    const deleteHandler = async (e, index) => {
-        const { id, name } = e.currentTarget
+    const deleteHandler = async (id, index) => {
 
         const dataToSubmit = {
             request_id: id,
@@ -88,12 +86,12 @@ const UserBookingDashboard = props => {
             token: storage.token
         })
 
-        // const msgData = {
-        //     sender_id: props.user.id,
-        //     receiver_id: data[index].receiver_id,
-        //     content: `${props.user.username} cancelled ${data[index].product_name}`,
-        //     notification: null
-        // }
+        const msgData = {
+            sender_id: props.user.id,
+            receiver_id: data[index].receiver_id,
+            content: `${props.user.username} cancelled ${data[index].product_name}`,
+            notification: null
+        }
 
         // const send = await props.chats_send_message({
         //     form: msgData,
@@ -156,16 +154,14 @@ const UserBookingDashboard = props => {
                                                     !data.is_payed &&
                                                     <React.Fragment>
                                                         <input
-                                                            id={data.id}
                                                             type="submit"
                                                             value="O"
-                                                            onClick={e => updateHandler(e, index)}
+                                                            onClick={e => updateHandler(data.id, index, data.tours_id)}
                                                         />
                                                         <input
-                                                            id={data.id}
                                                             type="submit"
                                                             value="X"
-                                                            onClick={e => deleteHandler(e, index)}
+                                                            onClick={() => deleteHandler(data.id, index)}
                                                         />
                                                     </React.Fragment>
 

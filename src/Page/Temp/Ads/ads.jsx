@@ -11,6 +11,7 @@ import { API } from '../../../Constants/link'
 
 import Guides from './Guides/guide'
 import Sidebar from '../../../Components/Sidebar/sidebar'
+import { storage } from '../../../Constants/request'
 
 import { Body, Sub } from '../style.route'
 
@@ -20,9 +21,9 @@ const AdsList = props => {
 
     useEffect(() => {
         const req = async () => {
-            await axios.post(`${API}tours/dashboard`, { type: 'agency' }, {
+            await axios.get(`${API}tours/dashboard`, {
                 headers: {
-                    "Authorization": `Bearer ${props.token}`
+                    "Authorization": `Bearer ${storage.token}`
                 }
             })
                 .then(res => {

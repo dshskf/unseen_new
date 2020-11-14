@@ -30,13 +30,14 @@ import {
     ButtonBox,
     DestinationBox,
     DestinationItem
-} from '../Edit/style'
+} from './style'
 
 class AddTours extends Component {
 
     state = {
         title: "",
         cost: 0,
+        quota: 0,
         image: ['', '', '', ''],
         imgShow: ['', '', '', ''],
         start_date: "",
@@ -164,23 +165,23 @@ class AddTours extends Component {
 
     submitForm = async e => {
         e.preventDefault()
-        let { title, cost, destination, image, start_date, end_date, description } = this.state
-        const accountType = JSON.parse(localStorage.getItem('login_data')).type;
+        let { title, cost, quota, destination, image, start_date, end_date, description } = this.state
         image = image.filter(data => data !== '')
 
         let dataToSubmit = {
             title: title,
             cost: cost,
+            quota: quota,
+            quota_left: quota,
             destination: JSON.stringify(destination),
             image: image,
             description: description,
             start_date: start_date,
             end_date: end_date,
-            type: accountType,
         }
 
         const formData = serialize(dataToSubmit);
-        const sendForm = await this.props.add_tours(formData)        
+        const sendForm = await this.props.add_tours(formData)
 
         if (!sendForm.err) {
             this.props.history.push('/ads')
@@ -245,6 +246,10 @@ class AddTours extends Component {
                         <Item>
                             <p>Cost</p>
                             <input type="number" name="cost" value={this.state.cost} onChange={this.inputHandler} />
+                        </Item>
+                        <Item>
+                            <p>Quota</p>
+                            <input type="number" name="quota" value={this.state.quota} onChange={this.inputHandler} />
                         </Item>
                         <Item>
                             <p>Start & End date</p>

@@ -78,8 +78,7 @@ class GuidesAuth extends Component {
         const dataToSubmit = {
             username: username,
             email: email,
-            password: password,
-            account_types: 'user'
+            password: password
         }
 
         const req = await this.props.signUp(dataToSubmit)

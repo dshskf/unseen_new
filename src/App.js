@@ -52,7 +52,7 @@ class App extends React.Component {
       await this.props.checkToken(this.state.storage)
     }
 
-    if (this.props.user) {
+    if (this.props.user && storage) {
       let socket = io(API)
       socket.emit('join_room', {
         room_id: `${this.props.user.id}-${storage.type[0].toUpperCase()}`

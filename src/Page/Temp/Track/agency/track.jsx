@@ -15,22 +15,23 @@ import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 import { pullSocket } from '../../../../Redux/features/features.selector'
 
 import { storage } from '../../../../Constants/request'
+import { BiTargetLock } from 'react-icons/bi'
 
 import {
     Container,
-    MapBox
+    MapBox,
+    FocusBox
 } from './style'
 
 class TrackAgency extends Component {
     state = {
         zoom: null,
-        lat: null,
-        lng: null,
         center: null,
         change: false,
         user: null,
         opposite: null
     }
+
 
     refreshLocation = () => setInterval(() => {
         this.getPosition()
@@ -39,19 +40,36 @@ class TrackAgency extends Component {
     async componentDidMount() {
         const fetch = await this.props.get_user_location({
             booking_id: this.props.match.params.id,
-            receiver_type: storage.type
         })
 
         // Split user and opposite
-        const user_data = fetch.data.filter(data => data.type === storage.type[0].toUpperCase() ? data : null)[0]
-        const opposite_data = fetch.data.filter(data => data.type !== storage.type[0].toUpperCase() ? data : null)[0]
-
-        if (!this.state.change) {
-            this.getPosition()
+        const user_data = fetch.data.filter(data => {
+            if (data.type === storage.type[0].toUpperCase()) {
+                data.lat = data.lat ? data.lat : -6.200000
+                data.lng = data.lng ? data.lng : 106.816666
+                return data
+            }
+        })[0]
+        const opposite_data = fetch.data.filter(data => {
+            if (data.type !== storage.type[0].toUpperCase()) {
+                data.lat = data.lat ? data.lat : -6.200000
+                data.lng = data.lng ? data.lng : 106.816666
+                return data
+            }
+        })[0]
+        const coords = {
+            lat: user_data.lat,
+            lng: user_data.lng
         }
 
-        this.setState({ user: user_data, opposite: opposite_data })
-        this.refreshLocation()
+        this.setState({
+            user: user_data,
+            opposite: opposite_data,
+            center: coords,
+            zoom: 15,
+        })
+
+        this.refreshLocation() // start listener
 
         this.props.socket.on('new_location', data => {
             this.setState({
@@ -73,51 +91,45 @@ class TrackAgency extends Component {
     }
 
     currentPosition = async position => {
-        let map_position = null
         let new_location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
         }
+        let user = this.state.user
 
-        if (this.state.lat || this.state.change === false) {
-            // Update user location
-            if (this.state.change === false || this.state.lat.toString() !== position.coords.latitude.toString() || this.state.lng.toString() !== position.coords.longitude.toString()) {
-                map_position = this.calculateZoomLevel(position.coords)
+        if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {
+            this.props.socket.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
+            user.lat = new_location.lat
+            user.lng = new_location.lng
 
-                const update = await this.props.update_user_location({
-                    ...new_location,
-                    id: this.props.user.id,
-                    type: storage.type
-                })
-                if (update.err) {
-                    return
-                }
-            }
+            this.setState({
+                user: user
+            })
         }
+    }
 
-        if (this.state.opposite) {
-            map_position = this.calculateZoomLevel(position.coords)
-        }
+    errPosition = err => {
+        console.log(err)
+    }
 
-        if (!this.state.change) {
-            const center_position = this.calculateCenteredViewPosition(position.coords)
-            this.setState({ center: { lat: center_position.lat, lng: center_position.lng } })
-        }
-
-        this.props.socket.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
+    handleFocusLocation = () => {
+        const center_position = this.calculateCenteredViewPosition()
+        let zoom_level = this.calculateZoomLevel()
+        zoom_level = this.state.zoom === zoom_level + 0.001 ? zoom_level - 0.001 : zoom_level + 0.001
 
         this.setState({
-            ...new_location,
-            zoom: map_position,
-            change: true
+            center: center_position,
+            zoom: zoom_level,
         })
     }
 
-    calculateZoomLevel = (location_now) => {
-        // Get distance length between user and opposite                
-        const distance_lat = location_now.latitude - this.state.opposite.lat
-        const distance_lng = Math.abs(location_now.longitude) - Math.abs(this.state.opposite.lng)
+    calculateZoomLevel = () => {
+        let user = this.state.user
+        let opposite = this.state.opposite
 
+        // Get distance length between user and opposite                
+        const distance_lat = user.lat - opposite.lat
+        const distance_lng = Math.abs(user.lng) - Math.abs(opposite.lng)
         let calculatedDistance = Math.sqrt(Math.pow(distance_lng, 2) + Math.pow(distance_lat, 2))
 
         calculatedDistance = Math.round(
@@ -142,20 +154,28 @@ class TrackAgency extends Component {
         return { lat: center_lat, lng: center_lng }
     }
 
-    errPosition = err => {
-        console.log(err)
+    calculateCenteredViewPosition = () => {
+        let user = this.state.user
+        let opposite = this.state.opposite
+
+        const distance_lat = user.lat - opposite.lat
+        const distance_lng = Math.abs(user.lng) - Math.abs(opposite.lng)
+
+        // Calculate maps centered
+        const center_lat = ((distance_lat / 2) - user.lat) * -1
+        const center_lng = user.lng - (distance_lng / 2)
+
+        return { lat: center_lat, lng: center_lng }
     }
 
-    changeCoordinate = () => {
-        this.setState({ lat: this.state.lat + 0.0001 })
-    }
 
-    map() {
+    mapComponent() {
         return (
             <Map
                 google={this.props.google}
                 zoom={this.state.zoom}
-                initialCenter={{ lat: this.state.center.lat, lng: this.state.center.lng }}
+                initialCenter={this.state.center}
+                center={this.state.center}
                 style={{ width: "100%", height: "100%" }}
                 onClick={() => console.log(this.state)}
             >
@@ -163,11 +183,11 @@ class TrackAgency extends Component {
                     name={"You"}
                     title={"You"}
                     icon={{
-                        url: "https://pngimg.com/uploads/ferrari/ferrari_PNG10665.png",
+                        url: "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png",
                         anchor: new window.google.maps.Point(32, 32),
                         scaledSize: new window.google.maps.Size(20, 20)
                     }}
-                    position={{ lat: this.state.lat, lng: this.state.lng }}
+                    position={{ lat: this.state.user.lat, lng: this.state.user.lng }}
                 />
 
                 {
@@ -196,9 +216,13 @@ class TrackAgency extends Component {
                     </Header>
                     <Container>
                         <MapBox>
-                            {this.state.change ? this.map() : null}
+                            {this.state.center ? this.mapComponent() : null}
                         </MapBox>
-                        {/* <p onClick={this.calculateCenteredViewPosition}>Centered</p> */}
+
+                        <FocusBox onClick={this.handleFocusLocation}>
+                            <BiTargetLock color="white" size="20" />
+                            <p>Focus</p>
+                        </FocusBox>
                     </Container>
                 </Sub>
             </Body>

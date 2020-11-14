@@ -65,8 +65,7 @@ const ChatPage = props => {
 
         props.socket.on('msg_response', async data => {
             const d = new Date()
-            const dateNow = `T${d.getHours()}:${d.getMinutes()}`
-
+            const dateNow = `T${d.getHours()}:${d.getMinutes()}`            
             await req()
 
             if (data.sender_id.toString() === activeList.current.receiver.toString() && data.sender_type === activeList.current.type) {
@@ -79,7 +78,7 @@ const ChatPage = props => {
                     }
                 ])
 
-                if (isScroll.current) {
+                if (isScroll.current && messageEnd.current) {
                     messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
                 }
             }
@@ -93,23 +92,20 @@ const ChatPage = props => {
 
 
     const req = async () => {
-        let post = await props.chats_person_list({
-            id: props.user.id,
-            type: storage.type[0].toUpperCase(),
-        })
-
-        post.last_message.map((last_msg, i) => {
+        let get = await props.chats_person_list()
+        console.log(get)
+        get.last_message.map((last_msg, i) => {
             last_msg.content = checkMessageLength(last_msg.content)
 
             // set index
             last_msg.index = i
-            post.data[i].index = i
+            get.data[i].index = i
 
             return last_msg
         })
 
-        setLastMessage(post.last_message)
-        setFriendList(post.data)
+        setLastMessage(get.last_message)
+        setFriendList(get.data)
     }
 
     const checkMessageLength = msg => {

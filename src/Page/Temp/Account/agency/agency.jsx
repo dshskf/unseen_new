@@ -31,7 +31,7 @@ class AgencyAuth extends Component {
     }
 
     componentWillMount() {
-        if (this.props.isLogin) {                  
+        if (this.props.isLogin) {
             this.props.history.push('/')
         }
     }
@@ -59,7 +59,7 @@ class AgencyAuth extends Component {
             username: username,
             password: password,
             type: 'agency'
-        }        
+        }
 
         const req = await this.props.signIn({
             data: dataToSubmit
@@ -78,8 +78,7 @@ class AgencyAuth extends Component {
         const dataToSubmit = {
             username: username,
             email: email,
-            password: password,
-            account_types: 'user'
+            password: password
         }
 
         const req = await this.props.signUp(dataToSubmit)

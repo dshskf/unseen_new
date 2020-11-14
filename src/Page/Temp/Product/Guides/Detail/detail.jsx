@@ -1,239 +1,181 @@
-import React, { useEffect, useState } from 'react'
-import { createStructuredSelector } from 'reselect'
-import { connect } from 'react-redux';
-import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { createStructuredSelector } from "reselect";
+import { connect } from "react-redux";
+import { compose } from "redux";
+import { withRouter } from "react-router-dom";
 
 import ReactStars from "react-rating-stars-component";
-import Sidebar from '../../../../../Components/Sidebar/sidebar'
+import Sidebar from "../../../../../Components/Sidebar/sidebar";
 
-import { get_tours_guides_detail, post_user_request } from '../../../../../Redux/tours/tours.action'
-import { chats_send_message } from '../../../../../Redux/features/features.action'
+import {
+    get_tours_guides_detail,
+    post_user_request,
+} from "../../../../../Redux/tours/tours.action";
+import { chats_send_message } from "../../../../../Redux/features/features.action";
 
-import { pullToken, pullUserData } from '../../../../../Redux/auth/auth.selector'
-import { getImg } from '../../../../../Constants/get-img'
+import {
+    pullToken,
+    pullUserData,
+} from "../../../../../Redux/auth/auth.selector";
+import { getImg } from "../../../../../Constants/get-img";
 
-import { FiGitPullRequest } from 'react-icons/fi'
-import { BsChatDots } from 'react-icons/bs'
-import { AiOutlineSend } from 'react-icons/ai'
+import { FiGitPullRequest } from "react-icons/fi";
+import { BsChatDots } from "react-icons/bs";
+import { AiOutlineSend } from "react-icons/ai";
 
-import { Body, Sub, Header } from '../../../style.route'
+import { Body, Sub, Header } from "../../../style.route";
 
 import {
     Container,
-    Title,
-    Detail,
-    Left,
-    Right,
-    ProductTitle,
-    ProductGuide,
-    GuideImages,
-    GuideData,
-    ProductPrice,
-    ProductAction,
-    ActionItem,
+    Headers,
+    Background,
+    Logo,
+    Profile,
+    AvatarBox,
+    Avatar,
+    NameBox,
+    ActionBox,
+    ActionButton,
+    Details,
     Description,
-    Review,
+    Splitter,
+    Information,
+    InformationItem,
+    Photo,
+    PhotoAction,
+    PhotoBox,
+    PhotoCard,
+    ReviewBox,
+    SkillBox,
+    Skill,
+    CommentsBox,
     Comments,
-    CommentsProfile,
-    ProfileImage,
-    ProfileData,
-    Text,
-    Modal,
-    ModalBox,
-    ModalTitle,
-    ModalInput,
-    ModalButton
-} from './style'
+    C_Header,
+    Message,
+} from "./style";
 
-const GuidesToursDetail = props => {
-    const [data, setData] = useState(null)
-    const [comment, setComment] = useState(null)
-    const [openModal, setOpenModal] = useState(false)
+const GuidesToursDetail = (props) => {
+    const InfoData = [
+        {
+            label: 'Type',
+            value: 'Europe'
+        },
+        {
+            label: 'Gender',
+            value: 'Male'
+        },
+        {
+            label: 'Phone',
+            value: '0821-xxxx-xxxx'
+        },
+        {
+            label: 'Age',
+            value: '19'
+        },
+        {
+            label: 'Email',
+            value: 'elon@gmail.com'
+        },
+        {
+            label: 'Status',
+            value: 'On'
+        },
 
-    const [input, setInput] = useState({
-        reason: "",
-        price: ""
-    })
-
-    const api = 'http://localhost:1234/'
-
-    const inputHandler = e => {
-        const { name, value } = e.target
-        setInput({ ...input, [name]: value })
-    }
-
-    useEffect(() => {
-        const req = async () => {
-            const post = await props.get_tours_guides_detail({
-                id: props.match.params.toursId
-            })
-            
-            setComment(post.comment)
-            setData(post.tours[0])
-        }
-        req()
-    }, [])
-
-    const sendRequest = async () => {
-        const dataToSubmit = {
-            tours_id: data.id,
-            sender_id: props.user.id,
-            receiver_id: data.agencyId,
-            reason: input.reason,
-            offers_price: input.price,
-            start_date: data.start_date,
-            end_date: data.end_date,
-            is_approve: 0,
-            is_paying: 0,
-            is_active: 0,
-            receiver_type: 'A',
-            sender_type: 'U'
-        }
-        console.log(dataToSubmit)
-
-        const post = await props.post_user_request({
-            form: dataToSubmit,
-            token: props.token
-        })
-
-    }
-
+    ]
     return (
-        <Body>
-            <Sidebar page="home" />
+        <Container>
+            <Headers>
+                <Background>
+                    <img src="https://www.worldforestry.org/wp-content/uploads/2020/02/dan-otis-OYFHT4X5isg-unsplash-scaled.jpg" />
+                    <Logo>Unseen</Logo>
+                </Background>
+                <Profile>
+                    <AvatarBox>
+                        <Avatar>
+                            <img src="https://i.imgur.com/BHPUd0d.jpg" />
+                            <NameBox>
+                                <p>Elon Musk</p>
+                                <p>UK, London</p>
+                            </NameBox>
+                        </Avatar>
+                    </AvatarBox>
+                    <ActionBox>
+                        <ActionButton>
+                            <button>Request</button>{" "}
+                        </ActionButton>
+                        <ActionButton>
+                            <button>Chats</button>
+                        </ActionButton>
+                    </ActionBox>
+                </Profile>
+            </Headers>
+            <Photo>
+                <PhotoAction>&lt;</PhotoAction>
+                <PhotoBox>
+                    <PhotoCard>
+                        <img src="https://i.pinimg.com/originals/bf/82/f6/bf82f6956a32819af48c2572243e8286.jpg" />
+                    </PhotoCard>
+                </PhotoBox>
+                <PhotoAction>&gt;</PhotoAction>
+            </Photo>
+            <Details>
+                <Description>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                    minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Duis aute irure dolor in
+                    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                    culpa qui officia deserunt mollit anim id est laborum...
+        </Description>
+                <Splitter>
+                    <div></div>
+                </Splitter>
+                <Information>
+                    {
+                        InfoData.map(info => (
+                            <InformationItem>
+                                <p>{info.label}</p>
+                                <p>{info.value}</p>
+                            </InformationItem>
+                        ))
+                    }
+                </Information>
+            </Details>
+            <ReviewBox>
+                <SkillBox>
+                    <Skill></Skill>
+                </SkillBox>                
+                <CommentsBox>
+                    <PhotoAction>&lt;</PhotoAction>
+                    <Comments>
+                        <C_Header>
+                            <img src="https://cdn.vox-cdn.com/thumbor/4rDBWtnZ7FDBL4fHNL-sLTAV8_k=/0x0:2040x1360/1200x800/filters:focal(857x517:1183x843)/cdn.vox-cdn.com/uploads/chorus_image/image/67108186/elon_musk_tesla_3036.0.jpg" />
+                            <p>Elon musk</p>
+                        </C_Header>
+                        <Message>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                            ad minim veniam</Message>
+                    </Comments>
+                    <PhotoAction>&gt;</PhotoAction>
+                </CommentsBox>
 
-            <Sub>
-                <Header>
-                    <img src={getImg("Account", "logo.png")} alt="" />
-                    <h1>UNSEEN</h1>
-                </Header>
-                {
-                    data ?
-                        <Container>
-                            <Modal isOpen={openModal}>
-                                <ModalBox>
-                                    <ModalTitle>
-                                        <p>Request</p>
-                                    </ModalTitle>
-                                    <ModalInput>
-                                        <input type="text" name='reason' value={input.reason} placeholder="Reason" onChange={inputHandler} />
-                                        <input type="number" name='price' value={input.price} placeholder="Your offers" onChange={inputHandler} />
-                                    </ModalInput>
-                                    <ModalButton>
-                                        <input type="submit" value="X" onClick={() => setOpenModal(false)} />
-                                        <AiOutlineSend style={{
-                                            color: 'white',
-                                            background: '#00a7ff',
-                                            height: '2rem',
-                                            width: '3rem'
-                                        }}
-                                            onClick={sendRequest}
-                                        />
-                                    </ModalButton>
-                                </ModalBox>
-                            </Modal>
-                            < Title >
-                                <h1>{data.title}</h1>
-                            </Title >
-                            <Detail>
-                                <Left>
-                                    {/* <img src={api + data.image[0].replace('\\', '/')} alt="" /> */}
-                                    <img src={data.image[0]} alt="" />
-                                </Left>
-                                <Right>
-                                    <ProductTitle>
-                                        <h1>{data.title}</h1>
-                                        <p>{data.destination}</p>
-                                    </ProductTitle>
-                                    <ProductGuide>
-                                        <GuideImages>
-                                            <img src={data.agency_images} alt="" />
-                                        </GuideImages>
-                                        <GuideData>
-                                            <h2>Guided By:</h2>
-                                            <p>{data.username}</p>
-                                            <p>{data.start_date.split('T')[0] + "-" + data.end_date.split('T')[0]}</p>
-                                        </GuideData>
-                                    </ProductGuide>
-                                    <ProductPrice>
-                                        <h2>${data.cost}</h2>
-                                    </ProductPrice>
-                                    <ProductAction>
-                                        <ActionItem>
-                                            <BsChatDots />
-                                            <p> Chats</p>
-                                        </ActionItem>
-                                        <ActionItem onClick={() => setOpenModal(true)}>
-                                            <FiGitPullRequest />
-                                            <p> Request</p>
-                                        </ActionItem>
-                                    </ProductAction>
-                                </Right>
-                            </Detail>
-                            <Description>
-                                <p>{data.description}</p>
-                            </Description>
-                            {/* <Review>
-                                <h1>Ulasan({comment.length})</h1>
-                                {
-                                    comment.length > 0 ?
-                                        comment.map((c, i) => (
-                                            <Comments>
-                                                <CommentsProfile>
-                                                    <ProfileImage>
-                                                        <img src={c.image ? api + data.image[0].replace('\\', '/') : getImg('Account', 'guest.png')} />
-                                                    </ProfileImage>
-                                                    <ProfileData>
-                                                        <p>{c.username}</p>
-                                                        <ReactStars
-                                                            count={5}
-                                                            // onChange={ratingChanged}
-                                                            value={c.rating ? c.rating : 0}
-                                                            edit={false}
-                                                            size={24}
-                                                            isHalf={true}
-                                                            emptyIcon={<i className="far fa-star"></i>}
-                                                            halfIcon={<i className="fa fa-star-half-alt"></i>}
-                                                            fullIcon={<i className="fa fa-star"></i>}
-                                                            activeColor="#ffd700"
-                                                            style={{
-                                                                margin: 0,
-                                                                marginBottom: '4px'
-                                                            }}
-                                                        />
-                                                    </ProfileData>
-                                                </CommentsProfile>
-                                                <Text>
-                                                    <p>Yeah that's a nice trip bro, hope we weill meet again soon!!! yeahhh....</p>
-                                                </Text>
-                                            </Comments>
-                                        ))
-                                        :
-                                        null
-                                }
-
-                            </Review> */}
-                        </Container >
-                        :
-                        null
-                }
-            </Sub>
-        </Body>
-    )
-}
-
+            </ReviewBox>
+        </Container>
+    );
+};
 
 const mapStateToProps = createStructuredSelector({
     token: pullToken,
-    user: pullUserData
-})
+    user: pullUserData,
+});
 
 const mapDispatchToProps = (dispatch) => ({
-    get_tours_guides_detail: data => dispatch(get_tours_guides_detail(data)),
-    chats_send_message: data => dispatch(chats_send_message(data)),
-    post_user_request: data => dispatch(post_user_request(data))
-})
+    get_tours_guides_detail: (data) => dispatch(get_tours_guides_detail(data)),
+    chats_send_message: (data) => dispatch(chats_send_message(data)),
+    post_user_request: (data) => dispatch(post_user_request(data)),
+});
 
 export default compose(
     withRouter,
