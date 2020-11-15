@@ -197,6 +197,7 @@ class AddTours extends Component {
                         name="countries"
                         handler={this.handleChangeSelect}
                         option={this.state.countries && this.state.countries}
+                        default="Select Country"
                     />
                 </Item>
                 <Item isSelect={true}>
@@ -205,6 +206,7 @@ class AddTours extends Component {
                         name="states"
                         handler={this.handleChangeSelect}
                         option={this.state.states && this.state.states}
+                        default="Select State"
                     />
                 </Item>
                 <Item isSelect={true}>
@@ -213,6 +215,7 @@ class AddTours extends Component {
                         name="cities"
                         handler={this.handleChangeSelect}
                         option={this.state.cities && this.state.cities}
+                        default="Select City"
                     />
                 </Item>
                 <Item>
@@ -235,7 +238,7 @@ class AddTours extends Component {
                     <Modal
                         element={this.optionElement}
                         isOpen={this.state.isModalOpen}
-                        handleClose={this.handleOpenModal}
+                        handleClose={this.clearModalState}
                         action={this.handleAddDestination}
                     />
                     <Left>

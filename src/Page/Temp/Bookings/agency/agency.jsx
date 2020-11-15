@@ -18,6 +18,8 @@ import { storage } from '../../../../Constants/request'
 
 import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
 import { GiSandsOfTime } from 'react-icons/gi'
+import { useAlert } from "react-alert";
+
 
 import {
     Container,
@@ -31,36 +33,47 @@ import {
 } from './style'
 
 const AgencyBookingDashboard = props => {
-    const header = ['Seller', 'Product', 'Price', 'Start Date', 'Confirmation', 'Status']
+    const header = ['No.', 'Username', 'Tours', 'Price', 'Start Date', 'Confirmation', 'Status']
     const [data, setData] = useState('')
     const [refetch, setRefetch] = useState(false)
-    const [tab, setTab] = useState('A')
+    const alert = useAlert()
 
     useEffect(() => {
         const req = async () => {
             const get = await props.get_booking_agency({
-                action: 'sender_id',
-                token: storage.token
+                action: 'sender_id'
             })
-            console.log(get)
+            console.log(get.data)
             setData(get.data)
         }
         req()
     }, [])
 
-    const updateHandler = async (e, index) => {
-        const { id } = e.currentTarget
+    const updateHandler = async (id) => {
+        let booking_tours_name, index
+
+        let new_data = data.map((booking, i) => {
+            if (booking.id === id) {
+                booking.is_active = true
+                booking_tours_name = booking.ads_title
+                index = i
+                return booking
+            }
+            return booking
+        })
 
         const dataToSubmit = {
-            request_id: id,
+            booking_id: id,
             action: 'update'
         }
 
-        const post = await props.update_booking_agency({
-            form: dataToSubmit,
-            token: storage.token
-        })
+        const post = await props.update_booking_agency({ form: dataToSubmit })
 
+        if (!post.err) {
+            alert.success(`Sucessfully update ${booking_tours_name}!`)
+        } else {
+            alert.error(post.err)
+        }
 
         const msgData = {
             sender_id: props.user.id,
@@ -68,6 +81,7 @@ const AgencyBookingDashboard = props => {
             content: `Cool! now you can go to payment process!`,
             notification: data[index].tours_id
         }
+        console.log(msgData)
 
         // const send = await props.chats_send_message({
         //     form: msgData,
@@ -77,19 +91,42 @@ const AgencyBookingDashboard = props => {
         // if (!post.err) {
         //     setRefetch(!refetch)
         // }
+
+        setData(new_data)
     }
 
-    const deleteHandler = async (e, index) => {
-        const { id, name } = e.currentTarget
+    const deleteHandler = async (id) => {
+        let booking_tours_name, index
+
+        let new_data = data.map((booking, i) => {
+            if (booking.id === id) {
+                booking_tours_name = booking.ads_title
+                index = i
+                return null
+            }
+            return booking
+        }).filter(res => res !== null)
 
         const dataToSubmit = {
-            request_id: id,
+            booking_id: id,
             action: 'delete'
         }
-        const post = await props.update_booking_agency({
-            form: dataToSubmit,
-            token: storage.token
-        })
+
+        const post = await props.update_booking_agency({ form: dataToSubmit })
+
+
+        if (!post.err) {
+            alert.success(`Sucessfully reject ${booking_tours_name}!`)
+        } else {
+            alert.error(post.err)
+        }
+
+        const msgData = {
+            sender_id: props.user.id,
+            receiver_id: data[index].receiver_id,
+            content: `Cool! now you can go to payment process!`,
+            notification: data[index].tours_id
+        }
 
         // const msgData = {
         //     sender_id: props.user.id,
@@ -107,6 +144,7 @@ const AgencyBookingDashboard = props => {
         //     setRefetch(!refetch)
         // }
 
+        setData(new_data)
     }
 
     const styles = {
@@ -121,7 +159,6 @@ const AgencyBookingDashboard = props => {
                 <Header>
                     <img src={getImg("Account", "logo.png")} />
                     <h1>UNSEEN</h1>
-                    <h1>CHANGE</h1>
                 </Header>
                 <Container>
                     <Table>
@@ -140,9 +177,10 @@ const AgencyBookingDashboard = props => {
                                 data.map((data, index) => (
                                     <Row key={data.id}>
                                         <Content>
-                                            <p>{
-                                                tab === 'A' ? data.user_username : data.guides.username
-                                            }</p>
+                                            <p>{index + 1}</p>
+                                        </Content>
+                                        <Content>
+                                            <p>{data.user_username}</p>
                                         </Content>
                                         <Content>
                                             <p>{data.ads_title}</p>
@@ -159,16 +197,14 @@ const AgencyBookingDashboard = props => {
                                                     (data.is_payed && !data.is_active) &&
                                                     <React.Fragment>
                                                         <input
-                                                            id={data.id}
                                                             type="submit"
                                                             value="O"
-                                                            onClick={e => updateHandler(e, index)}
+                                                            onClick={() => updateHandler(data.id)}
                                                         />
                                                         <input
-                                                            id={data.id}
                                                             type="submit"
                                                             value="X"
-                                                            onClick={e => deleteHandler(e, index)}
+                                                            onClick={() => deleteHandler(data.id)}
                                                         />
                                                     </React.Fragment>
 

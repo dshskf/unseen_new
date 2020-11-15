@@ -17,7 +17,7 @@ import { storage } from '../../../../Constants/request'
 
 import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
 import { GiSandsOfTime } from 'react-icons/gi'
-
+import { useAlert } from "react-alert";
 
 import {
     Container,
@@ -31,32 +31,45 @@ import {
 } from './style'
 
 const UserBookingDashboard = props => {
-    const header = ['Seller', 'Product', 'Price', 'Start Date', 'Confirmation', 'Status']
+    const header = ['No.', 'Agency', 'Tours', 'Price', 'Start Date', 'Confirmation', 'Status']
     const [data, setData] = useState('')
     const [refetch, setRefetch] = useState(false)
-    const [tab, setTab] = useState('A')
+    const alert = useAlert()
 
     useEffect(() => {
         const req = async () => {
-            const get = await props.get_booking_user()
-            console.log(get.data)
+            const get = await props.get_booking_user()            
             setData(get.data)
         }
         req()
     }, [])
 
-    const updateHandler = async (id, index, tours_id) => {
+    const updateHandler = async (id, tours_id) => {
+        let booking_tours_name, index
+
+        let new_data = data.map((booking, i) => {
+            if (booking.id === id) {
+                booking.is_payed = true
+                booking_tours_name = booking.ads_title
+                index = i
+                return booking
+            }
+            return booking
+        })
 
         const dataToSubmit = {
-            request_id: id,
+            booking_id: id,
             tours_id: tours_id,
             action: 'update'
         }
 
-        const post = await props.update_booking_user({
-            form: dataToSubmit,
-            token: storage.token
-        })
+        // const post = await props.update_booking_user({ form: dataToSubmit })
+
+        // if (!post.err) {
+        //     alert.success(`Sucessfully update ${booking_tours_name}!`)
+        // } else {
+        //     alert.error(post.err)
+        // }
 
         const msgData = {
             sender_id: props.user.id,
@@ -64,6 +77,7 @@ const UserBookingDashboard = props => {
             content: `Cool! now you can go to payment process!`,
             notification: data[index].tours_id
         }
+        console.log(msgData)
 
         // const send = await props.chats_send_message({
         //     form: msgData,
@@ -73,18 +87,32 @@ const UserBookingDashboard = props => {
         // if (!post.err) {
         //     setRefetch(!refetch)
         // }
+        setData(new_data)
     }
 
-    const deleteHandler = async (id, index) => {
+    const deleteHandler = async (id) => {
+        let booking_tours_name, index
+
+        let new_data = data.map((booking, i) => {
+            if (booking.id === id) {
+                booking_tours_name = booking.ads_title
+                index = i
+                return null
+            }
+            return booking
+        }).filter(res => res !== null)
 
         const dataToSubmit = {
-            request_id: id,
+            booking_id: id,
             action: 'delete'
         }
-        const post = await props.update_booking_user({
-            form: dataToSubmit,
-            token: storage.token
-        })
+        const post = await props.update_booking_user({ form: dataToSubmit })
+
+        if (!post.err) {
+            alert.success(`Sucessfully Reject ${booking_tours_name}!`)
+        } else {
+            alert.error(post.err)
+        }
 
         const msgData = {
             sender_id: props.user.id,
@@ -101,7 +129,7 @@ const UserBookingDashboard = props => {
         // if (!post.err) {
         //     setRefetch(!refetch)
         // }
-
+        setData(new_data)
     }
 
     const styles = {
@@ -135,9 +163,10 @@ const UserBookingDashboard = props => {
                                 data.map((data, index) => (
                                     <Row key={data.id}>
                                         <Content>
-                                            <p>{
-                                                tab === 'A' ? data.agency_username : data.guides.username
-                                            }</p>
+                                            <p>{index + 1}</p>
+                                        </Content>
+                                        <Content>
+                                            <p>{data.agency_username}</p>
                                         </Content>
                                         <Content>
                                             <p>{data.ads_title}</p>
@@ -156,12 +185,12 @@ const UserBookingDashboard = props => {
                                                         <input
                                                             type="submit"
                                                             value="O"
-                                                            onClick={e => updateHandler(data.id, index, data.tours_id)}
+                                                            onClick={e => updateHandler(data.id, data.tours_id)}
                                                         />
                                                         <input
                                                             type="submit"
                                                             value="X"
-                                                            onClick={() => deleteHandler(data.id, index)}
+                                                            onClick={() => deleteHandler(data.id)}
                                                         />
                                                     </React.Fragment>
 

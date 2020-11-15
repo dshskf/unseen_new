@@ -57,7 +57,7 @@ const EditUserProfile = props => {
             // user.image = user.image ? user.image.replace('\\', '/') : null            
 
             let location = await props.get_location_data({ action: "countries" })
-            let location_data = { ...location, country: location.data }            
+            let location_data = { ...location, country: location.data }
 
             // if user already fill location
             if (user.country_id) {
@@ -202,7 +202,7 @@ const EditUserProfile = props => {
                                 <InputBox>
                                     <label>Country</label>
                                     <select name="country" onChange={locationHandler}>
-                                    <option value="" disabled selected>Select your country</option>
+                                        <option value="" disabled selected>Select your country</option>
                                         {
                                             location.country && location.country.map((data, index) => {
                                                 if (data.val === location.country_id) {

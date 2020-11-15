@@ -71,7 +71,7 @@ class TrackUsers extends Component {
 
         this.refreshLocation() // start listener
 
-        this.props.socket.on('new_location', data => {            
+        this.props.socket.on('new_location', data => {
             this.setState({
                 opposite: {
                     ...this.state.opposite,
@@ -80,6 +80,10 @@ class TrackUsers extends Component {
                 }
             })
         })
+    }
+
+    async componentWillUnmount() {
+        await this.props.update_user_location({ lat: this.state.user.lat, lng: this.state.user.lng })
     }
 
     getPosition = () => {
@@ -212,7 +216,7 @@ class TrackUsers extends Component {
                         <FocusBox onClick={this.handleFocusLocation}>
                             <BiTargetLock color="white" size="20" />
                             <p>Focus</p>
-                        </FocusBox>                        
+                        </FocusBox>
                     </Container>
                 </Sub>
             </Body>

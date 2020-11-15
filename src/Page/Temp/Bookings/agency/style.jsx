@@ -48,35 +48,39 @@ export const Content = styled.div`
   margin: 0;
   color: #5f5f5f;
   margin: 5px 0;
-  cursor: cell;
+  
   ${(props) => (props.isHeader ? header : null)};
 
   ${(props) => (props.isReason ? reason : null)};
 
   :nth-child(1) {
-    width: 15%;
+    width: 5%;
   }
 
   :nth-child(2) {
-    width: 20%;
+    width: 15%;
   }
 
   :nth-child(3) {
+    width: 20%;
+  }
+
+  :nth-child(4) {
     width: 10%;
     font-weight: bold;
   }
 
-  :nth-child(4) {
-    width: 24%;
-  }
-
   :nth-child(5) {
-    width: 15%;
+    width: 20%;
   }
 
   :nth-child(6) {
-    width: 15%;    
-  }  
+    width: 15%;
+  }
+
+  :nth-child(7) {
+    width: 15%;
+  }
 `;
 
 export const ActionBox = styled.div`
@@ -125,7 +129,6 @@ const onActive = css`
   cursor: pointer;
 `;
 
-
 export const StatusBox = styled.div`
   background: #d1d1d1;
   height: 2rem;
@@ -139,7 +142,7 @@ export const StatusBox = styled.div`
 
   p {
     margin: 0;
-    margin-left:6px;
+    margin-left: 6px;
   }
 `;
 

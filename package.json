@@ -16,6 +16,8 @@
     "moment": "^2.27.0",
     "object-to-formdata": "^4.0.1",
     "react": "^16.13.1",
+    "react-alert": "^7.0.2",
+    "react-alert-template-basic": "^1.0.0",
     "react-bootstrap-daterangepicker": "^6.0.0",
     "react-date-range": "^1.0.3",
     "react-dom": "^16.13.1",

@@ -82,6 +82,10 @@ class TrackAgency extends Component {
         })
     }
 
+    async componentWillUnmount() {
+        await this.props.update_user_location({ lat: this.state.user.lat, lng: this.state.user.lng })
+    }
+
     getPosition = () => {
         navigator.geolocation.getCurrentPosition(this.currentPosition, this.errPosition, {
             enableHighAccuracy: true,
@@ -101,6 +105,8 @@ class TrackAgency extends Component {
             this.props.socket.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
             user.lat = new_location.lat
             user.lng = new_location.lng
+
+            const post = await this.props.update_user_location({ ...new_location })
 
             this.setState({
                 user: user

@@ -3,18 +3,20 @@ import { Container } from './style'
 
 const Select = (props) => {
     return (
-        <Container name={props.name} onChange={props.handler}>
+        <Container name={props.name} onChange={props.handler} disabled={props.option === null}>
+            <option selected={true}>{props.default}</option>
             {
-                props.option ? props.option.map((opt, i) => (
-                    <option
-                        key={i}
-                        value={opt.val}
-                    >
-                        {opt.label}
-                    </option>
-                ))
+                props.option ?
+                    props.option.map((opt, i) => (
+                        <option
+                            key={i}
+                            value={opt.val}
+                        >
+                            {opt.label}
+                        </option>
+                    ))
                     :
-                    <option selected={true} disabled={true}>No data found!</option>
+                    <option selected={true} disabled={true}></option>
             }
         </Container>
     )
