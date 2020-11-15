@@ -26,9 +26,11 @@ import {
     ChatTitle,
     Box,
     BoxRight,
+    ToursBox,
+    ToursDetail,
     LeftText,
     RightText,
-    Text,
+    MessageBox,
     InputBox
 } from './style'
 
@@ -65,7 +67,7 @@ const ChatPage = props => {
 
         props.socket.on('msg_response', async data => {
             const d = new Date()
-            const dateNow = `T${d.getHours()}:${d.getMinutes()}`            
+            const dateNow = `T${d.getHours()}:${d.getMinutes()}`
             await req()
 
             if (data.sender_id.toString() === activeList.current.receiver.toString() && data.sender_type === activeList.current.type) {
@@ -93,7 +95,6 @@ const ChatPage = props => {
 
     const req = async () => {
         let get = await props.chats_person_list()
-        console.log(get)
         get.last_message.map((last_msg, i) => {
             last_msg.content = checkMessageLength(last_msg.content)
 
@@ -118,15 +119,15 @@ const ChatPage = props => {
 
         const receiver_id = filterFriends.id
         const receiver_type = filterFriends.type
-
+        const tours_type = storage.type[0].toUpperCase() === 'U' ? receiver_type : storage.type[0].toUpperCase()
 
         const dataToSubmit = {
             sender_id: props.user.id,
             sender_type: storage.type[0].toUpperCase(),
             receiver_id: receiver_id,
             receiver_type: receiver_type,
+            tours_type: tours_type
         }
-
         const req = await props.chats_fetch_message(dataToSubmit)
 
         const active_data = {
@@ -232,8 +233,8 @@ const ChatPage = props => {
                             {
                                 message ?
                                     message.map((data, index) => {
-                                        let img = data.notification ?
-                                            API + data.prod_data.image[0].replace('\\', '/')
+                                        let img = data.tours_id ?
+                                            API + data.tours_image[0].replace('\\', '/')
                                             :
                                             null
                                         const date = data.createdAt.split('T')[1].substring(0, 5)
@@ -242,22 +243,40 @@ const ChatPage = props => {
                                             data.sender_id.toString() === userData.sender_id.toString() && data.sender_type !== userData.receiver_type ?
                                                 <BoxRight key={index} ref={index === message.length - 1 ? messageEnd : null}>
                                                     <RightText>
-                                                        <Text isRight={true} length={data.content}>
+                                                        <MessageBox isRight={true} length={data.content}>
+                                                            {
+                                                                data.tours_id && <ToursBox>
+                                                                    <img src={img} />
+                                                                    <ToursDetail>
+                                                                        <p>{data.tours_title}</p>
+                                                                        <p>${data.tours_cost}</p>
+                                                                    </ToursDetail>
+                                                                </ToursBox>
+                                                            }
                                                             <p>{data.content}</p>
                                                             <span>{date} pm</span>
-                                                        </Text>
-
+                                                        </MessageBox>
                                                         <img src={userData.friend_image ? API + userData.friend_image : getImg("Account", "guest.png")} />
                                                     </RightText>
                                                 </BoxRight>
                                                 :
+
                                                 <LeftText key={index} ref={index === message.length - 1 ? messageEnd : null}>
                                                     <img src={userData.user_image ? API + userData.user_image : getImg("Account", "guest.png")} />
-                                                    <Text length={data.content}>
+                                                    <MessageBox length={data.content}>
+                                                        {
+                                                            data.tours_id && <ToursBox>
+                                                                <img src={img} />
+                                                                <ToursDetail>
+                                                                    <p>{data.tours_title}</p>
+                                                                    <p>${data.tours_cost}</p>
+                                                                </ToursDetail>
+                                                            </ToursBox>
+                                                        }
+
                                                         <p>{data.content}</p>
                                                         <span>{date} pm</span>
-                                                    </Text>
-
+                                                    </MessageBox>
                                                 </LeftText>
                                         )
                                     })

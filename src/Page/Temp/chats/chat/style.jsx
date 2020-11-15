@@ -98,18 +98,18 @@ export const FriendTitle = styled.div`
 export const FriendData = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;    
+  justify-content: center;
   height: 100%;
 
   p {
     margin: 0;
 
     :nth-child(1) {
-      text-transform: capitalize;      
+      text-transform: capitalize;
     }
     :nth-child(2) {
-      font-size:0.7rem;
-      color:gray;
+      font-size: 0.7rem;
+      color: gray;
     }
   }
 `;
@@ -194,6 +194,11 @@ const defaultMsg = css`
   }
 `;
 
+export const ChatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 export const BoxRight = styled.div`
   display: flex;
   flex-direction: column;
@@ -203,7 +208,7 @@ export const BoxRight = styled.div`
 
 export const LeftText = styled.div`
   ${defaultMsg};
-  max-width: 50%;
+  max-width: 70%;
 `;
 
 export const RightText = styled.div`
@@ -211,7 +216,7 @@ export const RightText = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-right: 2rem;
-  max-width: 50%;
+  max-width: 70%;
 
   span {
     left: 5%;
@@ -224,7 +229,35 @@ const rightTxt = css`
   background: white;
 `;
 
-export const Text = styled.div`
+export const ToursBox = styled.div`
+  display: flex;
+  width: 100%;
+  height: 5rem;  
+  align-items: center;
+  border-bottom: 1px solid gray;
+
+  img {
+    width: 3rem;
+    height: 3rem;
+  }
+`;
+
+export const ToursDetail = styled.div`
+  margin-left: 1rem;
+
+  * {
+    margin: 0;
+  }
+
+  p:nth-child(1) {
+    font-weight: bold;
+  }
+  p:nth-child(2) {
+    color: grey;
+  }
+`;
+
+export const MessageBox = styled.div`
   background: #2e3746;
   border-radius: 20px;
   display: flex;
@@ -233,7 +266,7 @@ export const Text = styled.div`
   justify-content: flex-start;
   margin-left: 10px;
   align-items: center;
-  padding: 0 10px;
+  padding: 8px 1rem;
   color: white;
   position: relative;
   min-width: 3rem;

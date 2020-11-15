@@ -4,11 +4,11 @@ export const Container = styled.div`
   margin-top: 4rem;
   width: 100%;
   text-transform: capitalize;
-  margin-bottom:3rem;  
+  margin-bottom: 3rem;
 `;
 
 export const Product = styled.div`
-  width: 95%;
+  width: 100%;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -20,9 +20,10 @@ export const Cards = styled.div`
   margin: 14px 1.2rem;
   overflow: hidden;
   display: flex;
-  border: 1px solid rgba(0,0,0,0.3);
-  transition: all 0.5s;  
-  background:white;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  transition: all 0.5s;
+  background: white;
+  box-shadow: 2px -2px 8px rgba(0,0,0,0.2);
 
   &:hover {
     transform: scale(1.02);

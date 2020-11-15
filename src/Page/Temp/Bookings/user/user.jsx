@@ -32,30 +32,20 @@ import {
 
 const UserBookingDashboard = props => {
     const header = ['No.', 'Agency', 'Tours', 'Price', 'Start Date', 'Confirmation', 'Status']
-    const [data, setData] = useState('')
-    const [refetch, setRefetch] = useState(false)
+    const [data, setData] = useState('')    
     const alert = useAlert()
 
     useEffect(() => {
         const req = async () => {
-            const get = await props.get_booking_user()            
+            const get = await props.get_booking_user()
             setData(get.data)
         }
         req()
     }, [])
 
-    const updateHandler = async (id, tours_id) => {
-        let booking_tours_name, index
-
-        let new_data = data.map((booking, i) => {
-            if (booking.id === id) {
-                booking.is_payed = true
-                booking_tours_name = booking.ads_title
-                index = i
-                return booking
-            }
-            return booking
-        })
+    const updateHandler = async (id, tours_id, index) => {
+        let new_data = data[index]
+        new_data.is_payed = true
 
         const dataToSubmit = {
             booking_id: id,
@@ -63,44 +53,33 @@ const UserBookingDashboard = props => {
             action: 'update'
         }
 
-        // const post = await props.update_booking_user({ form: dataToSubmit })
+        const post = await props.update_booking_user({ form: dataToSubmit })
 
-        // if (!post.err) {
-        //     alert.success(`Sucessfully update ${booking_tours_name}!`)
-        // } else {
-        //     alert.error(post.err)
-        // }
+        if (!post.err) {
+            alert.success(`Sucessfully update ${new_data.ads_title}!`)
+        } else {
+            new_data.is_payed = false
+            alert.error(post.err)
+        }
 
         const msgData = {
-            sender_id: props.user.id,
-            receiver_id: data[index].receiver_id,
-            content: `Cool! now you can go to payment process!`,
-            notification: data[index].tours_id
+            receiver_id: new_data.receiver_id,
+            receiver_type: 'A',
+            content: `${new_data.user_username} has been paid for ${new_data.ads_title} tours!`,
+            tours_id: new_data.tours_id,
+            tours_type: 'A'
         }
-        console.log(msgData)
 
-        // const send = await props.chats_send_message({
-        //     form: msgData,
-        //     token: storage.token
-        // })
+        await props.chats_send_message({ ...msgData })
 
-        // if (!post.err) {
-        //     setRefetch(!refetch)
-        // }
-        setData(new_data)
+        let update = data.map(d => d)
+        update[index] = new_data
+        setData(update)
     }
 
-    const deleteHandler = async (id) => {
-        let booking_tours_name, index
-
-        let new_data = data.map((booking, i) => {
-            if (booking.id === id) {
-                booking_tours_name = booking.ads_title
-                index = i
-                return null
-            }
-            return booking
-        }).filter(res => res !== null)
+    const deleteHandler = async (id, index) => {
+        let new_data = data[index]
+        let filtered_data = data.filter(booking => booking.id !== id)
 
         const dataToSubmit = {
             booking_id: id,
@@ -109,27 +88,11 @@ const UserBookingDashboard = props => {
         const post = await props.update_booking_user({ form: dataToSubmit })
 
         if (!post.err) {
-            alert.success(`Sucessfully Reject ${booking_tours_name}!`)
+            alert.success(`Sucessfully Reject ${new_data.ads_title}!`)
         } else {
             alert.error(post.err)
         }
-
-        const msgData = {
-            sender_id: props.user.id,
-            receiver_id: data[index].receiver_id,
-            content: `${props.user.username} cancelled ${data[index].product_name}`,
-            notification: null
-        }
-
-        // const send = await props.chats_send_message({
-        //     form: msgData,
-        //     token: storage.token
-        // })
-
-        // if (!post.err) {
-        //     setRefetch(!refetch)
-        // }
-        setData(new_data)
+        setData(filtered_data)
     }
 
     const styles = {
@@ -185,12 +148,12 @@ const UserBookingDashboard = props => {
                                                         <input
                                                             type="submit"
                                                             value="O"
-                                                            onClick={e => updateHandler(data.id, data.tours_id)}
+                                                            onClick={e => updateHandler(data.id, data.tours_id, index)}
                                                         />
                                                         <input
                                                             type="submit"
                                                             value="X"
-                                                            onClick={() => deleteHandler(data.id)}
+                                                            onClick={() => deleteHandler(data.id, index)}
                                                         />
                                                     </React.Fragment>
 
