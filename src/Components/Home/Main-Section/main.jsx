@@ -69,10 +69,10 @@ const MainComponent = (props) => {
 
                 <div className="content">
                     <div className="content-title">
-                        <h1 onClick={() => console.log(props.token)}>Adventure is Worthwhile</h1>
+                        <h1>Adventure is Worthwhile</h1>
                         <p>Find Your Professional Travel Expert!</p>
                         <div className="title-button">
-                            <Link to='/home'>Start Now</Link>
+                            <Link to='/guides'>Start Now</Link>
                             {
                                 !storage && <Link to='/user/auth'>Sign-Up</Link>
                             }

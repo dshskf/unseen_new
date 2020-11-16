@@ -1,14 +1,16 @@
 import styled from "styled-components";
+import { color } from "../../../../Constants/color"
 
-export const Container = styled.div`
+export const ToursBox = styled.div`
   margin-top: 4rem;
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 3rem;
 `;
 
-export const Products = styled.div`
+export const Tours = styled.div`
   width: 90%;
   height: 100%;
   display: flex;
@@ -50,7 +52,7 @@ export const Content = styled.div`
     width: 7rem;
     height: 7rem;
     border-radius: 50%;
-    border:4px dashed ${(props) => props.color.secondary};
+    border: 4px dashed ${(props) => props.color.secondary};
   }
 `;
 
@@ -67,7 +69,7 @@ export const Text = styled.p`
     margin: 0;
   }
   &:nth-child(4) {
-    color: #ff8000;
+    color: ${color.primary};
   }
 `;
 
@@ -97,6 +99,7 @@ export const InfoItem = styled.div`
   }
 
   p:nth-child(2) {
-    color: #ff8000;
+    color: ${color.primary};
   }
 `;
+

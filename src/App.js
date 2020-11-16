@@ -18,7 +18,8 @@ import UserAuth from './Page/Temp/Account/user/user'
 import GuidesAuth from './Page/Temp/Account/guides/guides'
 import AgencyAuth from './Page/Temp/Account/agency/agency'
 
-import Product from './Page/Temp/Product/product.route'
+import Guides from './Page/Temp/Product/Guides/guide'
+import Agency from './Page/Temp/Product/Agency/agency'
 import Chats from './Page/Temp/chats/chat.route'
 
 import AdsList from './Page/Temp/Ads/ads'
@@ -81,10 +82,13 @@ class App extends React.Component {
                 <Route path="/guides/auth" component={GuidesAuth} />
                 <Route path="/agency/auth" component={AgencyAuth} />
 
-                <Route path="/home" component={Product} />
+                <Route path="/agency/:toursId" component={AgencyToursDetail} />
+                <Route path="/guides/:toursId" component={GuidesToursDetail} />
+
+                <Route path="/guides" component={Guides} />
+                <Route path="/agency" component={Agency} />
+
                 <Route path="/chats" component={Chats} />
-
-
                 <Route path="/ads/add" component={AddTours} />
                 <Route path="/ads/:adsId" component={EditTours} />
                 <Route path="/ads" component={AdsList} />
@@ -94,8 +98,6 @@ class App extends React.Component {
                 <Route path="/user/edit" component={EditUserProfile} />
                 <Route path="/agency/edit" component={EditAgencyProfile} />
 
-                <Route path="/tours/agency/:toursId" component={AgencyToursDetail} />
-                <Route path="/tours/guides/:toursId" component={GuidesToursDetail} />
                 {/* <Route path="/profile/guides/:toursId" component={AgencyToursDetail} /> */}
 
                 <Route path="/tracks/users/:id" component={TrackUsers} />

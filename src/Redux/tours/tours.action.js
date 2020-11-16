@@ -11,17 +11,17 @@ const link = endpoint => {
 }
 
 export const get_tours_guides = (data) => async dispatch => {
-    const get = await Get(link('guides'))
+    const post = await Post(link('guides'),data)
 
-    dispatch({ type: toursType.set_tours_guides, data: get.data })
-    return get.data
+    dispatch({ type: toursType.set_tours_guides, data: post.data })
+    return post.data
 }
 
 export const get_tours_agency = (data) => async dispatch => {
-    const get = await Get(link('agency'))
+    const post = await Post(link('agency'),data)
 
-    dispatch({ type: toursType.set_tours_agency, data: get.data })
-    return get.data
+    dispatch({ type: toursType.set_tours_agency, data: post.data })
+    return post.data
 }
 
 

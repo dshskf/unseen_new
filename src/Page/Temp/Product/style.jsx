@@ -1,18 +1,18 @@
-import styled from "styled-components";
-import {color} from '../../../Constants/color'
+import styled, { css } from "styled-components";
+import { color } from "../../../Constants/color";
 
 export const Body = styled.div`
   margin: 0;
   overflow: hidden;
   width: 100%;
   height: 100vh;
-  display: flex;  
+  display: flex;
 `;
 
 export const Container = styled.div`
   width: 100%;
   height: 100vh;
-  min-width:32rem;
+  min-width: 32rem;
   overflow-x: hidden;
   box-sizing: border-box;
 `;
@@ -47,8 +47,8 @@ export const Search = styled.div`
     width: 50%;
     padding-left: 1rem;
 
-    &:focus{
-      border:1px solid ${color.primary};
+    &:focus {
+      border: 1px solid ${color.primary};
     }
   }
 
@@ -60,12 +60,45 @@ export const Search = styled.div`
     width: 7%;
     border: none;
     cursor: pointer;
-    min-width:4rem;    
+    min-width: 4rem;
 
-    &:hover{
+    &:hover {
       background: ${color.primary};
     }
   }
+`;
 
-  
+export const Switch = styled.div`
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+`;
+
+export const OptionBox = styled.div`
+  width: 30%;
+  height: 3rem;
+  display: flex;
+  border: 1px solid ${color.primary};
+  overflow: hidden;
+  border-radius: 4px;
+`;
+
+const selected = css`
+  background-color: ${color.primary};
+  color: white;
+`;
+
+export const Option = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: ${color.primary};
+  cursor: pointer;
+
+  ${(props) => props.selected && selected}
 `;

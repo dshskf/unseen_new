@@ -16,7 +16,7 @@ import { getImg } from '../../../../../Constants/get-img'
 import { FiGitPullRequest } from 'react-icons/fi'
 import { BsChatDots } from 'react-icons/bs'
 import { AiOutlineSend } from 'react-icons/ai'
-
+import { useAlert } from "react-alert";
 
 
 import { Body, Sub, Header } from '../../../style.route'
@@ -41,13 +41,14 @@ import { storage } from '../../../../../Constants/request';
 const AgencyToursDetail = props => {
     const [data, setData] = useState(null)
     const [comment, setComment] = useState(null)
+    const alert = useAlert()
 
     useEffect(() => {
         const req = async () => {
             const post = await props.get_tours_agency_detail({
                 id: props.match.params.toursId
             })
-            
+
             setComment(post.comment)
             setData(post.tours[0])
         }
@@ -73,7 +74,12 @@ const AgencyToursDetail = props => {
                 content: "Hey! you got new orders",
                 tours_id: data.id,
                 tours_type: 'A'
-            })
+            })            
+            alert.success(`Succesfully Booked!`)
+            props.history.push('/Agency')
+        }
+        else {            
+            alert.error(post.err)
         }
     }
 
@@ -109,7 +115,7 @@ const AgencyToursDetail = props => {
                                         <GuideData>
                                             <h2>Guided By:</h2>
                                             <p>{data.username}</p>
-                                            <p>{data.start_date.split('T')[0] + "-" + data.end_date.split('T')[0]}</p>
+                                            <p>{data.start_date.split('T')[0] + " ~ " + data.end_date.split('T')[0]}</p>
                                         </GuideData>
                                     </ProductGuide>
                                     <ProductPrice>
@@ -117,11 +123,11 @@ const AgencyToursDetail = props => {
                                     </ProductPrice>
                                     <ProductAction>
                                         <ActionItem>
-                                            <BsChatDots />
-                                            <p> Chats</p>
+                                            <BsChatDots size={20} />
+                                            <p>Send Message</p>
                                         </ActionItem>
                                         <ActionItem onClick={sendBooking}>
-                                            <FiGitPullRequest />
+                                            <FiGitPullRequest size={20} />
                                             <p> Books</p>
                                         </ActionItem>
                                     </ProductAction>

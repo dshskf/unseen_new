@@ -105,7 +105,7 @@ const Sidebar = props => {
             }
 
             <Main isOpen={open}>
-                <Item isOpen={open} isActive={active[0]} onClick={() => props.history.push('/home')}>
+                <Item isOpen={open} isActive={active[0]} onClick={() => props.history.push('/guides')}>
                     <FaHome style={nav_icon} />
                     {
                         open ? <p>Home</p> : null

@@ -54,29 +54,33 @@ export const Content = styled.div`
   ${(props) => (props.isReason ? reason : null)};
 
   :nth-child(1) {
-    width: 15%;
+    width: 5%;
   }
 
   :nth-child(2) {
-    width: 20%;
+    width: 15%;
   }
 
   :nth-child(3) {
+    width: 20%;
+  }
+
+  :nth-child(4) {
     width: 10%;
     font-weight: bold;
   }
 
-  :nth-child(4) {
-    width: 24%;
-  }
-
   :nth-child(5) {
-    width: 15%;
+    width: 20%;
   }
 
   :nth-child(6) {
-    width: 15%;    
-  }  
+    width: 15%;
+  }
+
+  :nth-child(7) {
+    width: 15%;
+  }
 `;
 
 export const ActionBox = styled.div`

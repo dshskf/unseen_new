@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
+export const ToursBox = styled.div`
   margin-top: 4rem;
   width: 100%;
   text-transform: capitalize;
   margin-bottom: 3rem;
 `;
 
-export const Product = styled.div`
+export const Tours = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -83,3 +83,10 @@ export const Item = styled.div`
   width: 100%;
   color: #ff8000;
 `;
+
+
+export const Pagination=styled.div`
+width:100%;
+height:4rem;
+background-color: #ff8000;
+`

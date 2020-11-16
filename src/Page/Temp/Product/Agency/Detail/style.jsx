@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { color } from '../../../../../Constants/color'
 
 export const Container = styled.div`
   display: flex;
@@ -12,8 +13,8 @@ export const Container = styled.div`
 export const Title = styled.div`
   width: 90%;
 
-  h1{
-    text-transform:capitalize;    
+  h1 {
+    text-transform: capitalize;
   }
 `;
 
@@ -81,7 +82,7 @@ export const GuideData = styled.div`
     font-size: 2.5rem;
     margin-top: 2px;
     margin-bottom: 0;
-    color: orange;
+    color: ${color.primary};
 
     :nth-child(3) {
       font-size: 0.9rem;
@@ -103,24 +104,39 @@ export const ProductAction = styled.div`
 export const ActionItem = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
-  width: 8rem;
+  align-items: center;  
   height: 2.4rem;
   margin: 0 1rem;
   margin-left: 0;
   border-radius: 4px;
   cursor: pointer;
+  padding:0 1rem;
 
   :nth-child(1) {
-    background: #00a7ff;
-    color: white;
+    background: ${color.button_1};
+    color: white; 
+
+    :hover{
+      background-color:${color.button_hover_1};
+    }  
   }
 
   :nth-child(2) {
-    border: 1px solid #ff7600;
-    color: #ff7600;
+    border: 1px solid ${color.primary};
+    color: ${color.primary};
     margin-left: 8px;
+
+    :hover{
+      background-color:${color.primary};
+      color: white; 
+    }
   }
+
+  p {
+      margin-left: 8px;
+    }
+
+
 `;
 
 export const Description = styled.div`
@@ -231,8 +247,8 @@ export const ModalButton = styled.div`
     border: none;
     color: white;
     background: red;
-    font-size:1.5rem;
-    margin:0;
+    font-size: 1.5rem;
+    margin: 0;
     margin-right: 1rem;
   }
 `;
