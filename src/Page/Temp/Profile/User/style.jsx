@@ -2,6 +2,8 @@ import styled, { css } from "styled-components";
 
 export const Container = styled.div`
   width: 100%;  
+  height:60%;
+  min-height:30rem;
   display: flex;
   flex-direction: column;
   justify-content: center;  
@@ -14,7 +16,7 @@ export const Form = styled.div`
   min-width:30rem;
   border: 1px solid #e6e6e6;
   box-shadow: 0 0 10px #e6e6e6;
-  height:20rem;
+  height:100%;
   display: flex;  
   flex-direction: column;
   justify-content: center;
@@ -66,7 +68,7 @@ export const ImageBox = styled.div`
 const inputBoxDefault = css`
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 40%;
   height: 4rem;
   margin: 10px 0;
 `;

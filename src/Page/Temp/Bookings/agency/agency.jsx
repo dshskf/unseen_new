@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { compose } from 'redux'
 import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -10,11 +10,13 @@ import { Body, Sub, Header } from '../../style.route'
 import { getImg } from '../../../../Constants/get-img'
 
 import { get_booking_agency, update_booking_agency } from '../../../../Redux/management/management.action'
-import { chats_send_message } from '../../../../Redux/features/features.action'
+import { chats_send_message, set_io_connection } from '../../../../Redux/features/features.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 import { storage } from '../../../../Constants/request'
-
+import { API } from '../../../../Constants/link'
+import Pagination from '../../../../Components/Paginations/pagination'
+import io from 'socket.io-client'
 
 import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
 import { GiSandsOfTime } from 'react-icons/gi'
@@ -34,24 +36,68 @@ import {
 
 const AgencyBookingDashboard = props => {
     const header = ['No.', 'Username', 'Tours', 'Price', 'Start Date', 'Confirmation', 'Status']
-    const [data, setData] = useState('')
+    const [bookingList, setBookingList] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
+    const [page, setPage] = useState([{ index: 1, isActive: false }])
+
+    const tempBooking = useRef()
+    const socketIo = useRef()
     const alert = useAlert()
 
     useEffect(() => {
-        const req = async () => {
-            const get = await props.get_booking_agency({
-                action: 'sender_id'
+        let socket = io(API)
+        socket.emit('join_room', {
+            room_id: `${storage.id}-${storage.type_code}`
+        })
+
+        socket.on('new_booking', res => {
+            tempBooking.current = tempBooking.current.map(b => {
+                if (res.booking_id === b.id) {
+                    alert.show(b.ads_title + " has been activated!")
+                    b.is_payed = true
+                    return b
+                }
+                return b
             })
-            console.log(get.data)
-            setData(get.data)
-        }
-        req()
+
+            setBookingList(tempBooking.current)
+        })
+
+        socketIo.current = socket
+
+        return () => socketIo.current.disconnect()
     }, [])
 
-    const updateHandler = async (id, index) => {
-        let new_data = data[index]
-        new_data.is_active = true
+    useEffect(() => {
+        fetch()
+    }, [currentPage])
 
+    const fetch = async () => {
+        const get = await props.get_booking_agency({
+            page: currentPage,
+            is_mobile: false
+        })
+        tempBooking.current = get.data
+        convertPagetoArr(get.total_page)
+        setBookingList(get.data)
+    }
+
+    const convertPagetoArr = (total) => {
+        const temp = []
+        for (let i = 1; i <= total; i++) {
+            if (i === currentPage) {
+                temp.push({ index: i, isActive: true })
+                continue
+            }
+            temp.push({ index: i, isActive: false })
+        }
+
+        setPage(temp)
+    }
+
+    const updateHandler = async (id, index) => {
+        let new_data = bookingList[index]
+        new_data.is_active = true
         const dataToSubmit = {
             booking_id: id,
             action: 'update'
@@ -63,28 +109,32 @@ const AgencyBookingDashboard = props => {
             alert.success(`Sucessfully update ${new_data.ads_title}!`)
         } else {
             new_data.is_active = false
-            alert.error(post.err)            
+            alert.error(post.err)
+            return
         }
 
         const msgData = {
-            receiver_id: data[index].receiver_id,
-            receiver_type: 'A',
+            receiver_id: new_data.receiver_id,
+            receiver_type: 'U',
             content: `${new_data.agency_username} already activate for ${new_data.ads_title} tours!`,
-            tours_id: data[index].tours_id,
+            tours_id: new_data.tours_id,
             tours_type: 'A'
         }
 
         await props.chats_send_message({ ...msgData })
+        socketIo.current.emit('update_booking', {
+            opposite_room: `${new_data.sender_id}-U`,
+            booking_id: new_data.id
+        })
 
-
-        let update = data.map(d => d)
+        let update = bookingList.map(d => d)
         update[index] = new_data
-        setData(update)
+        setBookingList(update)
     }
 
     const deleteHandler = async (id, index) => {
-        let new_data = data[index]
-        let filtered_data = data.filter(booking => booking.id !== id)
+        let new_data = bookingList[index]
+        let filtered_data = bookingList.filter(booking => booking.id !== id)
 
         const dataToSubmit = {
             booking_id: id,
@@ -98,17 +148,24 @@ const AgencyBookingDashboard = props => {
             alert.error(post.err)
         }
 
-        setData(filtered_data)
+        setBookingList(filtered_data)
     }
 
     const styles = {
         link: { textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }
     }
 
+
+    const handleChangePage = (index) => {
+        if (index > page.length || index < 1) {
+            return 0
+        }
+        setCurrentPage(index)
+    }
+
     return (
         <Body>
             <Sidebar page="dashboard" />
-
             <Sub>
                 <Header>
                     <img src={getImg("Account", "logo.png")} />
@@ -127,8 +184,8 @@ const AgencyBookingDashboard = props => {
                         </Row>
 
                         {
-                            data ?
-                                data.map((data, index) => (
+                            bookingList ?
+                                bookingList.map((data, index) => (
                                     <Row key={data.id}>
                                         <Content>
                                             <p>{index + 1}</p>
@@ -194,7 +251,13 @@ const AgencyBookingDashboard = props => {
                                 null
 
                         }
+                        <Pagination
+                            current={currentPage}
+                            page={page}
+                            actions={handleChangePage}
+                        />
                     </Table>
+
                 </Container>
             </Sub>
         </Body>

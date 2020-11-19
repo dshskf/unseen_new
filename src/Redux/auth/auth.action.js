@@ -25,8 +25,9 @@ export const sign_in = (data) => async (dispatch) => {
         //     email: encrypt(post.data.userData.email),
         //     token: encrypt(post.data.token),
         //     type: post.data.type
-        // }));
+        // }));        
         localStorage.setItem('login_data', JSON.stringify({
+            id: post.data.userData.id,
             email: post.data.userData.email,
             token: post.data.token,
             type: post.data.type
@@ -55,7 +56,7 @@ export const sign_out = (data) => async (dispatch) => {
 export const check_token = (data) => async (dispatch) => {
     const post = await Post(link('check-token'), { type: data.type })
 
-    if (post.data.err) {        
+    if (post.data.err) {
         localStorage.removeItem('login_data')
         dispatch({ type: authType.sign_out, data: null })
         dispatch({ type: authType.set_token, data: null })

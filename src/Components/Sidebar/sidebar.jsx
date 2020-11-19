@@ -18,7 +18,8 @@ import { sign_out } from '../../Redux/auth/auth.action'
 import { storage } from '../../Constants/request'
 
 import { getImg } from '../../Constants/get-img'
-import { API } from '../../Constants/link'
+import { API, URI } from '../../Constants/link'
+
 
 import {
     Container,
@@ -76,7 +77,7 @@ const Sidebar = props => {
 
     const sign_outHandler = async () => {
         await props.sign_out()
-        window.location.reload();
+        window.location.href = URI
     }
 
     return (

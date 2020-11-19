@@ -3,12 +3,12 @@ import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux';
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
+import io from 'socket.io-client'
 
 import { chats_person_list, chats_fetch_message, chats_send_message } from '../../../../Redux/features/features.action'
 // import { get_tours_detail } from '../../../../Redux/tours/tours.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
-import { pullSocket } from '../../../../Redux/features/features.selector'
 
 import { getImg } from '../../../../Constants/get-img'
 import { AiOutlineSend, AiOutlineClose } from 'react-icons/ai'
@@ -53,6 +53,7 @@ const ChatPage = props => {
 
     const messageEnd = useRef(null)
     const isScroll = useRef(false)
+    const socketIo = useRef()
     const activeList = useRef({
         index: '',
         receiver: '',
@@ -61,14 +62,15 @@ const ChatPage = props => {
     })
 
     useEffect(() => {
-        if (!props.socket) {
-            props.history.push('/')
-        }
+        let socket = io(API)
+        socket.emit('join_room', {
+            room_id: `${storage.id}-${storage.type_code}`
+        })
 
-        props.socket.on('msg_response', async data => {
+        socket.on('msg_response', async data => {
             const d = new Date()
             const dateNow = `T${d.getHours()}:${d.getMinutes()}`
-            await req()
+            await fetchFriend()
 
             if (data.sender_id.toString() === activeList.current.receiver.toString() && data.sender_type === activeList.current.type) {
 
@@ -86,14 +88,16 @@ const ChatPage = props => {
             }
         })
 
-        if (props.user) {
-            req()
-        }
+        socketIo.current = socket
+        fetchFriend()
+
+
+        return () => socketIo.current.disconnect()
     }, [])
 
 
 
-    const req = async () => {
+    const fetchFriend = async () => {
         let get = await props.chats_person_list()
         get.last_message.map((last_msg, i) => {
             last_msg.content = checkMessageLength(last_msg.content)
@@ -175,12 +179,11 @@ const ChatPage = props => {
 
         await setLastMessage(lastMessage)
         await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
+        await props.chats_send_message(dataToSubmit)
+
         setInput('')
-
-        const req = await props.chats_send_message(dataToSubmit)
-
         messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
-        props.socket.emit('msg', dataToSubmit)
+        socketIo.current.emit('msg', dataToSubmit)
     }
 
     const onEnterHandler = e => {
@@ -298,8 +301,7 @@ const ChatPage = props => {
 
 const mapStateToProps = createStructuredSelector({
     token: pullToken,
-    user: pullUserData,
-    socket: pullSocket
+    user: pullUserData,    
 })
 
 const mapDispatchToProps = (dispatch) => ({

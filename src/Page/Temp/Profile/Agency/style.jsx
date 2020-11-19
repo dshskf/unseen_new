@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 export const Container = styled.div`
   width: 100%;  
   height:60%;
-  min-height:40rem;
+  min-height:30rem;
   display: flex;
   flex-direction: column;
   justify-content: center;  
@@ -68,7 +68,7 @@ export const ImageBox = styled.div`
 const inputBoxDefault = css`
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 80%;
   height: 4rem;
   margin: 10px 0;
 `;
@@ -103,6 +103,7 @@ export const InputBox = styled.div`
 export const SubmitBox = styled.div`
   ${inputBoxDefault};
   margin-top: 2rem;
+  width:40%;
 
   input {
     ${inputDefault};

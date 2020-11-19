@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { compose } from 'redux'
 import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -14,6 +14,9 @@ import { chats_send_message } from '../../../../Redux/features/features.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
 import { storage } from '../../../../Constants/request'
+import { API } from '../../../../Constants/link'
+import Pagination from '../../../../Components/Paginations/pagination'
+import io from 'socket.io-client'
 
 import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
 import { GiSandsOfTime } from 'react-icons/gi'
@@ -32,19 +35,67 @@ import {
 
 const UserBookingDashboard = props => {
     const header = ['No.', 'Agency', 'Tours', 'Price', 'Start Date', 'Confirmation', 'Status']
-    const [data, setData] = useState('')    
+    const [bookingList, setBookingList] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
+    const [page, setPage] = useState([{ index: 1, isActive: false }])
+
+    const tempBooking = useRef()
+    const socketIo = useRef()
     const alert = useAlert()
 
     useEffect(() => {
-        const req = async () => {
-            const get = await props.get_booking_user()
-            setData(get.data)
-        }
-        req()
+        let socket = io(API)
+        socket.emit('join_room', {
+            room_id: `${storage.id}-${storage.type_code}`
+        })
+        socket.on('new_booking', res => {
+
+            tempBooking.current = tempBooking.current.map(b => {
+                if (res.booking_id === b.id) {
+                    alert.show(b.ads_title + " has been activated!")
+                    b.is_active = true
+                    return b
+                }
+                return b
+            })
+
+            setBookingList(tempBooking.current)
+        })
+
+        socketIo.current = socket
+
+        return () => socketIo.current.disconnect()
     }, [])
 
+    useEffect(() => {
+        fetch()
+    }, [currentPage])
+
+    const fetch = async () => {
+        const get = await props.get_booking_user({
+            page: currentPage,
+            is_mobile: false
+        })
+        tempBooking.current = get.data
+        convertPagetoArr(get.total_page)
+        setBookingList(get.data)
+    }
+
+    const convertPagetoArr = (total) => {
+        const temp = []
+        for (let i = 1; i <= total; i++) {
+            if (i === currentPage) {
+                temp.push({ index: i, isActive: true })
+                continue
+            }
+            temp.push({ index: i, isActive: false })
+        }
+
+        setPage(temp)
+    }
+
     const updateHandler = async (id, tours_id, index) => {
-        let new_data = data[index]
+        let new_data = bookingList[index]
         new_data.is_payed = true
 
         const dataToSubmit = {
@@ -71,15 +122,19 @@ const UserBookingDashboard = props => {
         }
 
         await props.chats_send_message({ ...msgData })
+        socketIo.current.emit('update_booking', {
+            opposite_room: `${new_data.sender_id}-A`,
+            booking_id: new_data.id
+        })
 
-        let update = data.map(d => d)
+        let update = bookingList.map(d => d)
         update[index] = new_data
-        setData(update)
+        setBookingList(update)
     }
 
     const deleteHandler = async (id, index) => {
-        let new_data = data[index]
-        let filtered_data = data.filter(booking => booking.id !== id)
+        let new_data = bookingList[index]
+        let filtered_data = bookingList.filter(booking => booking.id !== id)
 
         const dataToSubmit = {
             booking_id: id,
@@ -92,11 +147,18 @@ const UserBookingDashboard = props => {
         } else {
             alert.error(post.err)
         }
-        setData(filtered_data)
+        setBookingList(filtered_data)
     }
 
     const styles = {
         link: { textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }
+    }
+
+    const handleChangePage = (index) => {
+        if (index > page.length || index < 1) {
+            return 0
+        }
+        setCurrentPage(index)
     }
 
     return (
@@ -122,8 +184,8 @@ const UserBookingDashboard = props => {
                         </Row>
 
                         {
-                            data ?
-                                data.map((data, index) => (
+                            bookingList ?
+                                bookingList.map((data, index) => (
                                     <Row key={data.id}>
                                         <Content>
                                             <p>{index + 1}</p>
@@ -189,6 +251,11 @@ const UserBookingDashboard = props => {
                                 null
 
                         }
+                        <Pagination
+                            current={currentPage}
+                            page={page}
+                            actions={handleChangePage}
+                        />
                     </Table>
                 </Container>
             </Sub>

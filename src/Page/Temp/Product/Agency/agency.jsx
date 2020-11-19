@@ -39,8 +39,8 @@ const Agency = props => {
     const [page, setPage] = useState([{ index: 1, isActive: false }])
 
     useEffect(() => {
-        fetch(currentPage)
-    }, [])
+        fetch()
+    }, [currentPage])
 
     const convertPagetoArr = (total) => {
         const temp = []
@@ -55,15 +55,13 @@ const Agency = props => {
         setPage(temp)
     }
 
-    const fetch = async (page) => {
-        const post = await props.get_tours_agency({ page: page })
+    const fetch = async () => {
+        const post = await props.get_tours_agency({ page: currentPage, is_mobile: false })
         convertPagetoArr(post.total_page)
         setTours(post.tours)
     }
 
-    useEffect(() => {
-        fetch(currentPage)
-    }, [currentPage])
+
 
     const handleChangePage = (index) => {
         if (index > page.length || index < 1) {

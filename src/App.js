@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect'
-import io from 'socket.io-client'
 import './App.css'
 
 import HomePage from './Page/Home/home'
@@ -35,9 +34,8 @@ import GuidesToursDetail from './Page/Temp/Product/Guides/Detail/detail'
 import Test from './Page/Account/test'
 
 import { check_token } from './Redux/auth/auth.action'
-import { set_io_connection } from './Redux/features/features.action'
+
 import { pullResponse, pullLoginStatus, pullUserData } from './Redux/auth/auth.selector'
-import { API } from './Constants/link'
 import { storage } from './Constants/request'
 
 
@@ -51,15 +49,6 @@ class App extends React.Component {
   async componentDidMount() {
     if (this.state.storage) {
       await this.props.checkToken(this.state.storage)
-    }
-
-    if (this.props.user && storage) {
-      let socket = io(API)
-      socket.emit('join_room', {
-        room_id: `${this.props.user.id}-${storage.type[0].toUpperCase()}`
-      })
-
-      await this.props.setIOConnection(socket)
     }
 
     this.setState({ isCheck: false })
@@ -82,6 +71,11 @@ class App extends React.Component {
                 <Route path="/guides/auth" component={GuidesAuth} />
                 <Route path="/agency/auth" component={AgencyAuth} />
 
+                <Route path="/agency/dashboard" component={AgencyBookingDashboard} />
+                <Route path="/user/dashboard" component={UserBookingDashboard} />
+                <Route path="/user/edit" component={EditUserProfile} />
+                <Route path="/agency/edit" component={EditAgencyProfile} />
+
                 <Route path="/agency/:toursId" component={AgencyToursDetail} />
                 <Route path="/guides/:toursId" component={GuidesToursDetail} />
 
@@ -92,11 +86,6 @@ class App extends React.Component {
                 <Route path="/ads/add" component={AddTours} />
                 <Route path="/ads/:adsId" component={EditTours} />
                 <Route path="/ads" component={AdsList} />
-
-                <Route path="/agency/dashboard" component={AgencyBookingDashboard} />
-                <Route path="/user/dashboard" component={UserBookingDashboard} />
-                <Route path="/user/edit" component={EditUserProfile} />
-                <Route path="/agency/edit" component={EditAgencyProfile} />
 
                 {/* <Route path="/profile/guides/:toursId" component={AgencyToursDetail} /> */}
 
@@ -123,7 +112,6 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => ({
   checkToken: (data) => dispatch(check_token(data)),
-  setIOConnection: (data) => dispatch(set_io_connection(data))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

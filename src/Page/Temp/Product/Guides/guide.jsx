@@ -36,7 +36,7 @@ import {
 
 
 const Guides = props => {
-    const [guides, setGuides] = useState(null)    
+    const [guides, setGuides] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [page, setPage] = useState([{ index: 1, isActive: false }])
     let indexColor = 0
@@ -59,7 +59,7 @@ const Guides = props => {
     }
 
     const fetch = async (page) => {
-        const post = await props.get_tours_guides({ page: page })
+        const post = await props.get_tours_guides({ page: page, is_mobile: false })
         convertPagetoArr(post.total_page)
         setGuides(post.tours)
     }

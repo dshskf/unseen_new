@@ -21,9 +21,9 @@ export const update_booking_guides = (data) => async dispatch => {
 }
 
 
-export const get_booking_agency = (data) => async dispatch => {
-    const get = await Get(link('agency'))
-    return get.data
+export const get_booking_agency = (data) => async dispatch => {    
+    const post = await Post(link('agency'),data)
+    return post.data
 }
 
 export const update_booking_agency = (data) => async dispatch => {

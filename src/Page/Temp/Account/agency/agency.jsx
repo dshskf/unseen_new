@@ -7,6 +7,7 @@ import { sign_in, send_email } from '../../../../Redux/auth/auth.action'
 import { pullResponse, pullLoginStatus } from '../../../../Redux/auth/auth.selector'
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
+import { URI } from '../../../../Constants/link'
 
 
 import { getImg } from '../../../../Constants/get-img'
@@ -69,7 +70,7 @@ class AgencyAuth extends Component {
             this.setState({ err: req.err })
         }
         if (!req.err) {
-            window.location.href = "http://localhost:3000/home"
+            window.location.href = URI
         }
     }
 

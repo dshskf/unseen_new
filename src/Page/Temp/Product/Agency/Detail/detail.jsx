@@ -17,6 +17,7 @@ import { FiGitPullRequest } from 'react-icons/fi'
 import { BsChatDots } from 'react-icons/bs'
 import { AiOutlineSend } from 'react-icons/ai'
 import { useAlert } from "react-alert";
+import { storage } from '../../../../../Constants/request'
 
 
 import { Body, Sub, Header } from '../../../style.route'
@@ -36,7 +37,6 @@ import {
     ActionItem,
     Description
 } from './style'
-import { storage } from '../../../../../Constants/request';
 
 const AgencyToursDetail = props => {
     const [data, setData] = useState(null)
@@ -48,7 +48,7 @@ const AgencyToursDetail = props => {
             const post = await props.get_tours_agency_detail({
                 id: props.match.params.toursId
             })
-
+            console.log(storage)
             setComment(post.comment)
             setData(post.tours[0])
         }
@@ -56,6 +56,16 @@ const AgencyToursDetail = props => {
     }, [])
 
     const sendBooking = async () => {
+        if (storage) {
+            if (storage.type_code !== 'U') {
+                alert.error("User Only!")
+                return
+            }
+        } else {
+            props.history.push('/user/auth')
+            return 0
+        }
+
         const post = await props.post_user_booking({
             tours_id: data.id,
             sender_id: props.user.id,
@@ -74,11 +84,10 @@ const AgencyToursDetail = props => {
                 content: "Hey! you got new orders",
                 tours_id: data.id,
                 tours_type: 'A'
-            })            
+            })
             alert.success(`Succesfully Booked!`)
-            props.history.push('/Agency')
         }
-        else {            
+        else {
             alert.error(post.err)
         }
     }

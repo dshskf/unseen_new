@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import { Map, GoogleApiWrapper, Marker, InfoWindow } from 'google-maps-react'
+import io from 'socket.io-client'
 
 import Sidebar from '../../../../Components/Sidebar/sidebar'
 import { Body, Sub, Header } from '../../style.route'
@@ -11,10 +12,9 @@ import { Body, Sub, Header } from '../../style.route'
 import { getImg } from '../../../../Constants/get-img'
 
 import { get_user_location, update_user_location } from '../../../../Redux/features/features.action'
-import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
-import { pullSocket } from '../../../../Redux/features/features.selector'
 
 import { storage } from '../../../../Constants/request'
+import { API } from '../../../../Constants/link'
 import { BiTargetLock } from 'react-icons/bi'
 
 import {
@@ -29,7 +29,8 @@ class TrackUsers extends Component {
         center: null,
         change: false,
         user: null,
-        opposite: null
+        opposite: null,
+        socketIo: null
     }
 
     refreshLocation = () => setInterval(() => {
@@ -62,16 +63,12 @@ class TrackUsers extends Component {
             lng: user_data.lng
         }
 
-        this.setState({
-            user: user_data,
-            opposite: opposite_data,
-            center: coords,
-            zoom: 15,
+        let socket = io(API)
+        socket.emit('join_room', {
+            room_id: `${storage.id}-${storage.type_code}`
         })
 
-        this.refreshLocation() // start listener
-
-        this.props.socket.on('new_location', data => {
+        socket.on('new_location', data => {
             this.setState({
                 opposite: {
                     ...this.state.opposite,
@@ -80,10 +77,27 @@ class TrackUsers extends Component {
                 }
             })
         })
+
+        this.setState({
+            user: user_data,
+            opposite: opposite_data,
+            center: coords,
+            zoom: 15,
+            socketIo: socket
+        })
+
+        this.refreshLocation() // start listener       
+        window.addEventListener('beforeunload', this.componentCleanup);
     }
 
     async componentWillUnmount() {
+        this.componentCleanup();
+        window.removeEventListener('beforeunload', this.componentCleanup);
+    }
+
+    componentCleanup = async () => {
         await this.props.update_user_location({ lat: this.state.user.lat, lng: this.state.user.lng })
+        this.state.socketIo.disconnect()
     }
 
     getPosition = () => {
@@ -102,7 +116,7 @@ class TrackUsers extends Component {
         let user = this.state.user
 
         if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {
-            this.props.socket.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
+            this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
             user.lat = new_location.lat
             user.lng = new_location.lng
 
@@ -225,10 +239,7 @@ class TrackUsers extends Component {
 
 }
 
-const mapStateToProps = createStructuredSelector({
-    token: pullToken,
-    user: pullUserData,
-    socket: pullSocket
+const mapStateToProps = createStructuredSelector({        
 })
 
 const mapDispatchToProps = (dispatch) => ({

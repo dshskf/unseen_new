@@ -14,6 +14,7 @@ import { get_edit_profile, post_edit_profile } from '../../../../Redux/user/user
 import { get_location_data } from '../../../../Redux/features/features.action'
 import { pullToken } from '../../../../Redux/auth/auth.selector'
 import { API } from '../../../../Constants/link'
+import { useAlert } from 'react-alert'
 
 import {
     Container,
@@ -48,6 +49,7 @@ const EditUserProfile = props => {
         lat: null,
         lng: null
     })
+    const alert = useAlert()
 
 
     useEffect(() => {
@@ -165,7 +167,9 @@ const EditUserProfile = props => {
 
         const post = await props.post_edit_profile({ user: serialize(dataToSubmit), token: props.token })
         if (!post.err) {
-            props.history.push('/home')
+            alert.success("Profile Updated!")
+        } else {
+            alert.error("Something gone wrong!")
         }
     }
 
