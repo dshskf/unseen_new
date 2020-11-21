@@ -5,7 +5,7 @@ export const Container = styled.div`
   bottom: -80px;
   width: 100vw;
   height: 3rem;
-  background: #f37d1f;
+  background: black;
 `;
 
 export const Sub = styled.div`

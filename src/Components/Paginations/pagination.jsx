@@ -10,9 +10,9 @@ const Pagination = props => {
         <Container>
             <Index onClick={() => actions(current - 1)}>&lt;</Index>
             {
-                page && page.map(data => {
+                page && page.map((data, index) => {
                     return (
-                        <Index isActive={data.isActive} onClick={() => actions(data.index)}>{data.index}</Index>
+                        <Index key={index} isActive={data.isActive} onClick={() => actions(data.index)}>{data.index}</Index>
                     )
                 })
             }

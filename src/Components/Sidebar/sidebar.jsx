@@ -17,8 +17,8 @@ import { get_edit_profile as get_user_profile } from '../../Redux/user/user.acti
 import { sign_out } from '../../Redux/auth/auth.action'
 import { storage } from '../../Constants/request'
 
-import { getImg } from '../../Constants/get-img'
-import { API, URI } from '../../Constants/link'
+import { getImg, renameImg } from '../../Constants/get-img'
+import { URI } from '../../Constants/link'
 
 
 import {
@@ -48,22 +48,24 @@ const Sidebar = props => {
         setActive(newPage)
 
         const req = async () => {
-            const accountType = storage && storage.type;
             let user = null
 
+
             if (storage) {
-                if (accountType === 'agency') {
-                    user = await props.get_agency_profile({ token: storage.token })
-                } else if (accountType === 'guides') {
-                    user = await props.get_guides_profile({ token: storage.token })
+                const accountType = storage.type_code
+
+                if (accountType === 'A') {
+                    user = await props.get_agency_profile()
+                } else if (accountType === 'G') {
+                    user = await props.get_guides_profile()
                 } else {
-                    user = await props.get_user_profile({ token: storage.token })
+                    user = await props.get_user_profile()
                 }
                 const { data, err } = user
                 if (!err) {
                     let image = null
                     if (data.image) {
-                        image = API + data.image.replace('\\', '/')
+                        image = renameImg(data.image)
                     }
                     setUser({ ...data, image: image, account_types: accountType })
                 }
@@ -95,14 +97,12 @@ const Sidebar = props => {
                 }
             </Top>
             {
-                open && user ?
-                    <User>
-                        <img src={user.image ? user.image : getImg('Account', 'guest.png')} alt="" />
-                        <h1>{user.username}</h1>
-                        <p>{user.email}</p>
-                    </User>
-                    :
-                    null
+                (open && user) &&
+                <User>
+                    <img src={user.image ? user.image : getImg('Account', 'guest.png')} alt="" />
+                    <h1>{user.username}</h1>
+                    <p>{user.email}</p>
+                </User>
             }
 
             <Main isOpen={open}>
@@ -116,7 +116,7 @@ const Sidebar = props => {
                 <Item
                     isOpen={open}
                     isActive={active[1]}
-                    onClick={() => props.history.push(storage.type === "agency" ? '/agency/edit' : '/user/edit')}
+                    onClick={() => props.history.push('/profile/edit')}
                 >
                     <FaUserEdit style={nav_icon} />
                     {
@@ -128,32 +128,27 @@ const Sidebar = props => {
                 <Item
                     isOpen={open}
                     isActive={active[2]}
-                    onClick={() => props.history.push(storage.type === "agency" ? '/agency/dashboard' : '/user/dashboard')}
+                    onClick={() => props.history.push('/bookings')}
                 >
                     <FaSitemap style={nav_icon} />
                     {
-                        open ?
-                            storage.type === "agency" ?
-                                <p>Dashboard</p>
-                                :
-                                <p>Order</p>
-                            :
-                            null
+                        open && <p>Bookings</p>
+
                     }
                 </Item>
 
                 <Item isOpen={open} isActive={active[3]} onClick={() => props.history.push('/chats')}>
                     <BsFillChatDotsFill style={nav_icon} />
                     {
-                        open ? <p>Chats</p> : null
+                        open && <p>Chats</p>
                     }
                 </Item>
                 {
-                    storage.type === "agency" &&
-                    <Item isOpen={open} isActive={active[4]} onClick={() => props.history.push('/ads')}>
+                    storage.type_code === "A" &&
+                    <Item isOpen={open} isActive={active[4]} onClick={() => props.history.push('/ads/list/0')}>
                         <AiOutlineAreaChart style={nav_icon} />
                         {
-                            open ? <p>Ads</p> : null
+                            open && <p>Ads</p>
                         }
                     </Item>
                 }
@@ -161,7 +156,7 @@ const Sidebar = props => {
                 <Item isOpen={open} isActive={active[5]} isLogout={true} onClick={sign_outHandler}>
                     <RiLogoutBoxLine style={nav_icon} />
                     {
-                        open ? <p>Logout</p> : null
+                        open && <p>Logout</p>
                     }
                 </Item>
             </Main >

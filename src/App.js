@@ -5,38 +5,32 @@ import { createStructuredSelector } from 'reselect'
 import './App.css'
 
 import HomePage from './Page/Home/home'
+import ResetAction from './Page/Account/reset/reset-action'
 
-import ResetAction from './Page/Account/Reset/reset-action'
-import EditUserProfile from './Page/Temp/Profile/User/user'
-import EditAgencyProfile from './Page/Temp/Profile/Agency/agency'
+import TrackAgency from './Page/Track/agency/track'
+import TrackUsers from './Page/Track/users/track'
 
-import TrackAgency from './Page/Temp/Track/agency/track'
-import TrackUsers from './Page/Temp/Track/users/track'
+import { default as UserAuth } from './Page/Account/user/user'
+import { default as GuidesAuth } from './Page/Account/guides/guides'
+import { default as AgencyAuth } from './Page/Account/agency/agency'
 
-import UserAuth from './Page/Temp/Account/user/user'
-import GuidesAuth from './Page/Temp/Account/guides/guides'
-import AgencyAuth from './Page/Temp/Account/agency/agency'
+import { default as BookingsPage } from './Page/Bookings/index'
+import { default as EditProfilePage } from './Page/Profile/index'
+import { default as Chats } from './Page/Chats/index'
 
-import Guides from './Page/Temp/Product/Guides/guide'
-import Agency from './Page/Temp/Product/Agency/agency'
-import Chats from './Page/Temp/chats/chat.route'
+import { default as ToursGuides } from './Page/Tours/guides/guide'
+import { default as ToursAgency } from './Page/Tours/agency/agency'
 
-import AdsList from './Page/Temp/Ads/ads'
-import AddTours from './Page/Temp/Ads/Add/add'
-import EditTours from './Page/Temp/Ads/Edit/edit'
+import { default as ToursManagement } from './Page/Tours-Management/index'
+import { default as TrackPage } from './Page/Track/index'
 
-import UserBookingDashboard from './Page/Temp/Bookings/user/user'
-import AgencyBookingDashboard from './Page/Temp/Bookings/agency/agency'
-
-import AgencyToursDetail from './Page/Temp/Product/Agency/Detail/detail'
-import GuidesToursDetail from './Page/Temp/Product/Guides/Detail/detail'
-
-import Test from './Page/Account/test'
+import AgencyToursDetail from './Page/Tours/agency/Detail/detail'
+import GuidesToursDetail from './Page/Tours/guides/Detail/detail'
 
 import { check_token } from './Redux/auth/auth.action'
 
 import { pullResponse, pullLoginStatus, pullUserData } from './Redux/auth/auth.selector'
-import { storage } from './Constants/request'
+
 
 
 class App extends React.Component {
@@ -71,27 +65,19 @@ class App extends React.Component {
                 <Route path="/guides/auth" component={GuidesAuth} />
                 <Route path="/agency/auth" component={AgencyAuth} />
 
-                <Route path="/agency/dashboard" component={AgencyBookingDashboard} />
-                <Route path="/user/dashboard" component={UserBookingDashboard} />
-                <Route path="/user/edit" component={EditUserProfile} />
-                <Route path="/agency/edit" component={EditAgencyProfile} />
+                <Route path="/bookings" component={BookingsPage} />
+                <Route path="/profile/edit" component={EditProfilePage} />
 
                 <Route path="/agency/:toursId" component={AgencyToursDetail} />
                 <Route path="/guides/:toursId" component={GuidesToursDetail} />
 
-                <Route path="/guides" component={Guides} />
-                <Route path="/agency" component={Agency} />
-
+                <Route path="/guides" component={ToursGuides} />
+                <Route path="/agency" component={ToursAgency} />
                 <Route path="/chats" component={Chats} />
-                <Route path="/ads/add" component={AddTours} />
-                <Route path="/ads/:adsId" component={EditTours} />
-                <Route path="/ads" component={AdsList} />
 
-                {/* <Route path="/profile/guides/:toursId" component={AgencyToursDetail} /> */}
+                <Route path="/ads/:method/:adsId" component={ToursManagement} />
+                <Route path="/tracks/:id" component={TrackPage} />
 
-                <Route path="/tracks/users/:id" component={TrackUsers} />
-                <Route path="/tracks/agency/:id" component={TrackAgency} />
-                <Route path="/test" component={Test} />
                 <Route path="/" component={HomePage} />
               </Switch>
           }

@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "../../Constants/color";
 
 export const icon = {
   color: "white",
@@ -26,7 +27,7 @@ const onOpen = {
   container: css`
     width: 20vw;
     position: relative;
-    min-width:15rem;
+    min-width: 15rem;
   `,
   top: css`
     display: flex;
@@ -37,14 +38,14 @@ const onOpen = {
     display: flex;
     align-items: center;
     width: 100%;
-    margin: 0;    
+    margin: 0;
   `,
   logout: css`
     position: absolute;
     left: 0;
     bottom: 0;
     border: none;
-    color: #f37d1f;
+    color: ${color.primary};
   `,
 };
 
@@ -54,13 +55,13 @@ export const Container = styled.div`
   overflow: hidden;
   background: #2e2e2e;
   transition: all 0.5s;
-  min-width:3rem;
+  min-width: 3rem;
   ${(props) => (props.isOpen ? onOpen.container : null)}
 `;
 
 export const Top = styled.div`
   width: 100%;
-  background: #f37d1f;
+  background: ${color.primary};
   height: 2rem;
   overflow: hidden;
   text-align: center;
@@ -89,19 +90,18 @@ export const Main = styled.div`
 export const Item = styled.div`
   margin: 1rem 0;
   text-align: center;
-  color: ${(props) => (props.isActive ? "#F37D1F" : "#575757")};
+  color: ${(props) => (props.isActive ? color.primary : "#575757")};
   transition: all 0.2s;
 
   ${(props) => (props.isOpen ? onOpen.item : null)}
   ${(props) => (props.isLogout ? onOpen.logout : null)}
 
   &:hover {
-    color: ${(props) => (props.isOpen ? "white" : "#F37D1F")};
-    background: ${(props) => (props.isOpen ? "#F37D1F" : "")};
+    color: ${(props) => (props.isOpen ? "white" : color.primary)};
+    background: ${(props) => (props.isOpen ? color.primary : "")};
     cursor: pointer;
   }
 `;
-
 
 export const User = styled.div`
   width: 100%;
@@ -109,7 +109,7 @@ export const User = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #f37d1f;
+  color: ${color.primary};
   margin-top: 1.5rem;
 
   h1 {
