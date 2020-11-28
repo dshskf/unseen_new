@@ -28,6 +28,7 @@ export const sign_in = (data) => async (dispatch) => {
         // }));        
         localStorage.setItem('login_data', JSON.stringify({
             id: post.data.userData.id,
+            username:post.data.userData.username,
             email: post.data.userData.email,
             token: post.data.token,
             type: post.data.type

@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom'
 
 import { color_collections } from './color'
 import { API } from '../../../Constants/link'
-import { get_tours_guides } from '../../../Redux/tours/tours.action'
+import { get_filter_tours, get_tours_guides } from '../../../Redux/tours/tours.action'
 import Pagination from '../../../Components/Paginations/pagination'
-import { getImg } from '../../../Constants/get-img'
+import { defaultProfile, getImg } from '../../../Constants/get-img'
 import Sidebar from '../../../Components/Sidebar/sidebar'
 
 import {
@@ -39,6 +39,8 @@ const Guides = props => {
     const [guides, setGuides] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [page, setPage] = useState([{ index: 1, isActive: false }])
+    const [searchInput, setSearchInput] = useState('')
+    const [errMessage, setErrorMessage] = useState('')
     let indexColor = 0
 
     useEffect(() => {
@@ -61,7 +63,8 @@ const Guides = props => {
     const fetch = async (page) => {
         const post = await props.get_tours_guides({ page: page, is_mobile: false })
         convertPagetoArr(post.total_page)
-        setGuides(post.tours)
+        setGuides(post.guides)
+        setErrorMessage('')
     }
 
     useEffect(() => {
@@ -75,6 +78,21 @@ const Guides = props => {
         setCurrentPage(index)
     }
 
+    const handleSearchTours = async e => {
+        setSearchInput(e.target.value)
+    }
+
+    const findTours = async () => {      
+        const filtered_tours = await props.get_tours_guides({ page: currentPage, is_mobile: false,input: searchInput })
+        if (filtered_tours.err) {
+            setErrorMessage(filtered_tours.err)
+            return
+        }
+
+        setGuides(filtered_tours.guides)
+        convertPagetoArr(filtered_tours.total_page)
+        setErrorMessage('')
+    }
 
     return (
         <Body>
@@ -85,8 +103,8 @@ const Guides = props => {
                     <h1>UNSEEN</h1>
                 </Header>
                 <Search>
-                    <input type="text" placeholder="Enter something here..." />
-                    <input type="submit" value="Search" />
+                    <input type="text" placeholder="Enter something here..." value={searchInput} onChange={handleSearchTours} />
+                    <input type="submit" value="Search" onClick={findTours} />
                 </Search>
                 <Switch>
                     <OptionBox>
@@ -99,7 +117,7 @@ const Guides = props => {
                         {
                             guides ?
                                 guides.map(data => {
-                                    const image = API + data.image[0].replace('\\', '/')
+                                    const image = defaultProfile
                                     // Generate gradient color
                                     indexColor += 1
                                     if (indexColor > 7) {
@@ -157,7 +175,8 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    get_tours_guides: (data) => dispatch(get_tours_guides(data))
+    get_tours_guides: (data) => dispatch(get_tours_guides(data)),
+    get_filter_tours: (data) => dispatch(get_filter_tours(data))
 })
 
 export default compose(

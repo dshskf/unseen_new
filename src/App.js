@@ -7,13 +7,11 @@ import './App.css'
 import HomePage from './Page/Home/home'
 import ResetAction from './Page/Account/reset/reset-action'
 
-import TrackAgency from './Page/Track/agency/track'
-import TrackUsers from './Page/Track/users/track'
-
 import { default as UserAuth } from './Page/Account/user/user'
 import { default as GuidesAuth } from './Page/Account/guides/guides'
 import { default as AgencyAuth } from './Page/Account/agency/agency'
 
+import { default as RequestPage } from './Page/Request/index'
 import { default as BookingsPage } from './Page/Bookings/index'
 import { default as EditProfilePage } from './Page/Profile/index'
 import { default as Chats } from './Page/Chats/index'
@@ -65,6 +63,7 @@ class App extends React.Component {
                 <Route path="/guides/auth" component={GuidesAuth} />
                 <Route path="/agency/auth" component={AgencyAuth} />
 
+                <Route path="/request" component={RequestPage} />
                 <Route path="/bookings" component={BookingsPage} />
                 <Route path="/profile/edit" component={EditProfilePage} />
 

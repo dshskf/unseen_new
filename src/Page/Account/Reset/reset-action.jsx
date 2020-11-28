@@ -18,6 +18,7 @@ class ResetAction extends Component {
         const { token } = this.props.match.params
         const check = await this.props.check_email({ token: token })
         this.setState({ user: check.data })
+        console.log(check.data)
 
         if (!check.err) {
             this.setState({ isTokenValid: true })
@@ -31,6 +32,7 @@ class ResetAction extends Component {
 
     submitForm = async e => {
         const update = await this.props.update_password({ userId: this.state.user.id, password: this.state.password })
+        console.log(update)
         if (!update.err) {
             this.props.history.push('/login')
         }

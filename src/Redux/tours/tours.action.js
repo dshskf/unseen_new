@@ -11,19 +11,23 @@ const link = endpoint => {
 }
 
 export const get_tours_guides = (data) => async dispatch => {
-    const post = await Post(link('guides'),data)
+    const post = await Post(link('guides'), data)
 
     dispatch({ type: toursType.set_tours_guides, data: post.data })
     return post.data
 }
 
 export const get_tours_agency = (data) => async dispatch => {
-    const post = await Post(link('agency'),data)
+    const post = await Post(link('agency'), data)
 
     dispatch({ type: toursType.set_tours_agency, data: post.data })
     return post.data
 }
 
+export const get_filter_tours = (data) => async dispatch => {
+    const post = await Post(link('/agency/filter'), data)
+    return post.data
+}
 
 export const get_tours_guides_detail = (data) => async dispatch => {
     const post = await Post(link('guides/details'), { id: data.id })
@@ -36,7 +40,7 @@ export const get_tours_agency_detail = (data) => async dispatch => {
 }
 
 export const post_user_request = (data) => async dispatch => {
-    const post = await Post(link('request'), data.form)
+    const post = await Post(link('request'), data)
     return post.data
 }
 

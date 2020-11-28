@@ -7,7 +7,7 @@ import ReactStars from "react-rating-stars-component";
 import { Link } from 'react-router-dom'
 
 import { API } from '../../../Constants/link'
-import { get_tours_agency } from '../../../Redux/tours/tours.action'
+import { get_filter_tours, get_tours_agency } from '../../../Redux/tours/tours.action'
 import Pagination from '../../../Components/Paginations/pagination'
 import { getImg } from '../../../Constants/get-img'
 import Sidebar from '../../../Components/Sidebar/sidebar'
@@ -37,9 +37,16 @@ const Agency = props => {
     const [tours, setTours] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [page, setPage] = useState([{ index: 1, isActive: false }])
+    const [searchInput, setSearchInput] = useState('')
+    const [errMessage, setErrorMessage] = useState('')
 
     useEffect(() => {
-        fetch()
+        if (searchInput !== '') {
+            findTours()
+        } else {
+            fetch()
+        }
+
     }, [currentPage])
 
     const convertPagetoArr = (total) => {
@@ -59,6 +66,7 @@ const Agency = props => {
         const post = await props.get_tours_agency({ page: currentPage, is_mobile: false })
         convertPagetoArr(post.total_page)
         setTours(post.tours)
+        setErrorMessage('')
     }
 
 
@@ -71,6 +79,23 @@ const Agency = props => {
     }
 
 
+    const handleSearchTours = async e => {
+        setSearchInput(e.target.value)
+    }
+
+    const findTours = async () => {      
+        const filtered_tours = await props.get_tours_agency({ page: currentPage, is_mobile: false,input: searchInput })
+        if (filtered_tours.err) {
+            setErrorMessage(filtered_tours.err)
+            return
+        }
+
+        setTours(filtered_tours.tours)
+        convertPagetoArr(filtered_tours.total_page)
+        setErrorMessage('')
+    }
+
+
     return (
         <Body>
             <Sidebar page="home" />
@@ -80,8 +105,8 @@ const Agency = props => {
                     <h1>UNSEEN</h1>
                 </Header>
                 <Search>
-                    <input type="text" placeholder="Enter something here..." />
-                    <input type="submit" value="Search" />
+                    <input type="text" placeholder="Enter something here..." value={searchInput} onChange={handleSearchTours} />
+                    <input type="submit" value="Search" onClick={findTours} />
                 </Search>
                 <Switch>
                     <OptionBox>
@@ -92,7 +117,7 @@ const Agency = props => {
                 <ToursBox>
                     <Tours>
                         {
-                            tours ?
+                            tours && errMessage === '' ?
                                 tours.map(data => {
                                     const image = API + data.image[0].replace('\\', '/')
                                     return (
@@ -138,7 +163,7 @@ const Agency = props => {
                                     )
                                 })
                                 :
-                                null
+                                <p>{errMessage}</p>
                         }
                     </Tours>
                 </ToursBox>
@@ -157,7 +182,8 @@ const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    get_tours_agency: (data) => dispatch(get_tours_agency(data))
+    get_tours_agency: (data) => dispatch(get_tours_agency(data)),
+    get_filter_tours: (data) => dispatch(get_filter_tours(data))
 })
 
 export default compose(

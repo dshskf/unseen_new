@@ -62,24 +62,16 @@ const AgencyRequestDashboard = props => {
             tempRequest.current = tempRequest.current.map(b => {
                 if (res.request_id === b.id) {
                     if (res.is_delete) {
-                        alert.error(b.guides_name + " has reject your requests!")
+                        alert.error(b.customer_name + " has canceled the requests!")
                         return null
                     } else {
-                        if (!b.is_approve) {
-                            alert.success(b.guides_name + " has approved your requests!")
-                            b.is_approve = true
-                        } else if (!b.is_active) {
-                            alert.show(b.guides_name + " has activate your requests!")
-                            b.is_active = true
-                        }
+                        alert.show(b.customer_name + " has been payed!")
+                        b.is_payed = true
                     }
                 }
                 return b
             }).filter(res => res !== null)
-
             setRequestList(tempRequest.current)
-
-
         })
 
         socketIo.current = socket
@@ -95,16 +87,47 @@ const AgencyRequestDashboard = props => {
         fetch()
     }, [currentPage])
 
+
     const fetch = async () => {
         const get = await props.get_request({
             page: currentPage,
             is_mobile: false,
             type: storage.type_code
         })
+        const request_data = get.data.map(r => {
+            if (r.users_id) {
+                r.customer_id = r.users_id
+                r.customer_email = r.users_email
+                r.customer_image = r.users_image
+                r.customer_name = r.users_name
+                r.customer_phone = r.users_phone
+                r.customer_type = 'U'
+            } else {
+                r.customer_id = r.agency_id
+                r.customer_email = r.agency_email
+                r.customer_image = r.agency_image
+                r.customer_name = r.agency_name
+                r.customer_phone = r.agency_phone
+                r.customer_type = 'A'
+            }
 
-        tempRequest.current = get.data
+            delete r.agency_email
+            delete r.agency_id
+            delete r.agency_image
+            delete r.agency_name
+            delete r.agency_phone
+            delete r.users_email
+            delete r.users_id
+            delete r.users_image
+            delete r.users_name
+            delete r.users_phone
+
+            return r
+        })
+
+        tempRequest.current = request_data
         convertPagetoArr(get.total_page)
-        setRequestList(get.data)
+        setRequestList(request_data)
     }
 
     const convertPagetoArr = (total) => {
@@ -122,7 +145,13 @@ const AgencyRequestDashboard = props => {
 
     const updateHandler = async (id, index) => {
         let new_data = requestList[index]
-        new_data.is_payed = true
+
+        // set  active if not active
+        if (!new_data.is_approve) {
+            new_data.is_approve = true
+        } else if (new_data.is_approve && !new_data.is_active) {
+            new_data.is_active = true
+        }
 
         const dataToSubmit = {
             request_id: id,
@@ -132,21 +161,21 @@ const AgencyRequestDashboard = props => {
         const post = await props.update_request({ ...dataToSubmit })
 
         if (!post.err) {
-            alert.success(`Sucessfully payed ${new_data.guides_name}!`)
+            alert.success(`Sucessfully update ${new_data.customer_name}!`)
         } else {
-            new_data.is_payed = false
+            new_data.is_approve = false
             alert.error(post.err)
             return
         }
 
         const message = new_data.is_active ?
-            `${storage.username} has payed your requests!`
+            `${storage.username} has approved your requests!`
             :
-            `${storage.username} has payed your requests!`
+            `${storage.username} has activated your requests!`
 
         const msgData = {
-            receiver_id: new_data.guides_id,
-            receiver_type: 'G',
+            receiver_id: new_data.customer_id,
+            receiver_type: new_data.customer_type,
             content: message,
             tours_id: new_data.id,
             tours_type: 'G'
@@ -154,8 +183,8 @@ const AgencyRequestDashboard = props => {
 
         await props.chats_send_message({ ...msgData })
         socketIo.current.emit('update_request', {
-            opposite_room: `${new_data.receiver_id}-G`,
-            request_id: new_data.id,
+            opposite_room: `${new_data.customer_id}-${new_data.customer_type}`,
+            request_id: new_data.id
         })
 
         let update = requestList.map(d => d)
@@ -171,19 +200,21 @@ const AgencyRequestDashboard = props => {
             request_id: id,
             action: 'delete'
         }
-        const post = await props.update_request({ ...dataToSubmit })       
+        const post = await props.update_request({ ...dataToSubmit })
+
         if (!post.err) {
-            alert.success(`Sucessfully reject ${new_data.guides_name}!`)
+            alert.success(`Sucessfully reject ${new_data.customer_name}!`)
             const msgData = {
-                receiver_id: new_data.guides_id,
-                receiver_type: 'G',
-                content: `${storage.username} has canceled your requests!`,
+                receiver_id: new_data.customer_id,
+                receiver_type: new_data.customer_type,
+                content: `${storage.username} has rejected your requests!`,
                 tours_id: new_data.id,
                 tours_type: 'G'
             }
+
             await props.chats_send_message({ ...msgData })
             socketIo.current.emit('update_request', {
-                opposite_room: `${new_data.receiver_id}-G`,
+                opposite_room: `${new_data.customer_id}-${new_data.customer_type}`,
                 request_id: new_data.id,
                 is_delete: true,
             })
@@ -191,6 +222,7 @@ const AgencyRequestDashboard = props => {
         } else {
             alert.error(post.err)
         }
+
         setRequestList(filtered_data)
     }
 
@@ -220,12 +252,17 @@ const AgencyRequestDashboard = props => {
                 <ReasonItem>
                     <p>Name</p>
                     <p>:</p>
-                    <p>{modalData.guides_name}</p>
+                    <p>{modalData.customer_name}</p>
                 </ReasonItem>
                 <ReasonItem>
                     <p>Email</p>
                     <p>:</p>
-                    <p>{modalData.guides_email}</p>
+                    <p>{modalData.customer_email}</p>
+                </ReasonItem>
+                <ReasonItem>
+                    <p>Phone</p>
+                    <p>:</p>
+                    <p>{modalData.customer_phone}</p>
                 </ReasonItem>
                 <ReasonDescription>
                     {modalData.description}
@@ -266,7 +303,7 @@ const AgencyRequestDashboard = props => {
                                             <p>{index + 1}</p>
                                         </Content>
                                         <Content>
-                                            <p>{request.guides_name}</p>
+                                            <p>{request.customer_name}</p>
                                         </Content>
                                         <Content>
                                             <p>${request.offers_price}</p>
@@ -282,19 +319,28 @@ const AgencyRequestDashboard = props => {
                                         <Content>
                                             <ActionBox>
                                                 {
-                                                    request.is_approve && !request.is_payed &&
-                                                    <React.Fragment>
-                                                        <input
-                                                            type="submit"
-                                                            value="O"
-                                                            onClick={() => updateHandler(request.id, index)}
-                                                        />
-                                                        <input
-                                                            type="submit"
-                                                            value="X"
-                                                            onClick={() => deleteHandler(request.id, index)}
-                                                        />
-                                                    </React.Fragment>
+                                                    !request.is_approve && !request.is_payed ?
+                                                        <React.Fragment>
+                                                            <input
+                                                                type="submit"
+                                                                value="O"
+                                                                onClick={() => updateHandler(request.id, index)}
+                                                            />
+                                                            <input
+                                                                type="submit"
+                                                                value="X"
+                                                                onClick={() => deleteHandler(request.id, index)}
+                                                            />
+                                                        </React.Fragment>
+                                                        :
+                                                        request.is_payed && !request.is_active ?
+                                                            <input
+                                                                type="submit"
+                                                                value="Activate"
+                                                                onClick={() => updateHandler(request.id, index)}
+                                                            />
+                                                            :
+                                                            null
                                                 }
                                             </ActionBox>
                                         </Content>

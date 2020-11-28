@@ -44,6 +44,7 @@ class TrackAgency extends Component {
         const fetch = await this.props.get_user_location({
             booking_id: this.props.id,
         })
+        console.log(fetch)
 
         // Split user and opposite
         const user_data = fetch.data.filter(data => {
@@ -120,7 +121,7 @@ class TrackAgency extends Component {
         }
         let user = this.state.user
 
-        if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {
+        if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {            
             this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
             user.lat = new_location.lat
             user.lng = new_location.lng

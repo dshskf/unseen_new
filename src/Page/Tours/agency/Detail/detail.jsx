@@ -47,8 +47,7 @@ const AgencyToursDetail = props => {
         const req = async () => {
             const post = await props.get_tours_agency_detail({
                 id: props.match.params.toursId
-            })
-            console.log(storage)
+            })            
             setComment(post.comment)
             setData(post.tours[0])
         }
@@ -68,7 +67,7 @@ const AgencyToursDetail = props => {
 
         const post = await props.post_user_booking({
             tours_id: data.id,
-            sender_id: props.user.id,
+            sender_id: storage.id,
             receiver_id: data.agencyId,
             is_payed: false,
             is_active: false,
@@ -77,7 +76,7 @@ const AgencyToursDetail = props => {
 
         if (!post.err) {
             await props.chats_send_message({
-                sender_id: props.user.id,
+                sender_id: storage.id,
                 sender_type: 'U',
                 receiver_id: data.agencyId,
                 receiver_type: 'A',
@@ -155,9 +154,7 @@ const AgencyToursDetail = props => {
 }
 
 
-const mapStateToProps = createStructuredSelector({
-    token: pullToken,
-    user: pullUserData
+const mapStateToProps = createStructuredSelector({    
 })
 
 const mapDispatchToProps = (dispatch) => ({

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { createStructuredSelector } from 'reselect'
 import { connect } from 'react-redux';
 
-import { sign_up } from '../../../Redux/user/user.action'
+import { sign_up } from '../../../Redux/guides/guides.action'
 import { sign_in, send_email } from '../../../Redux/auth/auth.action'
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
@@ -96,8 +96,7 @@ class GuidesAuth extends Component {
 
     reset = async () => {
         if (this.state.email.length > 0) {
-            const req = await this.props.sendEmail({ email: this.state.email })
-            console.log(req)
+            const req = await this.props.sendEmail({ email: this.state.email })            
             if (req.err) {
                 this.setState({ err: req.err })
             } else {

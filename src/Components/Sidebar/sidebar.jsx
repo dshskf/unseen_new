@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom'
 
 
 import { FaBars, FaHome, FaUserEdit, FaSitemap } from 'react-icons/fa'
-import { AiOutlineClose, AiOutlineAreaChart } from 'react-icons/ai'
+import { AiOutlineClose, AiOutlineAreaChart, AiOutlinePullRequest } from 'react-icons/ai'
 import { BsFillChatDotsFill } from 'react-icons/bs'
 import { RiLogoutBoxLine } from 'react-icons/ri'
 
@@ -34,11 +34,11 @@ import {
 
 const Sidebar = props => {
     const [open, setOpen] = useState(false)
-    const [active, setActive] = useState([0, 0, 0, 0, 0])
+    const [active, setActive] = useState([0, 0, 0, 0, 0, 0])
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-        const listPage = ["home", "profile", "dashboard", "chats", "ads"]
+        const listPage = ["home", "profile", "dashboard", "request", "chats", "ads"]
         const newPage = active.map((data, index) => {
             if (props.page === listPage[index]) {
                 return 1
@@ -72,9 +72,7 @@ const Sidebar = props => {
             }
 
         }
-
         req()
-
     }, [props.page])
 
     const sign_outHandler = async () => {
@@ -120,24 +118,41 @@ const Sidebar = props => {
                 >
                     <FaUserEdit style={nav_icon} />
                     {
-                        open ? <p>Profile</p> : null
+                        open && <p>Profile</p>
                     }
                 </Item>
 
 
-                <Item
-                    isOpen={open}
-                    isActive={active[2]}
-                    onClick={() => props.history.push('/bookings')}
-                >
-                    <FaSitemap style={nav_icon} />
-                    {
-                        open && <p>Bookings</p>
+                {
+                    storage.type_code !== 'G' && <Item
+                        isOpen={open}
+                        isActive={active[2]}
+                        onClick={() => props.history.push('/bookings')}
+                    >
+                        <FaSitemap style={nav_icon} />
+                        {
+                            open && <p>Bookings</p>
 
-                    }
-                </Item>
+                        }
+                    </Item>
+                }
 
-                <Item isOpen={open} isActive={active[3]} onClick={() => props.history.push('/chats')}>
+                {
+                    <Item
+                        isOpen={open}
+                        isActive={active[3]}
+                        onClick={() => props.history.push('/request')}
+                    >
+                        <AiOutlinePullRequest style={nav_icon} />
+                        {
+                            open && <p>Request</p>
+
+                        }
+                    </Item>
+                }
+
+
+                <Item isOpen={open} isActive={active[4]} onClick={() => props.history.push('/chats')}>
                     <BsFillChatDotsFill style={nav_icon} />
                     {
                         open && <p>Chats</p>
@@ -145,7 +160,7 @@ const Sidebar = props => {
                 </Item>
                 {
                     storage.type_code === "A" &&
-                    <Item isOpen={open} isActive={active[4]} onClick={() => props.history.push('/ads/list/0')}>
+                    <Item isOpen={open} isActive={active[5]} onClick={() => props.history.push('/ads/list/0')}>
                         <AiOutlineAreaChart style={nav_icon} />
                         {
                             open && <p>Ads</p>
@@ -153,7 +168,7 @@ const Sidebar = props => {
                     </Item>
                 }
 
-                <Item isOpen={open} isActive={active[5]} isLogout={true} onClick={sign_outHandler}>
+                <Item isOpen={open} isActive={active[6]} isLogout={true} onClick={sign_outHandler}>
                     <RiLogoutBoxLine style={nav_icon} />
                     {
                         open && <p>Logout</p>

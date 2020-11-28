@@ -92,7 +92,11 @@ const ChatPage = props => {
         fetchFriend()
 
 
-        return () => socketIo.current.disconnect()
+        return () => {
+            if (socketIo.current) {
+                socketIo.current.disconnect()
+            }
+        }
     }, [])
 
 
