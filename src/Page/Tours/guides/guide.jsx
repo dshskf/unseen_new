@@ -10,7 +10,7 @@ import { color_collections } from './color'
 import { API } from '../../../Constants/link'
 import { get_filter_tours, get_tours_guides } from '../../../Redux/tours/tours.action'
 import Pagination from '../../../Components/Paginations/pagination'
-import { defaultProfile, getImg } from '../../../Constants/get-img'
+import { renameImg, getImg } from '../../../Constants/get-img'
 import Sidebar from '../../../Components/Sidebar/sidebar'
 
 import {
@@ -82,8 +82,8 @@ const Guides = props => {
         setSearchInput(e.target.value)
     }
 
-    const findTours = async () => {      
-        const filtered_tours = await props.get_tours_guides({ page: currentPage, is_mobile: false,input: searchInput })
+    const findTours = async () => {
+        const filtered_tours = await props.get_tours_guides({ page: currentPage, is_mobile: false, input: searchInput })
         if (filtered_tours.err) {
             setErrorMessage(filtered_tours.err)
             return
@@ -117,7 +117,7 @@ const Guides = props => {
                         {
                             guides ?
                                 guides.map(data => {
-                                    const image = defaultProfile
+                                    const image = renameImg(data.image)
                                     // Generate gradient color
                                     indexColor += 1
                                     if (indexColor > 7) {
@@ -127,7 +127,7 @@ const Guides = props => {
                                         <Link key={data.id} to={`/guides/${data.id}`} style={{ textDecoration: 'none', outline: 'none' }}>
                                             <Cards key={data.id} id={data.id} color={color_collections[indexColor]}>
                                                 <Content color={color_collections[indexColor]} >
-                                                    <img src={data.image} alt="" />
+                                                    <img src={image} alt="" />
                                                     <Text>{data.country}</Text>
                                                     <Text>{data.username}</Text>
                                                 </Content>

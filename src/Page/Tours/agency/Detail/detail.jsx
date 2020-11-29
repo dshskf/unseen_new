@@ -11,7 +11,7 @@ import { get_tours_agency_detail, post_user_booking } from '../../../../Redux/to
 import { chats_send_message } from '../../../../Redux/features/features.action'
 
 import { pullToken, pullUserData } from '../../../../Redux/auth/auth.selector'
-import { getImg } from '../../../../Constants/get-img'
+import { getImg, renameImg } from '../../../../Constants/get-img'
 
 import { FiGitPullRequest } from 'react-icons/fi'
 import { BsChatDots } from 'react-icons/bs'
@@ -73,11 +73,16 @@ const AgencyToursDetail = props => {
             is_active: false,
             receiver_type: 'A'
         })
+        await props.chats_send_message({                
+            receiver_id: data.agencyId,
+            receiver_type: 'A',
+            content: "Hey! you got new orders",
+            tours_id: data.id,
+            tours_type: 'A'
+        })
 
         if (!post.err) {
-            await props.chats_send_message({
-                sender_id: storage.id,
-                sender_type: 'U',
+            await props.chats_send_message({                
                 receiver_id: data.agencyId,
                 receiver_type: 'A',
                 content: "Hey! you got new orders",
@@ -107,9 +112,8 @@ const AgencyToursDetail = props => {
                                 <h1>{data.title}</h1>
                             </Title >
                             <Detail>
-                                <Left>
-                                    {/* <img src={api + data.image[0].replace('\\', '/')} alt="" /> */}
-                                    <img src={data.image[0]} alt="" />
+                                <Left>                                    
+                                    <img src={renameImg(data.image[0])} alt="" />
                                 </Left>
                                 <Right>
                                     <ProductTitle>

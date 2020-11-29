@@ -65,7 +65,7 @@ const AgencyRequestDashboard = props => {
                         alert.error(b.customer_name + " has canceled the requests!")
                         return null
                     } else {
-                        alert.show(b.customer_name + " has been payed!")
+                        alert.success(b.customer_name + " has been payed!")
                         b.is_payed = true
                     }
                 }

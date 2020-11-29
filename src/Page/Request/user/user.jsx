@@ -66,10 +66,10 @@ const AgencyRequestDashboard = props => {
                         return null
                     } else {
                         if (!b.is_approve) {
-                            alert.success(b.guides_name + " has approved your requests!")
+                            alert.show(b.guides_name + " has approved your requests!")
                             b.is_approve = true
                         } else if (!b.is_active) {
-                            alert.show(b.guides_name + " has activate your requests!")
+                            alert.success(b.guides_name + " has activate your requests!")
                             b.is_active = true
                         }
                     }

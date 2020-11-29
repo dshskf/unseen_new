@@ -99,8 +99,6 @@ const ChatPage = props => {
         }
     }, [])
 
-
-
     const fetchFriend = async () => {
         let get = await props.chats_person_list()
         get.last_message.map((last_msg, i) => {

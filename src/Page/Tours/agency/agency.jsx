@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import { API } from '../../../Constants/link'
 import { get_filter_tours, get_tours_agency } from '../../../Redux/tours/tours.action'
 import Pagination from '../../../Components/Paginations/pagination'
-import { getImg } from '../../../Constants/get-img'
+import { getImg, renameImg } from '../../../Constants/get-img'
 import Sidebar from '../../../Components/Sidebar/sidebar'
 
 import {
@@ -119,12 +119,12 @@ const Agency = props => {
                         {
                             tours && errMessage === '' ?
                                 tours.map(data => {
-                                    const image = API + data.image[0].replace('\\', '/')
+                                    const image = renameImg(data.image[0])
                                     return (
                                         <Link to={`/agency/${data.id}`} style={{ textDecoration: 'none', outline: 'none' }}>
                                             <Cards key={data.id} id={data.id}>
                                                 <CardImage>
-                                                    <img src={data.image[0]} alt="" />
+                                                    <img src={image} alt="" />
                                                 </CardImage>
                                                 <CardContent>
                                                     <Content>

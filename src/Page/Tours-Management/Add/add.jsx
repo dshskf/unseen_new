@@ -184,7 +184,7 @@ class AddTours extends Component {
         const sendForm = await this.props.add_tours(formData)
 
         if (!sendForm.err) {
-            this.props.history.push('/ads')
+            this.props.history.push('/ads/list/0')
         }
     }
 

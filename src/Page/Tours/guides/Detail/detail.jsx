@@ -10,7 +10,7 @@ import Sidebar from "../../../../Components/Sidebar/sidebar";
 import { get_tours_guides_detail, post_user_request, } from "../../../../Redux/tours/tours.action";
 import { chats_send_message, get_location_data } from "../../../../Redux/features/features.action";
 
-import { defaultProfile, getImg } from "../../../../Constants/get-img";
+import { defaultProfile, getImg, renameImg } from "../../../../Constants/get-img";
 
 import { FaRegAddressBook, FaMapMarkerAlt } from "react-icons/fa";
 import { BsChatDots } from "react-icons/bs";
@@ -153,7 +153,7 @@ const GuidesToursDetail = (props) => {
         const dataToSubmit = {
             sender_id: storage.id,
             sender_type: storage.type_code,
-            receiver_id: guidesData.id,            
+            receiver_id: guidesData.id,
             country_id: location.countries_id,
             state_id: location.states_id,
             city_id: location.cities_id,
@@ -270,7 +270,7 @@ const GuidesToursDetail = (props) => {
                             <Profile>
                                 <AvatarBox>
                                     <Avatar>
-                                        <img src={guidesData.image ? guidesData.image : defaultProfile} />
+                                        <img src={guidesData.image ? renameImg(guidesData.image) : defaultProfile} />
                                         <ProfileList>
                                             <ProfileItem>
                                                 <p>{guidesData.username}</p>
