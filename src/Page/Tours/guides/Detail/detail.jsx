@@ -165,6 +165,12 @@ const GuidesToursDetail = (props) => {
 
         const post = await props.post_user_request({ ...dataToSubmit })
         if (!post.err) {
+            await props.chats_send_message({
+                receiver_id: guidesData.id,
+                receiver_type: 'G',
+                content: `Hello i'm ${storage.username}, ${requestForm.description}!
+                `
+            })
             alert.success("Request Success")
         } else {
             alert.error(post.err)

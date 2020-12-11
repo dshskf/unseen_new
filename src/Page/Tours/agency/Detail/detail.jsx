@@ -72,14 +72,7 @@ const AgencyToursDetail = props => {
             is_payed: false,
             is_active: false,
             receiver_type: 'A'
-        })
-        await props.chats_send_message({                
-            receiver_id: data.agencyId,
-            receiver_type: 'A',
-            content: "Hey! you got new orders",
-            tours_id: data.id,
-            tours_type: 'A'
-        })
+        })       
 
         if (!post.err) {
             await props.chats_send_message({                

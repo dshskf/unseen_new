@@ -224,7 +224,9 @@ const EditUserProfile = props => {
                                         onChange={locationHandler}
                                         disabled={location.states ? false : true}
                                     >
-                                        <option value="" disabled selected>Select your states</option>
+                                        {
+                                            !location.state_id && <option value="" disabled selected>Select your states</option>
+                                        }
                                         {
                                             location.states && location.states.map((data, index) => {
                                                 if (data.val === location.state_id) {
@@ -242,7 +244,9 @@ const EditUserProfile = props => {
                                         onChange={locationHandler}
                                         disabled={location.city ? false : true}
                                     >
-                                        <option value="" disabled selected>Select your cities</option>
+                                        {
+                                            !location.city_id && <option value="" disabled selected>Select your cities</option>
+                                        }
                                         {
                                             location.city && location.city.map((data, index) => {
                                                 if (data.val === location.city_id) {

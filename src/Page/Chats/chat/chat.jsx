@@ -6,11 +6,14 @@ import { withRouter } from 'react-router-dom'
 import io from 'socket.io-client'
 
 import { chats_person_list, chats_fetch_message, chats_send_message } from '../../../Redux/features/features.action'
-// import { get_tours_detail } from '../../../Redux/tours/tours.action'
+import { get_edit_profile as get_agency_profile } from '../../../Redux/agency/agency.action'
+import { get_edit_profile as get_guides_profile } from '../../../Redux/guides/guides.action'
+import { get_edit_profile as get_user_profile } from '../../../Redux/user/user.action'
+
 
 import { pullToken, pullUserData } from '../../../Redux/auth/auth.selector'
 
-import { getImg } from '../../../Constants/get-img'
+import { getImg, renameImg } from '../../../Constants/get-img'
 import { AiOutlineSend, AiOutlineClose } from 'react-icons/ai'
 import { API } from '../../../Constants/link'
 import { storage } from '../../../Constants/request'
@@ -39,27 +42,17 @@ import {
 const ChatPage = props => {
     const [input, setInput] = useState('')
     const [userData, setUserData] = useState('')
+    const [friendData, setFriendData] = useState('')
     const [friendList, setFriendList] = useState([])
     const [message, setMessage] = useState('')
     const [chatting, setChatting] = useState(false)
 
-    let [lastMessage, setLastMessage] = useState(false)
-    const [activeChats, setActiveChats] = useState({
-        index: '',
-        receiver: '',
-        friendName: '',
-        type: ''
-    })
-
     const messageEnd = useRef(null)
-    const isScroll = useRef(false)
+    const friendListRef = useRef(null)
+    const friendDataRef = useRef(null)
+    const messageRef = useRef(null)
     const socketIo = useRef()
-    const activeList = useRef({
-        index: '',
-        receiver: '',
-        friendName: '',
-        type: ''
-    })
+
 
     useEffect(() => {
         let socket = io(API)
@@ -70,22 +63,29 @@ const ChatPage = props => {
         socket.on('msg_response', async data => {
             const d = new Date()
             const dateNow = `T${d.getHours()}:${d.getMinutes()}`
-            await fetchFriend()
-
-            if (data.sender_id.toString() === activeList.current.receiver.toString() && data.sender_type === activeList.current.type) {
-
-                await setMessage(lastData => [
-                    ...lastData,
-                    {
-                        ...data,
-                        createdAt: dateNow
-                    }
-                ])
-
-                if (isScroll.current && messageEnd.current) {
-                    messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+            const updateFriendlist = friendListRef.current.map(friend => {
+                if (data.sender_id === friend.id && data.sender_type === friend.type) {
+                    friend.content = checkMessageLength(data.content)
                 }
+                return friend
+            })
+
+            if (messageRef.current && friendDataRef.current.id === data.sender_id && friendDataRef.current.type === data.sender_type) {
+                const updateMessage = [...messageRef.current, {
+                    ...data,
+                    createdAt: dateNow
+                }]
+
+                messageRef.current = updateMessage
+                setMessage(updateMessage)
             }
+
+
+            setFriendList(updateFriendlist)
+            if (messageEnd.current) {
+                messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+            }
+
         })
 
         socketIo.current = socket
@@ -100,62 +100,60 @@ const ChatPage = props => {
     }, [])
 
     const fetchFriend = async () => {
-        let get = await props.chats_person_list()
-        get.last_message.map((last_msg, i) => {
-            last_msg.content = checkMessageLength(last_msg.content)
+        let user
 
-            // set index
-            last_msg.index = i
-            get.data[i].index = i
+        // Why using "request" instead of using "local storage" is because when user update the profile, need a new data
+        if (storage.type_code === 'A') {
+            user = await props.get_agency_profile()
+        } else if (storage.type_code === 'G') {
+            user = await props.get_guides_profile()
+        } else {
+            user = await props.get_user_profile()
+        }
 
-            return last_msg
+        let friend = await props.chats_person_list()
+
+        // check message length
+        friend = friend.data.map(f => {
+            f.content = checkMessageLength(f.content)
+            return f
         })
 
-        setLastMessage(get.last_message)
-        setFriendList(get.data)
+        friendListRef.current = friend
+        setUserData(user.data)
+        setFriendList(friend)
     }
 
     const checkMessageLength = msg => {
         return msg.length > 30 ? msg.substr(0, 30) + "..." : msg
     }
 
-    const fetchMsg = async e => {
-        let filterFriends = friendList.filter(friend => friend.index.toString() === e.currentTarget.id)
+    const fetchMsg = async (id, type) => {
+        let filterFriends = friendList.filter(friend => friend.id === id && friend.type === type);
         filterFriends = filterFriends[0]
 
         const receiver_id = filterFriends.id
         const receiver_type = filterFriends.type
-        const tours_type = storage.type[0].toUpperCase() === 'U' ? receiver_type : storage.type[0].toUpperCase()
 
         const dataToSubmit = {
-            sender_id: props.user.id,
-            sender_type: storage.type[0].toUpperCase(),
+            sender_type: storage.type_code,
             receiver_id: receiver_id,
             receiver_type: receiver_type,
-            tours_type: tours_type
+            tours_type: receiver_type
         }
-        const req = await props.chats_fetch_message(dataToSubmit)
+        const msg = await props.chats_fetch_message(dataToSubmit)
 
-        const active_data = {
-            index: filterFriends.index,
-            receiver: receiver_id,
-            friendName: filterFriends.username,
-            type: receiver_type
-        }
+        messageRef.current = msg.data
+        friendDataRef.current = filterFriends
 
-        setUserData({
-            ...dataToSubmit,
-            user_image: props.user.image,
-            friend_image: filterFriends.image
-        })
-
-        activeList.current = active_data
-        setActiveChats(active_data)
-        setMessage(req.data)
+        setFriendData(filterFriends)
+        setMessage(msg.data)
         setChatting(true)
 
-        isScroll.current = true
-        messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+        if (messageEnd.current) {
+            messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+        }
+
     }
 
     const send_message = async () => {
@@ -163,29 +161,36 @@ const ChatPage = props => {
         const dateNow = `T${d.getHours()}:${d.getMinutes()}`
 
         const dataToSubmit = {
-            sender_id: userData.sender_id,
-            sender_type: storage.type[0].toUpperCase(),
-            receiver_id: userData.receiver_id,
-            receiver_type: userData.receiver_type,
+            sender_id: storage.id,
+            sender_type: storage.type_code,
+            receiver_id: friendData.id,
+            receiver_type: friendData.type,
             content: input,
         }
 
+        const sendMsg = await props.chats_send_message(dataToSubmit)
 
-        lastMessage = await lastMessage.map(msg => {
-            if (msg.index === activeChats.index) {
-                msg.content = checkMessageLength(input)
-            }
-            return msg
-        })
+        if (!sendMsg.err) {
+            const updateFriendlist = friendList.map(friend => {
+                if (friend.id === dataToSubmit.receiver_id && friend.type === dataToSubmit.receiver_type) {
+                    friend.content = checkMessageLength(input)
+                }
+                return friend
 
+            })
 
-        await setLastMessage(lastMessage)
-        await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
-        await props.chats_send_message(dataToSubmit)
+            messageRef.current = [...messageRef.current, { ...dataToSubmit, createdAt: dateNow }]
+
+            await setFriendList(updateFriendlist)
+            await setMessage(lastData => [...lastData, { ...dataToSubmit, createdAt: dateNow }])
+        }
 
         setInput('')
-        messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
         socketIo.current.emit('msg', dataToSubmit)
+
+        if (messageEnd.current) {
+            messageEnd.current.scrollIntoView({ behavior: "smooth", block: 'start' });
+        }
     }
 
     const onEnterHandler = e => {
@@ -202,18 +207,17 @@ const ChatPage = props => {
                 <Friend>
                     {
                         friendList ?
-                            friendList.map((data, index) => {
+                            friendList.map((friend, index) => {
                                 return (
                                     <FriendTitle
-                                        id={data.index}
                                         key={index}
-                                        isActive={data.id.toString() === activeChats.receiver.toString()}
-                                        onClick={fetchMsg}
+                                        isActive={friendData && (friend.id === friendData.id && friend.type === friendData.type)}
+                                        onClick={() => fetchMsg(friend.id, friend.type)}
                                     >
-                                        <img alt="" src={data.image ? API + data.image.replace('\\', '/') : getImg("Account", "guest.png")} />
+                                        <img alt="" src={friend.image ? renameImg(friend.image) : getImg("Account", "guest.png")} />
                                         <FriendData>
-                                            <p>{data.username}</p>
-                                            <p>{lastMessage[index].content}</p>
+                                            <p>{friend.username}</p>
+                                            <p>{friend.content}</p>
                                         </FriendData>
 
                                     </FriendTitle>
@@ -232,54 +236,49 @@ const ChatPage = props => {
                                 style={{ position: 'absolute', color: '#384355', fontSize: '1.5rem', right: '5%', cursor: 'pointer' }}
                                 onClick={() => setChatting(false)}
                             />
-                            <p>{activeChats.friendName}</p>
+                            <p>{friendData && friendData.username}</p>
                         </ChatTitle>
                         <Box>
                             {
                                 message ?
-                                    message.map((data, index) => {
-                                        let img = data.tours_id ?
-                                            API + data.tours_image[0].replace('\\', '/')
-                                            :
-                                            null
-                                        const date = data.createdAt.split('T')[1].substring(0, 5)
-
+                                    message.map((msg, index) => {
+                                        let img = msg.tours_id ? renameImg(msg.tours_image[0]) : null
+                                        const date = msg.createdAt.split('T')[1].substring(0, 5)
                                         return (
-                                            data.sender_id.toString() === userData.sender_id.toString() && data.sender_type !== userData.receiver_type ?
+                                            storage.type_code === msg.sender_type ?
                                                 <BoxRight key={index} ref={index === message.length - 1 ? messageEnd : null}>
                                                     <RightText>
-                                                        <MessageBox isRight={true} length={data.content}>
+                                                        <MessageBox isRight={true} length={msg.content}>
                                                             {
-                                                                data.tours_id && <ToursBox>
+                                                                msg.tours_id && <ToursBox>
                                                                     <img alt="" src={img} />
                                                                     <ToursDetail>
-                                                                        <p>{data.tours_title}</p>
-                                                                        <p>${data.tours_cost}</p>
+                                                                        <p>{msg.tours_title}</p>
+                                                                        <p>${msg.tours_cost}</p>
                                                                     </ToursDetail>
                                                                 </ToursBox>
                                                             }
-                                                            <p>{data.content}</p>
+                                                            <p>{msg.content}</p>
                                                             <span>{date} pm</span>
                                                         </MessageBox>
-                                                        <img alt="" src={userData.friend_image ? API + userData.friend_image : getImg("Account", "guest.png")} />
+                                                        <img alt="" src={userData.image ? renameImg(userData.image) : getImg("Account", "guest.png")} />
                                                     </RightText>
                                                 </BoxRight>
                                                 :
-
                                                 <LeftText key={index} ref={index === message.length - 1 ? messageEnd : null}>
-                                                    <img alt="" src={userData.user_image ? API + userData.user_image : getImg("Account", "guest.png")} />
-                                                    <MessageBox length={data.content}>
+                                                    <img alt="" src={friendData.image ? renameImg(friendData.image) : getImg("Account", "guest.png")} />
+                                                    <MessageBox length={msg.content}>
                                                         {
-                                                            data.tours_id && <ToursBox>
+                                                            msg.tours_id && <ToursBox>
                                                                 <img alt="" src={img} />
                                                                 <ToursDetail>
-                                                                    <p>{data.tours_title}</p>
-                                                                    <p>${data.tours_cost}</p>
+                                                                    <p>{msg.tours_title}</p>
+                                                                    <p>${msg.tours_cost}</p>
                                                                 </ToursDetail>
                                                             </ToursBox>
                                                         }
 
-                                                        <p>{data.content}</p>
+                                                        <p>{msg.content}</p>
                                                         <span>{date} pm</span>
                                                     </MessageBox>
                                                 </LeftText>
@@ -310,7 +309,9 @@ const mapDispatchToProps = (dispatch) => ({
     chats_person_list: data => dispatch(chats_person_list(data)),
     chats_fetch_message: data => dispatch(chats_fetch_message(data)),
     chats_send_message: data => dispatch(chats_send_message(data)),
-    // get_tours_detail: data => dispatch(get_tours_detail(data))
+    get_agency_profile: (data) => dispatch(get_agency_profile(data)),
+    get_guides_profile: (data) => dispatch(get_guides_profile(data)),
+    get_user_profile: (data) => dispatch(get_user_profile(data)),
 })
 
 export default compose(
