@@ -223,7 +223,7 @@ const UserBookingDashboard = props => {
                                         <Content>
                                             {
                                                 data.is_active ?
-                                                    <Link to={`/tracks/${data.id}.agency`} style={styles.link}>
+                                                    <Link to={`/tracks/bookings/${data.id}`} style={styles.link}>
                                                         <StatusBox id={data.id} isActive={true}>
                                                             <FaMapMarkerAlt style={{ color: "white" }} />
                                                             <p>Track</p>

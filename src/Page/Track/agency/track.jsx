@@ -41,10 +41,11 @@ class TrackAgency extends Component {
     }, 3000);
 
     async componentDidMount() {
+        const { type, id } = this.props.match.params
         const fetch = await this.props.get_user_location({
-            booking_id: this.props.id,
-        })
-        console.log(fetch)
+            id: id,
+            reqType: type
+        })        
 
         // Split user and opposite
         const user_data = fetch.data.filter(data => {
@@ -121,7 +122,7 @@ class TrackAgency extends Component {
         }
         let user = this.state.user
 
-        if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {            
+        if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {
             this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
             user.lat = new_location.lat
             user.lng = new_location.lng
@@ -210,7 +211,7 @@ class TrackAgency extends Component {
                     title={"You"}
                     icon={{
                         url: "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png",
-                        anchor: new window.google.maps.Point(32, 32),
+                        anchor: new window.google.maps.Point(10, 10),
                         scaledSize: new window.google.maps.Size(20, 20)
                     }}
                     position={{ lat: this.state.user.lat, lng: this.state.user.lng }}

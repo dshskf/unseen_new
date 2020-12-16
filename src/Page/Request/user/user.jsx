@@ -147,9 +147,7 @@ const AgencyRequestDashboard = props => {
         const msgData = {
             receiver_id: new_data.guides_id,
             receiver_type: 'G',
-            content: message,
-            tours_id: new_data.id,
-            tours_type: 'G'
+            content: message            
         }
 
         await props.chats_send_message({ ...msgData })
@@ -301,7 +299,7 @@ const AgencyRequestDashboard = props => {
                                         <Content>
                                             {
                                                 request.is_active ?
-                                                    <Link to={`/tracks/${request.id}`} style={styles.link}>
+                                                    <Link to={`/tracks/requests/${request.id}`} style={styles.link}>
                                                         <StatusBox id={request.id} isActive={true}>
                                                             <FaMapMarkerAlt style={{ color: "white" }} />
                                                             <p>Track</p>

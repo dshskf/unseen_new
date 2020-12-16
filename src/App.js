@@ -75,7 +75,7 @@ class App extends React.Component {
                 <Route path="/chats" component={Chats} />
 
                 <Route path="/ads/:method/:adsId" component={ToursManagement} />
-                <Route path="/tracks/:id" component={TrackPage} />
+                <Route path="/tracks/:type/:id" component={TrackPage} />
 
                 <Route path="/" component={HomePage} />
               </Switch>

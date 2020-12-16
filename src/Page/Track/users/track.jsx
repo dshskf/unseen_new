@@ -37,12 +37,12 @@ class TrackUsers extends Component {
         this.getPosition()
     }, 3000);
 
-    async componentDidMount() {        
+    async componentDidMount() {
+        const { type, id } = this.props.match.params        
         const fetch = await this.props.get_user_location({
-            booking_id: this.props.id.split('.')[0],
-            receiver_type: this.props.id.split('.')[1][0].toUpperCase()
-        })
-        
+            id: id,
+            reqType: type
+        })        
 
         // Split user and opposite
         const user_data = fetch.data.filter(data => {
@@ -193,7 +193,7 @@ class TrackUsers extends Component {
                     title={"You"}
                     icon={{
                         url: "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png",
-                        anchor: new window.google.maps.Point(32, 32),
+                        anchor: new window.google.maps.Point(10, 10),
                         scaledSize: new window.google.maps.Size(20, 20)
                     }}
                     position={{ lat: this.state.user.lat, lng: this.state.user.lng }}

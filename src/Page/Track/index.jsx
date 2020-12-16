@@ -11,7 +11,7 @@ const TrackPage = props => {
             return (<Agency id={props.match.params.id} />)
         } else if (storage.type_code === 'U') {
             return (<User id={props.match.params.id} />)
-        } else if (storage.type_code === 'G') {
+        } else if (storage.type_code === 'G') {            
             return (<Guides />)
         } else {
 
