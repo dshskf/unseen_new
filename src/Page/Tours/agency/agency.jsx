@@ -64,6 +64,7 @@ const Agency = props => {
 
     const fetch = async () => {
         const post = await props.get_tours_agency({ page: currentPage, is_mobile: false })
+        console.log(post)
         convertPagetoArr(post.total_page)
         setTours(post.tours)
         setErrorMessage('')
@@ -130,12 +131,7 @@ const Agency = props => {
                                                     <Content>
                                                         <p>{data.title}</p>
                                                         <p>{data.username}</p>
-                                                        <p>
-                                                            {
-                                                                data.destination.map((dest, i) => {
-                                                                    return i < data.destination.length - 1 ? dest.name + ", " : dest.name
-                                                                })
-                                                            }
+                                                        <p>{data.city}
                                                         </p>
                                                         <p>Start: {data.start_date.split('T')[0]}</p>
                                                     </Content>
