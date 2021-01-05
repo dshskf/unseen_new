@@ -18,7 +18,10 @@ import { BsChatDots } from 'react-icons/bs'
 import { AiOutlineSend } from 'react-icons/ai'
 import { useAlert } from "react-alert";
 import { storage } from '../../../../Constants/request'
-
+// import { Carousel } from 'react-responsive-carousel';
+// import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+// import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
+import Carousel from 'react-elastic-carousel'
 
 import { Body, Sub, Header } from '../../../style.route'
 
@@ -35,7 +38,8 @@ import {
     ProductPrice,
     ProductAction,
     ActionItem,
-    Description
+    Description,
+    TitleBox
 } from './style'
 
 const AgencyToursDetail = props => {
@@ -47,7 +51,7 @@ const AgencyToursDetail = props => {
         const req = async () => {
             const post = await props.get_tours_agency_detail({
                 id: props.match.params.toursId
-            })            
+            })
             setComment(post.comment)
             setData(post.tours[0])
         }
@@ -72,10 +76,10 @@ const AgencyToursDetail = props => {
             is_payed: false,
             is_active: false,
             receiver_type: 'A'
-        })       
+        })
 
         if (!post.err) {
-            await props.chats_send_message({                
+            await props.chats_send_message({
                 receiver_id: data.agencyId,
                 receiver_type: 'A',
                 content: "Hey! you got new orders",
@@ -102,11 +106,24 @@ const AgencyToursDetail = props => {
                     data ?
                         <Container>
                             < Title >
-                                <h1>{data.title}</h1>
+                                <TitleBox>
+                                    <h1>{data.title}</h1>
+                                </TitleBox>
                             </Title >
                             <Detail>
-                                <Left>                                    
-                                    <img src={renameImg(data.image[0])} alt="" />
+                                <Left>
+                                    <Carousel
+                                        showEmptySlots={true}
+                                        style={{ color: 'red' }}
+                                    >
+                                        {
+                                            data.image.map((image, i) => (
+                                                <div key={i}>
+                                                    <img src={renameImg(image)} alt="" />
+                                                </div>
+                                            ))
+                                        }
+                                    </Carousel>
                                 </Left>
                                 <Right>
                                     <ProductTitle>
@@ -115,7 +132,7 @@ const AgencyToursDetail = props => {
                                     </ProductTitle>
                                     <ProductGuide>
                                         <GuideImages>
-                                            <img src={data.agency_images} alt="" />
+                                            <img src={renameImg(data.agency_images)} alt="" />
                                         </GuideImages>
                                         <GuideData>
                                             <h2>Guided By:</h2>
@@ -151,7 +168,7 @@ const AgencyToursDetail = props => {
 }
 
 
-const mapStateToProps = createStructuredSelector({    
+const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({

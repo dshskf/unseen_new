@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "../../../Constants/color";
 
 export const Container = styled.div`
   display: flex;
@@ -48,17 +49,17 @@ export const Content = styled.div`
   margin: 0;
   color: #5f5f5f;
   margin: 5px 0;
-  cursor: cell;
+
   ${(props) => (props.isHeader ? header : null)};
 
   ${(props) => (props.isReason ? reason : null)};
 
   :nth-child(1) {
-    width: 15%;
+    width: 5%;
   }
 
   :nth-child(2) {
-    width: 20%;
+    width: 15%;
   }
 
   :nth-child(3) {
@@ -67,16 +68,32 @@ export const Content = styled.div`
   }
 
   :nth-child(4) {
-    width: 24%;
+    width: 20%;
   }
 
   :nth-child(5) {
-    width: 15%;
+    width: 20%;
   }
 
   :nth-child(6) {
-    width: 15%;    
-  }  
+    width: 15%;
+  }
+
+  :nth-child(7) {
+    width: 15%;
+  }
+`;
+
+export const ReasonButton = styled.p`
+  color: ${color.grey_3};
+  background: ${color.border};
+  border-radius: 20px;
+  cursor: pointer;
+  height: 1.5rem;
+  width: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const ActionBox = styled.div`
@@ -122,57 +139,77 @@ const onPayed = css`
 const onActive = css`
   color: white;
   background: #f37d1f;
+  cursor: pointer;
 `;
 
 export const StatusBox = styled.div`
   background: #d1d1d1;
-  height: 2rem;
-  width: 70%;
-  border-radius: 5px;
+  padding: 8px 1.5rem;
+  border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
   ${(props) => (props.isPayed ? onPayed : null)};
+  ${(props) => (props.isActive ? onActive : null)};
 
   p {
     margin: 0;
+    margin-left: 6px;
   }
 `;
 
-export const Modal = styled.div`
-  position: fixed;
-  width: 100vw;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  background: rgba(8, 8, 8, 0.3);
-  display: ${(props) => (props.isOpen ? "flex" : "none")};
-  justify-content: center;
-  align-items: center;
-  z-index: 5;
-`;
+export const ReasonImage = styled.div`
+  position: absolute;
+  top: -3.5rem;
 
-export const ModalContent = styled.div`
-  width: 40%;
-  min-height: 10rem;
-  background: white;
-  padding-left: 1rem;
-  position: relative;
-  color: #272727;
-  text-align: left;
-  h1 {
-    width: 90%;
-    border-bottom: 1px solid #d4d4d4;
-    margin-bottom: 0;
-    padding-bottom: 10px;
-  }
-
-  label {
-    position: absolute;
-    color: gray;
-    right: 1rem;
-    top: 10px;
-    cursor: pointer;
-    font-size: 1.5rem;
+  img {
+    width: 7rem;
+    height: 7rem;
+    border: 4px solid white;
+    border-radius: 50%;
   }
 `;
+
+export const Reason = styled.div`
+  width: 16rem;  
+  margin-top: 1rem;  
+`;
+
+export const ReasonItem = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  border-bottom:1px solid ${color.primary};
+  padding:8px 0;
+  text-align:left;
+
+  p {
+    font-weight: bold;
+    color: ${color.grey_1};
+    text-transform: capitalize;
+    height: 1.5rem;
+    margin: 8px 0;
+
+    :nth-child(1) {
+      width:30%;
+    }
+
+    :nth-child(2) {
+      width:15%;
+    }
+
+    :nth-child(3) {
+      width:55%;
+      color:${color.grey_2};
+      font-weight:400;
+    }
+  }
+`;
+
+export const ReasonDescription = styled.div`
+width:100%;
+display: flex;
+flex-wrap:wrap;
+margin-top:2rem;
+color:${color.grey_2};
+`

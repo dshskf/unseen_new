@@ -26,8 +26,9 @@ export const RequestDimmer = styled.div`
 `;
 
 export const RequestBox = styled.div`
-  width: 50%;
-  height: 55rem;
+  width: 50%;  
+  min-height:15rem;
+  padding-bottom:5rem;
   background: white;
   border-radius: 4px;
   overflow-x: hidden;
@@ -66,6 +67,7 @@ export const RequestPanel = styled.div`
 export const RequestInput = styled.div`
   width: 90%;
   margin: 1rem 0;
+  
   * {
     width: 95%;
   }

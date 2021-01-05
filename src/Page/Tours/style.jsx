@@ -17,13 +17,20 @@ export const Container = styled.div`
   box-sizing: border-box;
 `;
 
-export const Header = styled.div`
+export const HeaderBox = styled.div`
   width: 100%;
   height: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+export const Header = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #2e2e2e;
+  cursor:pointer;
 
   img {
     width: 2rem;

@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "../../../Constants/color";
 
 export const Container = styled.div`
   width: 100%;  
@@ -87,7 +88,7 @@ export const InputBox = styled.div`
   label {
     font-size: 0.8rem;
     margin-bottom: 4px;
-    color: #3c3c3c;
+    color: ${color.primary};
   }
 
   input {

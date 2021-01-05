@@ -58,7 +58,6 @@ class App extends React.Component {
               <Switch>
 
                 <Route path="/reset/:token" component={ResetAction} />
-
                 <Route path="/user/auth" component={UserAuth} />
                 <Route path="/guides/auth" component={GuidesAuth} />
                 <Route path="/agency/auth" component={AgencyAuth} />

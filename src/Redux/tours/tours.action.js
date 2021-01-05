@@ -75,3 +75,24 @@ export const get_dashboard_detail = (data) => async dispatch => {
     const post = await Post(link("dashboard/details"), data)
     return post.data
 }
+
+export const get_booking_list = (data) => async dispatch => {
+    const get = await Get(link("booking-list"))
+    return get.data
+}
+
+
+export const post_agency_request = (data) => async dispatch => {
+    const post = await Post(link("request/agency"), data)
+    return post.data
+}
+
+export const send_comment_booking = (data) => async dispatch => {
+    const post = await Post(link('comments/bookings'), data)
+    return post.data
+}
+
+export const send_comment_requests = (data) => async dispatch => {
+    const post = await Post(link('comments/requests'), data)
+    return post.data
+}

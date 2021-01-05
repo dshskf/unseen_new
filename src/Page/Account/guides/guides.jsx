@@ -109,10 +109,10 @@ class GuidesAuth extends Component {
         return (
             <Container>
                 <Left>
-                    <img src={getImg("Product", "b1.jpg")} alt="" />
+                    <img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8dHJhdmVsbGluZ3xlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80" alt="" />
                 </Left>
                 <Right>
-                    <Title>
+                    <Title onClick={() => this.props.history.push('/')}>
                         <img src={getImg("Account", 'logo.png')} alt="" />
                         <h1>UNSEEN</h1>
                     </Title>

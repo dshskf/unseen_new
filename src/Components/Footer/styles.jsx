@@ -4,8 +4,8 @@ export const Container = styled.div`
   position: absolute;
   bottom: -80px;
   width: 100vw;
-  height: 3rem;
-  background: black;
+  height: 4rem;
+  background: rgba(10,10,10,0.9);
 `;
 
 export const Sub = styled.div`
@@ -17,7 +17,6 @@ export const Sub = styled.div`
   align-items: center;
 
   p {
-    margin: 0 1rem;
-    
+    margin: 0 1rem;    
   }
 `;

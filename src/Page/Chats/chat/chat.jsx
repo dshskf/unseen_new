@@ -242,7 +242,7 @@ const ChatPage = props => {
                             {
                                 message ?
                                     message.map((msg, index) => {
-                                        let img = msg.tours_id ? renameImg(msg.tours_image[0]) : null
+                                        let img = msg.tours_image ? renameImg(msg.tours_image[0]) : null
                                         const date = msg.createdAt.split('T')[1].substring(0, 5)
                                         return (
                                             storage.type_code === msg.sender_type ?

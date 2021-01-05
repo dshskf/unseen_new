@@ -45,11 +45,13 @@ export const Title = styled.div`
 
   h1 {
     font-weight: 400;
+    cursor:pointer;
   }
 
   img {
     width: 4rem;
     height: 4rem;
+    cursor:pointer;
   }
 `;
 

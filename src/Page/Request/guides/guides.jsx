@@ -18,7 +18,7 @@ import { API } from '../../../Constants/link'
 import Pagination from '../../../Components/Paginations/pagination'
 import { default as ModalComponent } from '../../../Components/ModalBox/modal'
 
-import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaMoneyCheck, FaMapMarkerAlt, FaFlagCheckered } from 'react-icons/fa'
 import { GiSandsOfTime } from 'react-icons/gi'
 import { useAlert } from "react-alert";
 
@@ -36,7 +36,10 @@ import {
     ReasonImage,
     Reason,
     ReasonItem,
-    ReasonDescription
+    ReasonDescription,
+    Switch,
+    OptionBox,
+    Option
 } from './style'
 import { BsThreeDots } from 'react-icons/bs'
 
@@ -47,6 +50,7 @@ const AgencyRequestDashboard = props => {
     const [page, setPage] = useState([{ index: 1, isActive: false }])
     const [openModal, setOpenModal] = useState(false)
     const [modalData, setModalData] = useState(null)
+    const [pageTab, setPageTab] = useState('U')
 
     const tempRequest = useRef()
     const socketIo = useRef()
@@ -88,13 +92,14 @@ const AgencyRequestDashboard = props => {
     }, [currentPage])
 
 
-    const fetch = async () => {
+    const fetch = async (type) => {
         const get = await props.get_request({
             page: currentPage,
             is_mobile: false,
             type: storage.type_code
         })
-        const request_data = get.data.map(r => {
+
+        let request_data = get.data.map(r => {
             if (r.users_id) {
                 r.customer_id = r.users_id
                 r.customer_email = r.users_email
@@ -124,6 +129,12 @@ const AgencyRequestDashboard = props => {
 
             return r
         })
+
+        if (type) {
+            request_data = request_data.filter(req => req.customer_type === type)
+        } else {
+            request_data = request_data.filter(req => req.customer_type === pageTab)
+        }
 
         tempRequest.current = request_data
         convertPagetoArr(get.total_page)
@@ -176,7 +187,7 @@ const AgencyRequestDashboard = props => {
         const msgData = {
             receiver_id: new_data.customer_id,
             receiver_type: new_data.customer_type,
-            content: message,            
+            content: message,
         }
 
         await props.chats_send_message({ ...msgData })
@@ -241,6 +252,12 @@ const AgencyRequestDashboard = props => {
         setOpenModal(!openModal)
     }
 
+    const handleChangePageTab = () => {
+        const page = pageTab === 'U' ? 'A' : 'U'
+        fetch(page)
+        setPageTab(page)
+    }
+
     const reasonComponent = () => (
         <React.Fragment>
             <ReasonImage>
@@ -272,11 +289,24 @@ const AgencyRequestDashboard = props => {
     return (
         <Body>
             <Sidebar page="request" />
+
             <Sub>
                 <Header>
                     <img src={getImg("Account", "logo.png")} />
                     <h1>UNSEEN</h1>
                 </Header>
+                <Switch>
+                    <OptionBox>
+                        <Option
+                            selected={pageTab === 'U'}
+                            onClick={handleChangePageTab}
+                        >User</Option>
+                        <Option
+                            selected={pageTab === 'A'}
+                            onClick={handleChangePageTab}
+                        >Agency</Option>
+                    </OptionBox>
+                </Switch>
                 <Container>
                     <Table>
                         <Row isHeader={true}>
@@ -307,7 +337,7 @@ const AgencyRequestDashboard = props => {
                                             <p>${request.offers_price}</p>
                                         </Content>
                                         <Content>
-                                            <p>{`${request.start_date.split('T')[0]} ~ ${request.end_date.split('T')[0]}`}</p>
+                                            <p>{`${request.start_date.split('T')[0]}`}</p>
                                         </Content>
                                         <Content>
                                             <ReasonButton onClick={() => handleModalReason(request)}>
@@ -331,37 +361,42 @@ const AgencyRequestDashboard = props => {
                                                             />
                                                         </React.Fragment>
                                                         :
-                                                        request.is_payed && !request.is_active ?
-                                                            <input
-                                                                type="submit"
-                                                                value="Activate"
-                                                                onClick={() => updateHandler(request.id, index)}
-                                                            />
-                                                            :
-                                                            null
+                                                        request.is_payed && !request.is_active && request.customer_type === 'U' &&
+                                                        <input
+                                                            type="submit"
+                                                            value="Activate"
+                                                            onClick={() => updateHandler(request.id, index)}
+                                                        />
+
                                                 }
                                             </ActionBox>
                                         </Content>
                                         <Content>
                                             {
-                                                request.is_active ?
-                                                    <Link to={`/tracks/requests/${request.id}`} style={styles.link}>
-                                                        <StatusBox id={request.id} isActive={true}>
-                                                            <FaMapMarkerAlt style={{ color: "white" }} />
-                                                            <p>Track</p>
-                                                        </StatusBox>
-                                                    </Link>
+                                                new Date(request.end_date) < Date.now() ?
+                                                    <StatusBox id={request.id} isPayed={true}>
+                                                        <FaFlagCheckered style={{ color: "white" }} />
+                                                        <p>Finished</p>
+                                                    </StatusBox>
                                                     :
-                                                    request.is_payed ?
-                                                        <StatusBox isPayed={true}>
-                                                            <FaMoneyCheck style={{ color: "white" }} />
-                                                            <p>Payed</p>
-                                                        </StatusBox>
+                                                    request.is_active || (request.customer_type === 'A' && request.is_payed) ?
+                                                        <Link to={`/tracks/requests/${request.id}`} style={styles.link}>
+                                                            <StatusBox id={request.id} isActive={true}>
+                                                                <FaMapMarkerAlt style={{ color: "white" }} />
+                                                                <p>Track</p>
+                                                            </StatusBox>
+                                                        </Link>
                                                         :
-                                                        <StatusBox>
-                                                            <GiSandsOfTime />
-                                                            <p>Waiting</p>
-                                                        </StatusBox>
+                                                        request.is_payed ?
+                                                            <StatusBox isPayed={true}>
+                                                                <FaMoneyCheck style={{ color: "white" }} />
+                                                                <p>Payed</p>
+                                                            </StatusBox>
+                                                            :
+                                                            <StatusBox>
+                                                                <GiSandsOfTime />
+                                                                <p>Waiting</p>
+                                                            </StatusBox>
 
                                             }
                                         </Content>

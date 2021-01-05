@@ -129,6 +129,12 @@ const onActive = css`
   cursor: pointer;
 `;
 
+
+const onDone = css`
+  color: white;
+  background: #5cdb5c;  
+`;
+
 export const StatusBox = styled.div`
   background: #d1d1d1;
   height: 2rem;
@@ -139,6 +145,7 @@ export const StatusBox = styled.div`
   align-items: center;
   ${(props) => (props.isPayed ? onPayed : null)};
   ${(props) => (props.isActive ? onActive : null)};
+  ${(props) => (props.isDone ? onDone : null)};
 
   p {
     margin: 0;

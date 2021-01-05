@@ -5,6 +5,9 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 
 import { check_email, update_password } from '../../../Redux/auth/auth.action'
+import { Container, InputRow, Main, LogoBox, SubmitButton } from './style';
+import { default as Loader } from "react-spinners/PropagateLoader";
+import { withAlert } from 'react-alert'
 
 class ResetAction extends Component {
     state = {
@@ -18,7 +21,6 @@ class ResetAction extends Component {
         const { token } = this.props.match.params
         const check = await this.props.check_email({ token: token })
         this.setState({ user: check.data })
-        console.log(check.data)
 
         if (!check.err) {
             this.setState({ isTokenValid: true })
@@ -26,13 +28,17 @@ class ResetAction extends Component {
     }
 
     inputHandler = e => {
-        const { name, value } = e.target
+        const { name, value } = e.target        
         this.setState({ [name]: value })
     }
 
     submitForm = async e => {
+        if(this.state.password!==this.state.re_password){
+            this.props.alert.error('Password not match!')
+            return false
+        }
+
         const update = await this.props.update_password({ userId: this.state.user.id, password: this.state.password })
-        console.log(update)
         if (!update.err) {
             this.props.history.push('/login')
         }
@@ -41,19 +47,36 @@ class ResetAction extends Component {
 
     render() {
         return (
-            <React.Fragment>
+            <Container>
                 {
                     this.state.isTokenValid ?
-                        <div>
-                            <input type="text" name="password" placeholder="password" value={this.state.password} onChange={this.inputHandler} />
-                            <input type="text" name="re_password" placeholder="confirm-password" value={this.state.re_password} onChange={this.inputHandler} />
-                            <input type="submit" value="Save Password" onClick={this.submitForm} />
-                        </div>
-                        :
-                        <h1>Token expired...</h1>
-                }
+                        <Main>
+                            <LogoBox>
+                                <img src={require('../../../Assets/Image/Account/logo.png')} />
+                                <h1>UNSEEN</h1>
+                            </LogoBox>
+                            <InputRow>
+                                <label>New Password</label>
+                                <input type="password" name="password" value={this.state.password} onChange={this.inputHandler} />
+                            </InputRow>
+                            <InputRow>
+                                <label>Re-enter Pasword</label>
+                                <input type="password" name="re_password" value={this.state.re_password} onChange={this.inputHandler} />
+                            </InputRow>
 
-            </React.Fragment>
+                            <SubmitButton onClick={this.submitForm}>UPDATE</SubmitButton>
+                        </Main>
+                        :
+                        <Main>
+                            <LogoBox>
+                                <img src={require('../../../Assets/Image/Account/logo.png')} />
+                                <h1>UNSEEN</h1>
+                            </LogoBox>
+                            <p style={{ color: 'grey', fontSize: '18px', marginTop: '2rem', marginBottom: '5rem' }}>Request a new link to reset your password....</p>
+                            <Loader color={'orange'} loading={true} css={''} size={20} />
+                        </Main>
+                }
+            </Container>
         )
     }
 }
@@ -68,6 +91,7 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 export default compose(
-    withRouter,
+    withAlert(),
+    withRouter,    
     connect(mapStateToProps, mapDispatchToProps)
 )(ResetAction);

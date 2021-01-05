@@ -110,10 +110,10 @@ class AgencyAuth extends Component {
         return (
             <Container>
                 <Left>
-                    <img src={getImg("Product", "b1.jpg")} alt="" />
+                    <img src={"https://images.wallpaperscraft.com/image/vintage_retro_camera_126517_3840x2400.jpg"} alt="" />
                 </Left>
                 <Right>
-                    <Title>
+                    <Title onClick={() => this.props.history.push('/')}>
                         <img src={getImg("Account", 'logo.png')} alt="" />
                         <h1>UNSEEN</h1>
                     </Title>

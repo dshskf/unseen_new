@@ -8,7 +8,7 @@ import io from 'socket.io-client'
 
 import Sidebar from '../../../Components/Sidebar/sidebar'
 
-import { getImg } from '../../../Constants/get-img'
+import { getImg, renameImg } from '../../../Constants/get-img'
 
 import { get_user_location, update_user_location } from '../../../Redux/features/features.action'
 import { pullToken, pullUserData } from '../../../Redux/auth/auth.selector'
@@ -18,7 +18,7 @@ import { storage } from '../../../Constants/request'
 import { API } from '../../../Constants/link'
 import { BiTargetLock } from 'react-icons/bi'
 
-import { Body, Sub, Header } from '../../style.route'
+import { Body, Sub, Header, HeaderBox } from '../../style.route'
 import {
     Container,
     MapBox,
@@ -45,20 +45,21 @@ class TrackAgency extends Component {
         const fetch = await this.props.get_user_location({
             id: id,
             reqType: type
-        })        
+        })
+
 
         // Split user and opposite
         const user_data = fetch.data.filter(data => {
-            if (data.type === storage.type[0].toUpperCase()) {
-                data.lat = data.lat ? data.lat : -6.200000
-                data.lng = data.lng ? data.lng : 106.816666
+            if (data.type === storage.type_code || data.type === 'G') {
+                data.lat = data.lat && data.lat !== 'NaN' ? data.lat : -6.200000
+                data.lng = data.lng && data.lng !== 'NaN' ? data.lng : 106.816666
                 return data
             }
         })[0]
         const opposite_data = fetch.data.filter(data => {
-            if (data.type !== storage.type[0].toUpperCase()) {
-                data.lat = data.lat ? data.lat : -6.200000
-                data.lng = data.lng ? data.lng : 106.816666
+            if (data.type !== storage.type_code && data.type !== 'G') {
+                data.lat = data.lat && data.lat !== 'NaN' ? data.lat : -6.200000
+                data.lng = data.lng && data.lng !== 'NaN' ? data.lng : 106.816666
                 return data
             }
         })[0]
@@ -68,21 +69,33 @@ class TrackAgency extends Component {
         }
 
 
+        console.log(user_data)
+        console.log(opposite_data)
 
         let socket = io(API)
         socket.emit('join_room', {
             room_id: `${storage.id}-${storage.type_code}`
         })
 
-
-        socket.on('new_location', data => {
-            this.setState({
-                opposite: {
-                    ...this.state.opposite,
-                    lat: data.lat,
-                    lng: data.lng
-                }
-            })
+        socket.on('new_location', data => {     
+            console.log(data)       
+            if (data.isGuides) {
+                this.setState({
+                    user: {
+                        ...this.state.user,
+                        lat: data.lat,
+                        lng: data.lng
+                    }
+                })
+            } else {
+                this.setState({
+                    opposite: {
+                        ...this.state.opposite,
+                        lat: data.lat,
+                        lng: data.lng
+                    }
+                })
+            }
         })
 
         this.setState({
@@ -103,7 +116,9 @@ class TrackAgency extends Component {
     }
 
     componentCleanup = async () => {
-        await this.props.update_user_location({ lat: this.state.user.lat, lng: this.state.user.lng })
+        if (this.state.user.type !== 'G') {
+            await this.props.update_user_location({ lat: this.state.user.lat, lng: this.state.user.lng })
+        }
         this.state.socketIo.disconnect()
     }
 
@@ -123,15 +138,15 @@ class TrackAgency extends Component {
         let user = this.state.user
 
         if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {
-            this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
-            user.lat = new_location.lat
-            user.lng = new_location.lng
 
-            const post = await this.props.update_user_location({ ...new_location })
+            if (this.state.user.type !== 'G') { // if agency is the host of the tour     
+                user.lat = new_location.lat
+                user.lng = new_location.lng
 
-            this.setState({
-                user: user
-            })
+                this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
+                await this.props.update_user_location({ ...new_location })
+                this.setState({ user: user })
+            }
         }
     }
 
@@ -208,9 +223,9 @@ class TrackAgency extends Component {
             >
                 <Marker
                     name={"You"}
-                    title={"You"}
+                    title={this.state.user.username}
                     icon={{
-                        url: "https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png",
+                        url: this.state.user.image ? renameImg(this.state.user.image) : getImg("Account", "guest.png"),
                         anchor: new window.google.maps.Point(10, 10),
                         scaledSize: new window.google.maps.Size(20, 20)
                     }}
@@ -221,7 +236,7 @@ class TrackAgency extends Component {
                     this.state.opposite ?
                         <Marker
                             name={"Other"}
-                            title={"Other"}
+                            title={this.state.opposite.username}
                             position={{ lat: this.state.opposite.lat, lng: this.state.opposite.lng }}
                         />
                         :
@@ -237,10 +252,12 @@ class TrackAgency extends Component {
                 <Sidebar page="dashboard" />
 
                 <Sub>
-                    <Header>
-                        <img src={getImg("Account", "logo.png")} />
-                        <h1>UNSEEN</h1>
-                    </Header>
+                    <HeaderBox>
+                        <Header onClick={() => this.props.history.push('/')}>
+                            <img src={getImg("Account", "logo.png")} />
+                            <h1>UNSEEN</h1>
+                        </Header>
+                    </HeaderBox>
                     <Container>
                         <MapBox>
                             {this.state.center ? this.mapComponent() : null}

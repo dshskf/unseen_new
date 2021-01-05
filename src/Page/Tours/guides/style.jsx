@@ -87,9 +87,8 @@ export const Info = styled.div`
 `;
 
 export const InfoItem = styled.div`
-  text-align: center;
-  width: 50%;
-
+  text-align: center;  
+/* 
   p {
     margin: 4px 0 !important;
   }
@@ -100,6 +99,6 @@ export const InfoItem = styled.div`
 
   p:nth-child(2) {
     color: ${color.primary};
-  }
+  } */
 `;
 

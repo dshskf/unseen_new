@@ -23,17 +23,17 @@ const AdvantangeComponent = (props) => {
                 <div className="adv-card">
                     <MdAccessTime style={styles.logo} />
                     <h1>Fast</h1>
-                    <p>Automobili-Lamborghini S.p.A., sering disebut Lamborghini adalah sebuah pembuat mobil di Italia. </p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                 </div>
                 <div className="adv-card mid">
                     <RiMoneyPoundCircleLine style={{ ...styles.logo, fontSize: "7rem" }} />
                     <h1>Cheap</h1>
-                    <p>Automobili-Lamborghini S.p.A., sering disebut Lamborghini adalah sebuah pembuat mobil di Italia.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                 </div>
                 <div className="adv-card">
                     <AiOutlineFieldTime style={styles.logo} />
                     <h1>Experienced</h1>
-                    <p>Automobili-Lamborghini S.p.A., sering disebut Lamborghini adalah sebuah pembuat mobil di Italia.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                 </div>
             </div>
         </div>

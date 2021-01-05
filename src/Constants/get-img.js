@@ -5,6 +5,11 @@ export const getImg = (path, fileName) => {
 }
 
 export const renameImg = (path) => {
+    if (!path) {
+        return getImg("Account", "guest.png")
+    } else if (path.includes('http:')) {
+        return (path)
+    }
     return API + path.replace('\\', '/')
 }
 

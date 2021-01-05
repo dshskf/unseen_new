@@ -16,7 +16,7 @@ import { API } from '../../../Constants/link'
 import { BiTargetLock } from 'react-icons/bi'
 
 
-import { Body, Sub, Header } from '../../style.route'
+import { Body, Sub, Header, HeaderBox } from '../../style.route'
 import {
     Container,
     MapBox,
@@ -38,24 +38,24 @@ class TrackUsers extends Component {
     }, 3000);
 
     async componentDidMount() {
-        const { type, id } = this.props.match.params        
+        const { type, id } = this.props.match.params
         const fetch = await this.props.get_user_location({
             id: id,
             reqType: type
-        })        
+        })
 
         // Split user and opposite
         const user_data = fetch.data.filter(data => {
-            if (data.type === storage.type[0].toUpperCase()) {
-                data.lat = data.lat ? data.lat : -6.200000
-                data.lng = data.lng ? data.lng : 106.816666
+            if (data.type === storage.type_code) {
+                data.lat = data.lat && data.lat !== 'NaN' ? data.lat : -6.200000
+                data.lng = data.lng && data.lng !== 'NaN' ? data.lng : 106.816666
                 return data
             }
         })[0]
         const opposite_data = fetch.data.filter(data => {
-            if (data.type !== storage.type[0].toUpperCase()) {
-                data.lat = data.lat ? data.lat : -6.200000
-                data.lng = data.lng ? data.lng : 106.816666
+            if (data.type !== storage.type_code) {
+                data.lat = data.lat && data.lat !== 'NaN' ? data.lat : -6.200000
+                data.lng = data.lng && data.lng !== 'NaN' ? data.lng : 106.816666
                 return data
             }
         })[0]
@@ -63,6 +63,9 @@ class TrackUsers extends Component {
             lat: user_data.lat,
             lng: user_data.lng
         }
+
+        console.log(user_data)
+        console.log(opposite_data)
 
         let socket = io(API)
         socket.emit('join_room', {
@@ -117,10 +120,19 @@ class TrackUsers extends Component {
         let user = this.state.user
 
         if (user.lat.toString() !== new_location.lat.toString() || user.lng.toString() !== new_location.lng.toString()) {
-            this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-${this.state.opposite.type}` })
+
+            if (this.state.opposite.type !== 'A') {
+                this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-G` }) //To Guides
+                this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.receiver_id}-A` }) //To Agency
+            } else {
+                this.state.socketIo.emit('update_location', { ...new_location, opposite_id: `${this.state.opposite.id}-A` }) //To Agency
+            }
+
             user.lat = new_location.lat
             user.lng = new_location.lng
 
+
+            await this.props.update_user_location({ ...new_location })
             this.setState({
                 user: user
             })
@@ -216,13 +228,15 @@ class TrackUsers extends Component {
     render() {
         return (
             <Body>
-                <Sidebar page="dashboard" />
+                <Sidebar page={this.props.match.params.type === 'bookings' ? 'dashboard' : 'request'} />
 
                 <Sub>
-                    <Header>
-                        <img src={getImg("Account", "logo.png")} />
-                        <h1>UNSEEN</h1>
-                    </Header>
+                    <HeaderBox>
+                        <Header onClick={() => this.props.history.push('/')}>
+                            <img src={getImg("Account", "logo.png")} />
+                            <h1>UNSEEN</h1>
+                        </Header>
+                    </HeaderBox>
                     <Container>
                         <MapBox>
                             {this.state.center ? this.mapComponent() : null}

@@ -36,6 +36,7 @@ import {
     DestinationBox,
     DestinationItem
 } from './style'
+import { HeaderBox } from '../../style.route'
 
 class EditTours extends Component {
     constructor(props) {
@@ -147,8 +148,8 @@ class EditTours extends Component {
             if (fileExt === 'png' || fileExt === 'jpg' || fileExt === 'jpeg') {
                 Resizer.imageFileResizer(
                     file,
-                    400,
-                    400,
+                    1000,
+                    1000,
                     fileExt,
                     100,
                     0,
@@ -351,10 +352,12 @@ class EditTours extends Component {
     render() {
         return (
             <React.Fragment>
-                <Header>
-                    <img src={getImg("Account", "logo.png")} alt="" />
-                    <h1>UNSEEN</h1>
-                </Header>
+                <HeaderBox>
+                    <Header onClick={() => this.props.history.push('/')}>
+                        <img src={getImg("Account", "logo.png")} />
+                        <h1>UNSEEN</h1>
+                    </Header>
+                </HeaderBox>
 
                 <Container>
                     <Modal

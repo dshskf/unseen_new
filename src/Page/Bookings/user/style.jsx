@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { color } from "../../../Constants/color";
 
 export const Container = styled.div`
   display: flex;
@@ -129,7 +130,6 @@ const onActive = css`
   cursor: pointer;
 `;
 
-
 export const StatusBox = styled.div`
   background: #d1d1d1;
   height: 2rem;
@@ -138,12 +138,13 @@ export const StatusBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
   ${(props) => (props.isPayed ? onPayed : null)};
   ${(props) => (props.isActive ? onActive : null)};
 
   p {
     margin: 0;
-    margin-left:6px;
+    margin-left: 6px;
   }
 `;
 
@@ -183,4 +184,97 @@ export const ModalContent = styled.div`
     cursor: pointer;
     font-size: 1.5rem;
   }
+`;
+
+export const RequestDimmer = styled.div`
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const RequestBox = styled.div`
+  width: 50%;
+  min-height: 15rem;
+  padding-bottom: 5rem;
+  background: white;
+  border-radius: 4px;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+`;
+
+export const RequestPanel = styled.div`
+  width: 100%;
+  height: 3rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  p {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+    border: 1px solid ${color.primary};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: ${color.primary};
+    cursor: pointer;
+
+    :hover {
+      background: ${color.primary};
+      color: white;
+    }
+  }
+`;
+
+export const RequestInput = styled.div`
+  width: 90%;
+  margin: 1rem 0;
+
+  * {
+    outline: none;
+  }
+  label {
+    color: ${color.grey_1};
+    font-weight: bold;
+    width: 95%;
+    /* font-size: 12px; */
+  }
+
+  textarea {
+    height: 2.5rem;
+    outline: none;
+    border: 1px solid ${color.border};
+    border-radius: 4px;
+    padding: 4px 2%;
+    margin-top: 10px;
+    resize: none;
+    height: 100px;
+    padding: 10px 2%;
+    width: 95%;
+  }
+`;
+
+export const RequestSubmit = styled.div`
+  width: 100%;
+  height: 3rem;
+  position: absolute;
+  background: ${color.primary};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  bottom: 0;
+  cursor: pointer;
 `;

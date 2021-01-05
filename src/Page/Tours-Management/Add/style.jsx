@@ -195,6 +195,7 @@ export const Sub = styled.div`
     justify-content: center;
     align-items: center;
     font-size: 1.2rem;
+    z-index:1;
   }
 `;
 

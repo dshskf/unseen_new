@@ -1,16 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { compose } from 'redux'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
+import io from 'socket.io-client'
 
 import Sidebar from '../../../Components/Sidebar/sidebar'
 import { Body, Sub, Header } from '../../style.route'
 
 import { getImg } from '../../../Constants/get-img'
 
-
+import { get_request, update_request } from '../../../Redux/management/management.action'
 import { chats_send_message } from '../../../Redux/features/features.action'
+
+import { storage } from '../../../Constants/request'
+import { API } from '../../../Constants/link'
+import Pagination from '../../../Components/Paginations/pagination'
+import { default as ModalComponent } from '../../../Components/ModalBox/modal'
+
+import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
+import { GiSandsOfTime } from 'react-icons/gi'
+import { useAlert } from "react-alert";
+
 
 import {
     Container,
@@ -20,95 +31,210 @@ import {
     ActionBox,
     StatusBox,
     Modal,
-    ModalContent
+    ModalContent,
+    ReasonButton,
+    ReasonImage,
+    Reason,
+    ReasonItem,
+    ReasonDescription
 } from './style'
+import { BsThreeDots } from 'react-icons/bs'
 
-const UserDashboard = props => {
-    const header = ['Seller', 'Product', 'Price', 'Start Date', 'Confirmation', 'Status']
-    const [data, setData] = useState('')
-    const [refetch, setRefetch] = useState(false)
+const AgencyRequestDashboard = props => {
+    const header = ['No.', 'Username', 'Offers', 'Date', 'Description', 'Confirmation', 'Status']
+    const [requestList, setRequestList] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
+    const [page, setPage] = useState([{ index: 1, isActive: false }])
+    const [openModal, setOpenModal] = useState(false)
+    const [modalData, setModalData] = useState(null)
 
-    useEffect(() => {        
-        const req = async () => {            
-            const get = await props.get_booking_user({
-                action: 'sender_id',
-                token: props.token
-            })
-            console.log(get)
-            setData(get.data)
-        } 
+    const tempRequest = useRef()
+    const socketIo = useRef()
+    const alert = useAlert()
 
-        req()
+    useEffect(() => {
+        let socket = io(API)
+        socket.emit('join_room', {
+            room_id: `${storage.id}-${storage.type_code}`
+        })
+
+        socket.on('new_request', res => {
+            tempRequest.current = tempRequest.current.map(b => {
+                if (res.request_id === b.id) {
+                    if (res.is_delete) {
+                        alert.error(b.guides_name + " has reject your requests!")
+                        return null
+                    } else {
+                        if (!b.is_approve) {
+                            alert.show(b.guides_name + " has approved your requests!")
+                            b.is_approve = true
+                        } else if (!b.is_active) {
+                            alert.success(b.guides_name + " has activate your requests!")
+                            b.is_active = true
+                        }
+                    }
+                }
+                return b
+            }).filter(res => res !== null)
+
+            setRequestList(tempRequest.current)
+
+
+        })
+
+        socketIo.current = socket
+
+        return () => {
+            if (socketIo.current) {
+                socketIo.current.disconnect()
+            }
+        }
     }, [])
 
-    const updateHandler = async (e, index) => {
-        const { id } = e.currentTarget
+    useEffect(() => {
+        fetch()
+    }, [currentPage])
 
-        const dataToSubmit = {
-            request_id: e.currentTarget.id,
-            action: 'update',
-            on: 'isPaying'
-        }
+    const fetch = async () => {
+        const get = await props.get_request({
+            page: currentPage,
+            is_mobile: false,
+            type: storage.type_code
+        })        
 
-        const post = await props.update_approval({
-            form: dataToSubmit,
-            token: props.token
-        })
-
-
-        const msgData = {
-            sender_id: props.user.id,
-            receiver_id: data[index].sender_id,
-            content: `Cool! ${props.user.username} has approved your request, now you can go to payment!`,
-            notification: data[index].product_id
-        }
-
-        const send = await props.chats_send_message({
-            form: msgData,
-            token: props.token
-        })
-
-        if (!post.err) {
-            setRefetch(!refetch)
-        }
+        tempRequest.current = get.data
+        convertPagetoArr(get.total_page)
+        setRequestList(get.data)
     }
 
-    const deleteHandler = async (e, index) => {
-        const { id, name } = e.currentTarget
-
-        const dataToSubmit = {
-            request_id: e.currentTarget.id,
-            action: 'delete',
-            on: 'isPaying'
-        }
-        const post = await props.update_approval({
-            form: dataToSubmit,
-            token: props.token
-        })
-
-        const msgData = {
-            sender_id: props.user.id,
-            receiver_id: data[index].receiver_id,
-            content: `${props.user.username} cancelled ${data[index].product_name}`,
-            notification: null
+    const convertPagetoArr = (total) => {
+        const temp = []
+        for (let i = 1; i <= total; i++) {
+            if (i === currentPage) {
+                temp.push({ index: i, isActive: true })
+                continue
+            }
+            temp.push({ index: i, isActive: false })
         }
 
-        const send = await props.chats_send_message({
-            form: msgData,
-            token: props.token
-        })
-
-        if (!post.err) {
-            setRefetch(!refetch)
-        }
-        console.log(send)
+        setPage(temp)
     }
 
+    const updateHandler = async (id, index) => {
+        let new_data = requestList[index]
+        new_data.is_payed = true
+
+        const dataToSubmit = {
+            request_id: id,
+            action: 'update'
+        }
+
+        const post = await props.update_request({ ...dataToSubmit })
+
+        if (!post.err) {
+            alert.success(`Sucessfully payed ${new_data.guides_name}!`)
+        } else {
+            new_data.is_payed = false
+            alert.error(post.err)
+            return
+        }
+
+        const message = new_data.is_active ?
+            `${storage.username} has payed your requests!`
+            :
+            `${storage.username} has payed your requests!`
+
+        const msgData = {
+            receiver_id: new_data.guides_id,
+            receiver_type: 'G',
+            content: message            
+        }
+
+        await props.chats_send_message({ ...msgData })
+        socketIo.current.emit('update_request', {
+            opposite_room: `${new_data.receiver_id}-G`,
+            request_id: new_data.id,
+        })
+
+        let update = requestList.map(d => d)
+        update[index] = new_data
+        setRequestList(update)
+    }
+
+    const deleteHandler = async (id, index) => {
+        let new_data = requestList[index]
+        let filtered_data = requestList.filter(request => request.id !== id)
+
+        const dataToSubmit = {
+            request_id: id,
+            action: 'delete'
+        }
+        const post = await props.update_request({ ...dataToSubmit })       
+        if (!post.err) {
+            alert.success(`Sucessfully reject ${new_data.guides_name}!`)
+            const msgData = {
+                receiver_id: new_data.guides_id,
+                receiver_type: 'G',
+                content: `${storage.username} has canceled your requests!`,
+                tours_id: new_data.id,
+                tours_type: 'G'
+            }
+            await props.chats_send_message({ ...msgData })
+            socketIo.current.emit('update_request', {
+                opposite_room: `${new_data.receiver_id}-G`,
+                request_id: new_data.id,
+                is_delete: true,
+            })
+
+        } else {
+            alert.error(post.err)
+        }
+        setRequestList(filtered_data)
+    }
+
+    const styles = {
+        link: { textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }
+    }
+
+
+    const handleChangePage = (index) => {
+        if (index > page.length || index < 1) {
+            return 0
+        }
+        setCurrentPage(index)
+    }
+
+    const handleModalReason = (request) => {
+        setModalData(request)
+        setOpenModal(!openModal)
+    }
+
+    const reasonComponent = () => (
+        <React.Fragment>
+            <ReasonImage>
+                <img alt="" src="https://miro.medium.com/max/10000/0*wZAcNrIWFFjuJA78" />
+            </ReasonImage>
+            <Reason>
+                <ReasonItem>
+                    <p>Name</p>
+                    <p>:</p>
+                    <p>{modalData.guides_name}</p>
+                </ReasonItem>
+                <ReasonItem>
+                    <p>Email</p>
+                    <p>:</p>
+                    <p>{modalData.guides_email}</p>
+                </ReasonItem>
+                <ReasonDescription>
+                    {modalData.description}
+                </ReasonDescription>
+            </Reason>
+        </React.Fragment>
+    )
 
     return (
         <Body>
-            <Sidebar page="dashboard" />
-
+            <Sidebar page="request" />
             <Sub>
                 <Header>
                     <img src={getImg("Account", "logo.png")} />
@@ -125,67 +251,71 @@ const UserDashboard = props => {
                                 ))
                             }
                         </Row>
-
+                        <ModalComponent
+                            component={reasonComponent}
+                            handler={handleModalReason}
+                            open={openModal}
+                        />
                         {
-                            data ?
-                                data.map((data, index) => (
-                                    <Row key={data.id}>
+                            requestList ?
+                                requestList.map((request, index) => (
+                                    <Row key={request.id}>
                                         <Content>
-                                            <p>{data.username}</p>
+                                            <p>{index + 1}</p>
                                         </Content>
                                         <Content>
-                                            <p>{data.product_name}</p>
+                                            <p>{request.guides_name}</p>
                                         </Content>
                                         <Content>
-                                            <p>${data.offers_price}</p>
+                                            <p>${request.offers_price}</p>
                                         </Content>
                                         <Content>
-                                            <p>{data.start_date.split('T')[0]}</p>
+                                            <p>{`${request.start_date.split('T')[0]} ~ ${request.end_date.split('T')[0]}`}</p>
+                                        </Content>
+                                        <Content>
+                                            <ReasonButton onClick={() => handleModalReason(request)}>
+                                                <BsThreeDots size={24} />
+                                            </ReasonButton>
                                         </Content>
                                         <Content>
                                             <ActionBox>
                                                 {
-                                                    data.isApprove && !data.isPaying && !data.isActive ?
-                                                        <React.Fragment>
-                                                            <input
-                                                                id={data.id}
-                                                                type="submit"
-                                                                value="O"
-                                                                onClick={e => updateHandler(e, index)}
-                                                            />
-                                                            <input
-                                                                id={data.id}
-                                                                type="submit"
-                                                                value="X"
-                                                                onClick={e => deleteHandler(e, index)}
-                                                            />
-                                                        </React.Fragment>
-                                                        :
-                                                        null
-
+                                                    request.is_approve && !request.is_payed &&
+                                                    <React.Fragment>
+                                                        <input
+                                                            type="submit"
+                                                            value="O"
+                                                            onClick={() => updateHandler(request.id, index)}
+                                                        />
+                                                        <input
+                                                            type="submit"
+                                                            value="X"
+                                                            onClick={() => deleteHandler(request.id, index)}
+                                                        />
+                                                    </React.Fragment>
                                                 }
                                             </ActionBox>
                                         </Content>
                                         <Content>
                                             {
-                                                data.isActive ?
-                                                    <StatusBox>
-                                                        <p>Active</p>
-                                                    </StatusBox>
+                                                request.is_active ?
+                                                    <Link to={`/tracks/requests/${request.id}`} style={styles.link}>
+                                                        <StatusBox id={request.id} isActive={true}>
+                                                            <FaMapMarkerAlt style={{ color: "white" }} />
+                                                            <p>Track</p>
+                                                        </StatusBox>
+                                                    </Link>
                                                     :
-                                                    data.isPaying ?
+                                                    request.is_payed ?
                                                         <StatusBox isPayed={true}>
+                                                            <FaMoneyCheck style={{ color: "white" }} />
                                                             <p>Payed</p>
                                                         </StatusBox>
                                                         :
-                                                        data.isApprove ?
-                                                            <StatusBox isPayed={true}>
-                                                                <p>Approved</p>
-                                                            </StatusBox>
-                                                            :
-                                                            <StatusBox>
-                                                                <p>Waiting</p>
-                                                            </StatusBox>
+                                                        <StatusBox>
+                                                            <GiSandsOfTime />
+                                                            <p>Waiting</p>
+                                                        </StatusBox>
 
                                             }
                                         </Content>
@@ -195,20 +325,29 @@ const UserDashboard = props => {
                                 null
 
                         }
+                        <Pagination
+                            current={currentPage}
+                            page={page}
+                            actions={handleChangePage}
+                        />
                     </Table>
+
                 </Container>
             </Sub>
         </Body>
     )
 }
 
-const mapStateToProps = createStructuredSelector({    
+const mapStateToProps = createStructuredSelector({
 })
 
-const mapDispatchToProps = (dispatch) => ({   
+const mapDispatchToProps = (dispatch) => ({
+    get_request: data => dispatch(get_request(data)),
+    update_request: data => dispatch(update_request(data)),
+    chats_send_message: data => dispatch(chats_send_message(data))
 })
 
 export default compose(
     withRouter,
     connect(mapStateToProps, mapDispatchToProps)
-)(UserDashboard);
+)(AgencyRequestDashboard);

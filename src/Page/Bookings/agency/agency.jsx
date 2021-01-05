@@ -19,7 +19,7 @@ import Pagination from '../../../Components/Paginations/pagination'
 import io from 'socket.io-client'
 
 import { FaMoneyCheck, FaMapMarkerAlt } from 'react-icons/fa'
-import { GiSandsOfTime } from 'react-icons/gi'
+import { GiSandsOfTime, GiCheckeredFlag } from 'react-icons/gi'
 import { useAlert } from "react-alert";
 
 
@@ -186,6 +186,7 @@ const AgencyBookingDashboard = props => {
                         {
                             bookingList ?
                                 bookingList.map((data, index) => (
+                                    !data.is_reviewed &&
                                     <Row key={data.id}>
                                         <Content>
                                             <p>{index + 1}</p>
@@ -224,24 +225,30 @@ const AgencyBookingDashboard = props => {
                                         </Content>
                                         <Content>
                                             {
-                                                data.is_active ?
-                                                    <Link to={`/tracks/bookings/${data.id}`} style={styles.link}>
-                                                        <StatusBox id={data.id} isActive={true}>
-                                                            <FaMapMarkerAlt style={{ color: "white" }} />
-                                                            <p>Track</p>
-                                                        </StatusBox>
-                                                    </Link>
+                                                new Date(data.ads_end_date) < Date.now() ?
+                                                    <StatusBox isDone={true}>
+                                                        <GiCheckeredFlag />
+                                                        <p>Done</p>
+                                                    </StatusBox>
                                                     :
-                                                    data.is_payed ?
-                                                        <StatusBox isPayed={true}>
-                                                            <FaMoneyCheck style={{ color: "white" }} />
-                                                            <p>Payed</p>
-                                                        </StatusBox>
+                                                    data.is_active ?
+                                                        <Link to={`/tracks/bookings/${data.id}`} style={styles.link}>
+                                                            <StatusBox id={data.id} isActive={true}>
+                                                                <FaMapMarkerAlt style={{ color: "white" }} />
+                                                                <p>Track</p>
+                                                            </StatusBox>
+                                                        </Link>
                                                         :
-                                                        <StatusBox>
-                                                            <GiSandsOfTime />
-                                                            <p>Waiting</p>
-                                                        </StatusBox>
+                                                        data.is_payed ?
+                                                            <StatusBox isPayed={true}>
+                                                                <FaMoneyCheck style={{ color: "white" }} />
+                                                                <p>Payed</p>
+                                                            </StatusBox>
+                                                            :
+                                                            <StatusBox>
+                                                                <GiSandsOfTime />
+                                                                <p>Waiting</p>
+                                                            </StatusBox>
 
                                             }
                                         </Content>
@@ -264,7 +271,7 @@ const AgencyBookingDashboard = props => {
     )
 }
 
-const mapStateToProps = createStructuredSelector({    
+const mapStateToProps = createStructuredSelector({
     user: pullUserData
 })
 

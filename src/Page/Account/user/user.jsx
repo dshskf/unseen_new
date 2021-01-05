@@ -7,9 +7,10 @@ import { sign_in, send_email } from '../../../Redux/auth/auth.action'
 
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
-
-
+import { css } from "@emotion/core";
+import { default as Loader } from "react-spinners/ScaleLoader";
 import { getImg } from '../../../Constants/get-img'
+import { withAlert } from 'react-alert'
 
 import {
     Container,
@@ -29,7 +30,8 @@ class UserAuth extends Component {
         password: "",
         email: "",
         err: "",
-        page: "login"
+        page: "login",
+        sendEmailLoad: false
     }
 
     componentWillMount() {
@@ -97,11 +99,14 @@ class UserAuth extends Component {
 
     reset = async () => {
         if (this.state.email.length > 0) {
+            await this.setState({ sendEmailLoad: true })
             const req = await this.props.sendEmail({ email: this.state.email })
-            console.log(req)
+            await this.setState({ sendEmailLoad: false })
+
             if (req.err) {
                 this.setState({ err: req.err })
             } else {
+                this.props.alert.success('Reset link has been sent to your email!')
                 this.setState({ page: 'login', err: "" })
             }
         }
@@ -111,10 +116,10 @@ class UserAuth extends Component {
         return (
             <Container>
                 <Left>
-                    <img src={getImg("Product", "b1.jpg")} alt="" />
+                    <img src={"https://papers.co/wallpaper/papers.co-od09-nature-travel-kit-36-3840x2400-4k-wallpaper.jpg"} alt="" />
                 </Left>
                 <Right>
-                    <Title>
+                    <Title onClick={() => this.props.history.push('/')}>
                         <img src={getImg("Account", 'logo.png')} alt="" />
                         <h1>UNSEEN</h1>
                     </Title>
@@ -140,7 +145,7 @@ class UserAuth extends Component {
                                 :
                                 null
                         }
-
+                        <Loader color={'orange'} loading={this.state.sendEmailLoad} css={''} size={50} />
                         <input
                             type="submit"
                             value={
@@ -174,6 +179,7 @@ class UserAuth extends Component {
                             }
                         </p>
                     </Forms>
+
                     <Nav>
                         <p
                             onClick={() => this.changePage(this.state.page === "register" || this.state.page === "reset" ? 'login' : "register")}
@@ -204,6 +210,7 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 export default compose(
+    withAlert(),
     withRouter,
     connect(mapStateToProps, mapDispatchToProps)
 )(UserAuth);

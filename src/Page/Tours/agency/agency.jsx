@@ -32,6 +32,7 @@ import {
     OptionBox,
     Option
 } from '../style'
+import { HeaderBox } from '../../style.route';
 
 const Agency = props => {
     const [tours, setTours] = useState(null)
@@ -63,8 +64,7 @@ const Agency = props => {
     }
 
     const fetch = async () => {
-        const post = await props.get_tours_agency({ page: currentPage, is_mobile: false })
-        console.log(post)
+        const post = await props.get_tours_agency({ page: currentPage, is_mobile: false })        
         convertPagetoArr(post.total_page)
         setTours(post.tours)
         setErrorMessage('')
@@ -84,8 +84,8 @@ const Agency = props => {
         setSearchInput(e.target.value)
     }
 
-    const findTours = async () => {      
-        const filtered_tours = await props.get_tours_agency({ page: currentPage, is_mobile: false,input: searchInput })
+    const findTours = async () => {
+        const filtered_tours = await props.get_tours_agency({ page: currentPage, is_mobile: false, input: searchInput })
         if (filtered_tours.err) {
             setErrorMessage(filtered_tours.err)
             return
@@ -101,10 +101,12 @@ const Agency = props => {
         <Body>
             <Sidebar page="home" />
             <Container>
-                <Header>
-                    <img src={getImg("Account", "logo.png")} alt="" />
-                    <h1>UNSEEN</h1>
-                </Header>
+                <HeaderBox>
+                    <Header onClick={() => props.history.push('/')}>
+                        <img src={getImg("Account", "logo.png")} />
+                        <h1>UNSEEN</h1>
+                    </Header>
+                </HeaderBox>
                 <Search>
                     <input type="text" placeholder="Enter something here..." value={searchInput} onChange={handleSearchTours} />
                     <input type="submit" value="Search" onClick={findTours} />
@@ -141,7 +143,7 @@ const Agency = props => {
                                                             <ReactStars
                                                                 count={5}
                                                                 // onChange={ratingChanged}
-                                                                value={data.rating ? data.rating : 4}
+                                                                value={data.rating ? data.rating : 0}
                                                                 edit={false}
                                                                 size={24}
                                                                 isHalf={true}

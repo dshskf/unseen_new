@@ -14,6 +14,7 @@ export const Container = styled.div`
 export const MapBox = styled.div`
   width: 100%;
   height: 80vh;
+  min-height:20rem;
   position: relative;
 `;
 

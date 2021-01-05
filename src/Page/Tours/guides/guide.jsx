@@ -32,6 +32,7 @@ import {
     OptionBox,
     Option
 } from '../style'
+import { HeaderBox } from '../../style.route';
 
 
 
@@ -98,10 +99,12 @@ const Guides = props => {
         <Body>
             <Sidebar page="home" />
             <Container>
-                <Header>
-                    <img src={getImg("Account", "logo.png")} alt="" />
-                    <h1>UNSEEN</h1>
-                </Header>
+                <HeaderBox>
+                    <Header onClick={() => props.history.push('/')}>
+                        <img src={getImg("Account", "logo.png")} />
+                        <h1>UNSEEN</h1>
+                    </Header>
+                </HeaderBox>
                 <Search>
                     <input type="text" placeholder="Enter something here..." value={searchInput} onChange={handleSearchTours} />
                     <input type="submit" value="Search" onClick={findTours} />
@@ -133,10 +136,6 @@ const Guides = props => {
                                                 </Content>
 
                                                 <Info>
-                                                    <InfoItem>
-                                                        <p>Cost</p>
-                                                        <p>${data.cost}/h</p>
-                                                    </InfoItem>
                                                     <InfoItem>
                                                         <ReactStars
                                                             count={5}

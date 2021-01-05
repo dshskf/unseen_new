@@ -11,9 +11,9 @@ import { API } from '../../../Constants/link'
 
 import Sidebar from '../../../Components/Sidebar/sidebar'
 import { storage } from '../../../Constants/request'
-import { renameImg } from '../../../Constants/get-img'
+import { getImg, renameImg } from '../../../Constants/get-img'
 
-import { Body, Sub } from '../../style.route'
+import { Body, Header, HeaderBox, Sub } from '../../style.route'
 
 import {
     Container,
@@ -50,6 +50,12 @@ const AdsList = props => {
         <Body>
             <Sidebar page="ads" />
             <Sub>
+                <HeaderBox>
+                    <Header onClick={() => props.history.push('/')}>
+                        <img src={getImg("Account", "logo.png")} />
+                        <h1>UNSEEN</h1>
+                    </Header>
+                </HeaderBox>
                 <Container>
                     <Products>
                         {
@@ -102,11 +108,11 @@ const AdsList = props => {
     )
 }
 
-const mapStateToProps = createStructuredSelector({    
+const mapStateToProps = createStructuredSelector({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    get_dashboard: data => dispatch(get_dashboard(data)),    
+    get_dashboard: data => dispatch(get_dashboard(data)),
 })
 
 export default compose(

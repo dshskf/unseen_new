@@ -38,6 +38,10 @@ const PlatformComponent = props => {
             </Title>
             <Sub>
                 <Platform>
+                    <img
+                        style={{ width: '15rem', height: '30rem' }}
+                        src={getImage("phone.png")} alt=""
+                    />
                     {/* <PlatformImage autoplay>
                         <div>
                             <img src={getImage("b2.jpg")} alt="" />

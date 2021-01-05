@@ -213,3 +213,38 @@ flex-wrap:wrap;
 margin-top:2rem;
 color:${color.grey_2};
 `
+
+export const Switch = styled.div`
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+`;
+
+export const OptionBox = styled.div`
+  width: 30%;
+  height: 3rem;
+  display: flex;
+  border: 1px solid ${color.primary};
+  overflow: hidden;
+  border-radius: 4px;
+`;
+
+const selected = css`
+  background-color: ${color.primary};
+  color: white;
+`;
+
+export const Option = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: ${color.primary};
+  cursor: pointer;
+
+  ${(props) => props.selected && selected}
+`;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { color } from '../../../../Constants/color'
+import { color } from "../../../../Constants/color";
 
 export const Container = styled.div`
   display: flex;
@@ -11,12 +11,27 @@ export const Container = styled.div`
 `;
 
 export const Title = styled.div`
+  margin-top: 2rem;
   width: 90%;
+  height: 3rem;  
+  margin-bottom: 3rem;      
+  overflow:hidden;  
+`;
+
+export const TitleBox=styled.div`
+  width:30%;
+  min-width:20rem;
+  transform:skewX(-45deg) translateX(-2rem);
+  padding-left:2.5rem;
+  background:${color.primary};
+  color:white;
 
   h1 {
+    transform:skewX(45deg);
     text-transform: capitalize;
+    margin: 0;
   }
-`;
+`
 
 export const Detail = styled.div`
   width: 90%;
@@ -26,7 +41,7 @@ export const Detail = styled.div`
 
 export const Left = styled.div`
   width: 35%;
-  height: 22rem;
+  min-width: 40rem;
   margin-right: 2rem;
 
   img {
@@ -104,21 +119,21 @@ export const ProductAction = styled.div`
 export const ActionItem = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   height: 2.4rem;
   margin: 0 1rem;
   margin-left: 0;
   border-radius: 4px;
   cursor: pointer;
-  padding:0 1rem;
+  padding: 0 1rem;
 
   :nth-child(1) {
     background: ${color.button_1};
-    color: white; 
+    color: white;
 
-    :hover{
-      background-color:${color.button_hover_1};
-    }  
+    :hover {
+      background-color: ${color.button_hover_1};
+    }
   }
 
   :nth-child(2) {
@@ -126,17 +141,15 @@ export const ActionItem = styled.div`
     color: ${color.primary};
     margin-left: 8px;
 
-    :hover{
-      background-color:${color.primary};
-      color: white; 
+    :hover {
+      background-color: ${color.primary};
+      color: white;
     }
   }
 
   p {
-      margin-left: 8px;
-    }
-
-
+    margin-left: 8px;
+  }
 `;
 
 export const Description = styled.div`
@@ -145,6 +158,13 @@ export const Description = styled.div`
   color: #313131;
   min-height: 8rem;
   margin-top: 2rem;
+
+  p {
+    width: 100%;
+    min-height: 10rem;
+    background: rgba(200, 200, 200, 0.1);
+    padding: 1rem;
+  }
 `;
 
 export const Review = styled.div`

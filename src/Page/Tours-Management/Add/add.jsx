@@ -31,13 +31,14 @@ import {
     DestinationBox,
     DestinationItem
 } from './style'
+import { HeaderBox } from '../../style.route'
 
 class AddTours extends Component {
 
     state = {
         title: "",
-        cost: 0,
-        quota: 0,
+        cost: '',
+        quota: '',
         image: ['', '', '', ''],
         imgShow: ['', '', '', ''],
         start_date: "",
@@ -82,31 +83,34 @@ class AddTours extends Component {
 
         if (name.split('-')[0] === "image") {
             let file = e.target.files[0]
-            let fileExt = file.name.split('.')[1]
+            if (file) {
+                let fileExt = file.name.split('.')[1]
 
-            if (fileExt === 'png' || fileExt === 'jpg' || fileExt === 'jpeg') {
-                Resizer.imageFileResizer(
-                    file,
-                    400,
-                    400,
-                    fileExt,
-                    100,
-                    0,
-                    uri => {
-                        let index = name.split('-')[1]
-                        value = uri.blobImg
+                if (fileExt === 'png' || fileExt === 'jpg' || fileExt === 'jpeg') {
+                    Resizer.imageFileResizer(
+                        file,
+                        1000,
+                        1000,
+                        fileExt,
+                        100,
+                        0,
+                        uri => {
+                            let index = name.split('-')[1]
+                            value = uri.blobImg
 
-                        let new_image = this.state.image
-                        let new_imgShow = this.state.imgShow
+                            let new_image = this.state.image
+                            let new_imgShow = this.state.imgShow
 
-                        new_image[index] = value
-                        new_imgShow[index] = uri.base64Img
+                            new_image[index] = value
+                            new_imgShow[index] = uri.base64Img
 
-                        this.setState({ imgShow: new_imgShow, image: new_image })
-                    },
-                    'base64'
-                );
+                            this.setState({ imgShow: new_imgShow, image: new_image })
+                        },
+                        'base64'
+                    );
+                }
             }
+
         }
         else {
             this.setState({ [name]: value })
@@ -227,13 +231,31 @@ class AddTours extends Component {
 
     handleOpenModal = () => this.setState({ isModalOpen: !this.state.isModalOpen })
 
+    handleDeleteImage = (e, id) => {
+        e.stopPropagation()
+        let imgShow = this.state.imgShow
+        let imgData = this.state.image
+
+        imgData[id] = ''
+        imgShow[id] = ''
+
+        this.setState({ imgShow: imgShow, imgData: imgData })
+    }
+
+    handleRemoveDestination = (key) => {
+        const filtered = this.state.destination.filter(dest => dest.city_id !== key)        
+        this.setState({ destination: filtered })
+    }
+
     render() {
         return (
             <React.Fragment>
-                <Header>
-                    <img src={getImg("Account", "logo.png")} alt='' />
-                    <h1>UNSEEN</h1>
-                </Header>
+                <HeaderBox>
+                    <Header onClick={() => this.props.history.push('/')}>
+                        <img src={getImg("Account", "logo.png")} />
+                        <h1>UNSEEN</h1>
+                    </Header>
+                </HeaderBox>
                 <Container>
                     <Modal
                         element={this.optionElement}
@@ -280,7 +302,7 @@ class AddTours extends Component {
                                                     data !== '' ?
                                                         <React.Fragment>
                                                             <img src={data} alt='' />
-                                                            <span id={index} onClick={this.deleteImage}>X</span>
+                                                            <span id={index} onClick={(e) => this.handleDeleteImage(e, index)}>X</span>
                                                         </React.Fragment>
                                                         :
                                                         null
@@ -306,7 +328,7 @@ class AddTours extends Component {
                                 {
                                     this.state.destination && this.state.destination.map(dest => (
                                         <DestinationItem>
-                                            <label>X</label>
+                                            <label onClick={() => this.handleRemoveDestination(dest.city_id)}>X</label>
                                             <p>{dest.city_name} ({dest.period}days)</p>
                                         </DestinationItem>
                                     ))

@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import Sidebar from "../../../../Components/Sidebar/sidebar";
 
-import { get_tours_guides_detail, post_user_request, } from "../../../../Redux/tours/tours.action";
+import { get_tours_guides_detail, post_user_request, get_booking_list, post_agency_request } from "../../../../Redux/tours/tours.action";
 import { chats_send_message, get_location_data } from "../../../../Redux/features/features.action";
 
 import { defaultProfile, getImg, renameImg } from "../../../../Constants/get-img";
@@ -53,6 +53,7 @@ import {
     RequestPanel,
     RequestInput,
     RequestSubmit,
+    Dropdown,
 
 } from "./style";
 import Select from "../../../../Components/Select/select";
@@ -62,6 +63,8 @@ import { useAlert } from "react-alert";
 
 const GuidesToursDetail = (props) => {
     const [guidesData, setGuidesData] = useState(null)
+    const [bookingList, setBookingList] = useState(null)
+    const [selectedBooking, setSelectedBooking] = useState(null)
     const [openRequest, setOpenRequest] = useState(false)
     const [requestForm, setRequestForm] = useState({ offers: '', description: '' })
     const [requestDate, setRequestDate] = useState({ start: '', end: '' })
@@ -90,21 +93,38 @@ const GuidesToursDetail = (props) => {
         setGuidesData(post.guides)
     }
 
+    const handleRequestModal = async () => {
+        if (storage.type_code === 'U') {
+            setRequestDate({ start: '', end: '' })
+            setLocation({
+                ...location,
+                countries_id: null,
+                states_id: null,
+                states: null,
+                cities_id: null,
+                cities_name: null,
+                cities: null,
+            })
+        } else if (storage.type_code === 'A' && !openRequest) {
+            let bookingList = await props.get_booking_list()
 
+            if (bookingList.err) {
+                return alert.error(bookingList.err)
+            }
+            bookingList = bookingList.data.map(booking => {
+                booking.val = booking.id
+                booking.label = booking.tours_title + " | (" + booking.username + ")"
+                return booking
+            })
 
-    const handleRequestModal = () => {
+            setBookingList(bookingList)
+        } else if (storage.type_code === 'G') {
+            alert.info('Not available for guides!')
+            return 0
+        }
+
         setOpenRequest(!openRequest)
         setRequestForm({ offers: '', description: '' })
-        setRequestDate({ start: '', end: '' })
-        setLocation({
-            ...location,
-            countries_id: null,
-            states_id: null,
-            states: null,
-            cities_id: null,
-            cities_name: null,
-            cities: null,
-        })
     }
 
     const handleRequestInput = (e) => {
@@ -144,6 +164,12 @@ const GuidesToursDetail = (props) => {
         }
     }
 
+    const handleChangeSelectBookings = (e) => {
+        const { value } = e.target
+        const selected = bookingList.filter(b => b.id.toString() === value)[0]
+        setSelectedBooking(selected)
+    }
+
     const handleDateInput = (value, dateString) => {
         setRequestDate({ start: value[0], end: value[1] })
     }
@@ -178,6 +204,34 @@ const GuidesToursDetail = (props) => {
         handleRequestModal()
     }
 
+    const sendAgencyRequest = async () => {
+        const post = await props.post_agency_request({
+            booking_id: selectedBooking.id,
+            sender_id: storage.id,
+            sender_type: storage.type_code,
+            receiver_id: guidesData.id,
+            start_date: selectedBooking.start_date,
+            end_date: selectedBooking.end_date,
+            offers_price: requestForm.offers,
+            description: requestForm.description,
+        })
+
+        if (!post.err) {
+            await props.chats_send_message({
+                receiver_id: guidesData.id,
+                receiver_type: 'G',
+                content: `Hello i'm agency from ${storage.username}, ${requestForm.description}!`,
+                tours_id: guidesData.id,
+                tours_type: 'A'
+            })
+            alert.success("Request Success")
+            handleRequestModal()
+        } else {
+            alert.error(post.err)
+            handleRequestModal()
+        }
+    }
+
     const InfoData = [
         { label: 'Type', value: 'Europe' },
         { label: 'Gender', value: 'Male' },
@@ -194,72 +248,110 @@ const GuidesToursDetail = (props) => {
                 openRequest &&
                 <RequestDimmer>
                     <RequestBox>
-                        <RequestPanel onClick={handleRequestModal}>
-                            <p>X</p>
+                        <RequestPanel>
+                            <p onClick={handleRequestModal}>X</p>
                         </RequestPanel>
-                        <RequestInput>
-                            <Item isSelect={true}>
-                                <p>Country</p>
-                                <Select
-                                    name="countries"
-                                    handler={handleChangeSelect}
-                                    option={location.countries && location.countries}
-                                    default="Select Country"
-                                />
-                            </Item>
-                            <Item isSelect={true}>
-                                <p>State</p>
-                                <Select
-                                    name="states"
-                                    handler={handleChangeSelect}
-                                    option={location.states && location.states}
-                                    default="Select State"
-                                />
-                            </Item>
-                            <Item isSelect={true}>
-                                <p>Cities</p>
-                                <Select
-                                    name="cities"
-                                    handler={handleChangeSelect}
-                                    option={location.cities && location.cities}
-                                    default="Select City"
-                                />
-                            </Item>
-                            <Item>
-                                <p>Start & End date</p>
-                                <DateRangePicker
-                                    onChange={handleDateInput}
-                                    value={[
-                                        requestDate.start,
-                                        requestDate.end
-                                    ]}
-                                    minDate={new Date(Date.now() + (1000 * 60 * 60 * 72))}
-                                    clearIcon={null}
-                                    dayPlaceholder={'dd'}
-                                    monthPlaceholder={'mm'}
-                                    yearPlaceholder={'yyyy'}
-                                />
-                            </Item>
-                        </RequestInput>
-                        <RequestInput>
-                            <label>Offers</label>
-                            <input
-                                type="text"
-                                name="offers"
-                                onChange={handleRequestInput}
-                                value={requestForm.offers}
-                            />
-                        </RequestInput>
-                        <RequestInput>
-                            <label>Description</label>
-                            <textarea
-                                placeholder="Type something here..."
-                                name="description"
-                                onChange={handleRequestInput}
-                                value={requestForm.description}
-                            ></textarea>
-                        </RequestInput>
-                        <RequestSubmit onClick={sendRequest}>Send Request</RequestSubmit>
+
+                        {
+                            storage.type_code === 'U' ?
+                                <React.Fragment>
+                                    <RequestInput>
+                                        <Item isSelect={true}>
+                                            <p>Country</p>
+                                            <Select
+                                                name="countries"
+                                                handler={handleChangeSelect}
+                                                option={location.countries && location.countries}
+                                                default="Select Country"
+                                            />
+                                        </Item>
+                                        <Item isSelect={true}>
+                                            <p>State</p>
+                                            <Select
+                                                name="states"
+                                                handler={handleChangeSelect}
+                                                option={location.states && location.states}
+                                                default="Select State"
+                                            />
+                                        </Item>
+                                        <Item isSelect={true}>
+                                            <p>Cities</p>
+                                            <Select
+                                                name="cities"
+                                                handler={handleChangeSelect}
+                                                option={location.cities && location.cities}
+                                                default="Select City"
+                                            />
+                                        </Item>
+                                        <Item>
+                                            <p>Start & End date</p>
+                                            <DateRangePicker
+                                                onChange={handleDateInput}
+                                                value={[
+                                                    requestDate.start,
+                                                    requestDate.end
+                                                ]}
+                                                minDate={new Date(Date.now() + (1000 * 60 * 60 * 72))}
+                                                clearIcon={null}
+                                                dayPlaceholder={'dd'}
+                                                monthPlaceholder={'mm'}
+                                                yearPlaceholder={'yyyy'}
+                                            />
+                                        </Item>
+                                    </RequestInput>
+                                    <RequestInput>
+                                        <label>Offers</label>
+                                        <input
+                                            type="text"
+                                            name="offers"
+                                            onChange={handleRequestInput}
+                                            value={requestForm.offers}
+                                        />
+                                    </RequestInput>
+                                    <RequestInput>
+                                        <label>Description</label>
+                                        <textarea
+                                            placeholder="Type something here..."
+                                            name="description"
+                                            onChange={handleRequestInput}
+                                            value={requestForm.description}
+                                        ></textarea>
+                                    </RequestInput>
+                                </React.Fragment>
+                                :
+                                storage.type_code === 'A' &&
+                                <React.Fragment>
+                                    <RequestInput>
+                                        <label>Tours</label>
+                                        <Select
+                                            name="selectedBookings"
+                                            handler={handleChangeSelectBookings}
+                                            option={bookingList}
+                                            default="Select Bookings"
+                                        />
+                                    </RequestInput>
+                                    <RequestInput>
+                                        <label>Offers</label>
+                                        <input
+                                            type="text"
+                                            name="offers"
+                                            onChange={handleRequestInput}
+                                            value={requestForm.offers}
+                                        />
+                                    </RequestInput>
+                                    <RequestInput>
+                                        <label>Description</label>
+                                        <textarea
+                                            placeholder="Type something here..."
+                                            name="description"
+                                            onChange={handleRequestInput}
+                                            value={requestForm.description}
+                                        ></textarea>
+                                    </RequestInput>
+                                </React.Fragment>
+                        }
+
+                        <RequestSubmit onClick={storage.type_code === 'A' ? sendAgencyRequest : sendRequest}>Send Request</RequestSubmit>
                     </RequestBox>
                 </RequestDimmer>
             }
@@ -270,13 +362,13 @@ const GuidesToursDetail = (props) => {
                     <Container>
                         <Headers>
                             <Background>
-                                <img src="https://www.worldforestry.org/wp-content/uploads/2020/02/dan-otis-OYFHT4X5isg-unsplash-scaled.jpg" />
+                                <img src="https://www.hdwallpapers.in/download/autumn_forest-HD.jpg" />
                                 <Logo>Unseen</Logo>
                             </Background>
                             <Profile>
                                 <AvatarBox>
                                     <Avatar>
-                                        <img src={guidesData.image ? renameImg(guidesData.image) : defaultProfile} />
+                                        <img src={renameImg(guidesData.image)} />
                                         <ProfileList>
                                             <ProfileItem>
                                                 <p>{guidesData.username}</p>
@@ -388,7 +480,9 @@ const mapDispatchToProps = (dispatch) => ({
     get_tours_guides_detail: (data) => dispatch(get_tours_guides_detail(data)),
     chats_send_message: (data) => dispatch(chats_send_message(data)),
     post_user_request: (data) => dispatch(post_user_request(data)),
-    get_location_data: (data) => dispatch(get_location_data(data))
+    get_location_data: (data) => dispatch(get_location_data(data)),
+    get_booking_list: (data) => dispatch(get_booking_list(data)),
+    post_agency_request: (data) => dispatch(post_agency_request(data))
 });
 
 export default compose(

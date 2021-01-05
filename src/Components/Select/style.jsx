@@ -1,8 +1,10 @@
 import styled from "styled-components";
 
 export const Container = styled.select`
-  width: 100%;
-  padding: 5px;
+  width: 100% !important;
+  display: block;
+  padding: 5px 2%;
+  margin-top: 10px;
   font-size: 16px;
   line-height: 1;
   border: 0;
@@ -12,7 +14,7 @@ export const Container = styled.select`
   -webkit-appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-position-x: 95%;
+  background-position-x: 99%;
   outline: none;
   color: rgba(0, 0, 0, 0.5);
   cursor: pointer;
@@ -20,4 +22,5 @@ export const Container = styled.select`
   &:disabled {
     background: #dddddd;
   }
+
 `;
